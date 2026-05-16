@@ -15,7 +15,7 @@ const PHASES = [
   { n: "01", title: "Engineering Foundations", weeks: "Weeks 1–4", body: "Python, FastAPI, design patterns, CI/CD, spec-driven dev — backend discipline before AI complexity." },
   { n: "02", title: "GenAI & Measurable RAG", weeks: "Weeks 5–9", body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals, prompt caching, cost dashboards." },
   { n: "03", title: "Agents & MCP", weeks: "Weeks 10–13", body: "LangGraph orchestration, MCP servers, Claude Agent SDK + Skills, HITL governance, trajectory evals." },
-  { n: "04", title: "Cloud Computing (AWS)", weeks: "Weeks 14–16", body: "AWS Bedrock + AgentCore, observability, OWASP LLM Top 10, red-team your own capstone." },
+  { n: "04", title: "Cloud Computing (AWS)", weeks: "Weeks 14–16", body: "AWS Services ( Lambda, S3, RDS, Dynamo, Bedrock, AgentCore ..etc), observability, OWASP LLM Top 10, red-team your own capstone." },
   { n: "05", title: "Interview Mastery & Capstone", weeks: "Weeks 17–20", body: "7 mock interviews calibrated to real bars + Capstone Demo Day with industry panel." },
 ];
 
