@@ -419,7 +419,7 @@ function Rocket() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute right-[8%] lg:right-[12%] top-[38%] -translate-y-1/2 hidden md:block z-10"
+      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] -translate-y-1/2 z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px]"
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
