@@ -133,7 +133,7 @@ function Detail() {
               <Field k="LLM experience" v={app.llm_experience ? `Yes — ${app.llm_experience_desc ?? ""}` : "No"} />
               <Field k="English level" v={String(app.english_level ?? "—")} />
             </Grid>
-            {app.english_sample && (
+            {Boolean(app.english_sample) && (
               <div className="mt-4 rounded-sm border border-rule p-4 text-sm italic">"{String(app.english_sample)}"</div>
             )}
           </Card>
