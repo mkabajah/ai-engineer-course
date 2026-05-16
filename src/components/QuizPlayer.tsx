@@ -13,6 +13,7 @@ type Question = {
   choices: string[];
   time_limit_seconds: number;
   order_index: number;
+  image_url: string | null;
 };
 
 export function QuizPlayer({
