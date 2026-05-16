@@ -127,7 +127,7 @@ function Hero() {
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%]">
+        <h1 className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%] transition-[max-width,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <AnimatedLine delay={0.15}>Stop building</AnimatedLine>
           <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
           <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
@@ -419,7 +419,7 @@ function Rocket() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] -translate-y-1/2 z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px]"
+      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] -translate-y-1/2 z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px] transition-[width,right,top] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
