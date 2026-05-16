@@ -114,6 +114,9 @@ function Hero() {
         }}
       />
 
+      <Rocket />
+
+
       <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -410,5 +413,86 @@ function CTA() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function Rocket() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute right-2 md:right-10 lg:right-16 top-1/2 -translate-y-1/2 hidden md:block z-10"
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: [10, -10, 10], opacity: 1, rotate: [-2, 2, -2] }}
+        transition={{
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+          opacity: { duration: 1 },
+        }}
+        className="relative"
+      >
+        {/* Exhaust trail */}
+        <motion.div
+          className="absolute left-1/2 -translate-x-1/2 top-full w-3 origin-top"
+          animate={{ scaleY: [0.8, 1.4, 0.9, 1.3, 0.8], opacity: [0.7, 1, 0.8, 1, 0.7] }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            height: 120,
+            background:
+              "linear-gradient(to bottom, var(--primary), color-mix(in oklab, var(--primary) 60%, orange), transparent)",
+            filter: "blur(6px)",
+            borderRadius: "50%",
+          }}
+        />
+        {/* Sparks */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <motion.span
+            key={i}
+            className="absolute left-1/2 top-full block h-1.5 w-1.5 rounded-full bg-primary"
+            initial={{ x: 0, y: 0, opacity: 1 }}
+            animate={{
+              x: (i - 2) * 14,
+              y: 140 + i * 8,
+              opacity: 0,
+            }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              delay: i * 0.18,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+
+        {/* Rocket SVG */}
+        <svg width="120" height="200" viewBox="0 0 120 200" fill="none" className="relative drop-shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+          {/* Body */}
+          <path
+            d="M60 8 C 80 28, 90 70, 90 110 L 90 150 L 30 150 L 30 110 C 30 70, 40 28, 60 8 Z"
+            fill="url(#bodyGrad)"
+            stroke="var(--foreground)"
+            strokeWidth="1.5"
+          />
+          {/* Window */}
+          <circle cx="60" cy="78" r="14" fill="var(--background)" stroke="var(--primary)" strokeWidth="2.5" />
+          <circle cx="56" cy="74" r="4" fill="var(--primary)" opacity="0.6" />
+          {/* Body stripe */}
+          <rect x="30" y="120" width="60" height="6" fill="var(--primary)" opacity="0.8" />
+          {/* Left fin */}
+          <path d="M30 110 L 8 160 L 30 150 Z" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.5" />
+          {/* Right fin */}
+          <path d="M90 110 L 112 160 L 90 150 Z" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.5" />
+          {/* Nozzle */}
+          <path d="M38 150 L 82 150 L 76 168 L 44 168 Z" fill="var(--foreground)" opacity="0.85" />
+          <defs>
+            <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--background)" />
+              <stop offset="100%" stopColor="var(--card)" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </motion.div>
+    </div>
   );
 }
