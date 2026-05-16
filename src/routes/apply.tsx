@@ -55,7 +55,7 @@ function ApplyPage() {
     full_name: "", email: "", phone: "", city: "", location_pref: "remote",
     education_degree: "", education_institution: "", graduation_year: "",
     employment_status: "", employment_role: "", english_level: "4", english_sample: "",
-    time_commitment_ok: false, time_commitment_note: "", financial_ack: false,
+    time_commitment_ok: false, time_commitment_note: "", financial_ack: true,
     github_url: "", linkedin_url: "", portfolio_url: "", languages: "",
     llm_experience: false, llm_experience_desc: "",
     essay_shipping: "", essay_curiosity: "", essay_fit: "",
@@ -66,7 +66,7 @@ function ApplyPage() {
 
   const canProceed = useMemo(() => {
     if (step === 0)
-      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok && form.financial_ack;
+      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok;
     if (step === 1) return true;
     if (step === 2)
       return (
@@ -177,16 +177,6 @@ function ApplyPage() {
                 onChange={(e) => set("time_commitment_note", e.target.value)}
                 className="min-h-[70px]"
               />
-              <label className="flex items-start gap-3 pt-2">
-                <Checkbox
-                  checked={form.financial_ack}
-                  onCheckedChange={(v) => set("financial_ack", !!v)}
-                  className="mt-1"
-                />
-                <span className="text-sm">
-                  I acknowledge program tuition is <strong>120,000 NIS</strong> (payment plans available). *
-                </span>
-              </label>
             </div>
           </div>
         )}
