@@ -517,6 +517,19 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           <circle cx="56" cy="74" r="4" fill="var(--primary)" opacity="0.6" />
           {/* Body stripe */}
           <rect x="30" y="120" width="60" height="6" fill="var(--primary)" opacity="0.8" />
+          {/* Brand */}
+          <text
+            x="60"
+            y="108"
+            textAnchor="middle"
+            fill="var(--foreground)"
+            fontSize="8"
+            fontWeight="700"
+            fontFamily="ui-sans-serif, system-ui, sans-serif"
+            letterSpacing="0.5"
+          >
+            HasoubLabs
+          </text>
           {/* Left fin */}
           <path d="M30 110 L 8 160 L 30 150 Z" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.5" />
           {/* Right fin */}
