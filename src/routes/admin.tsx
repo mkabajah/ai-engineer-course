@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,12 +7,17 @@ export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, isAdmin, loading } = useAuth();
+  const isLoginRoute = location.pathname === "/admin/login";
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || isLoginRoute) return;
     if (!session) navigate({ to: "/admin/login" });
-  }, [session, loading, navigate]);
+  }, [session, loading, navigate, isLoginRoute]);
+
+  // Login page renders without the admin chrome / guard
+  if (isLoginRoute) return <Outlet />;
 
   if (loading) return <div className="min-h-screen bg-background" />;
   if (!session) return null;
