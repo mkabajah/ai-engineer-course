@@ -53,8 +53,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AI Engineer Accelerator — Apply" },
+      { title: "AI Engineer Accelerator" },
       { name: "description", content: "Application portal for the AI Engineer Career Accelerator." },
+      { property: "og:title", content: "AI Engineer Accelerator" },
+      { name: "twitter:title", content: "AI Engineer Accelerator" },
+      { property: "og:description", content: "Application portal for the AI Engineer Career Accelerator." },
+      { name: "twitter:description", content: "Application portal for the AI Engineer Career Accelerator." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/631622c0-fa07-4966-ae83-0a71df1622b7/id-preview-0f473f95--e63f6340-8d58-4a0c-a44b-a67bce4a0222.lovable.app-1778970199191.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/631622c0-fa07-4966-ae83-0a71df1622b7/id-preview-0f473f95--e63f6340-8d58-4a0c-a44b-a67bce4a0222.lovable.app-1778970199191.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
