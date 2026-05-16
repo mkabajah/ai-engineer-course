@@ -52,7 +52,7 @@ function ApplyPage() {
   const [videoPath, setVideoPath] = useState<string | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<QuizAnswer[] | null>(null);
   const [form, setForm] = useState<FormState>({
-    full_name: "", email: "", phone: "", city: "", location_pref: "remote",
+    full_name: "", email: "", phone: "", city: "", location_pref: "",
     education_degree: "", education_institution: "", graduation_year: "",
     employment_status: "", employment_role: "", english_level: "4", english_sample: "",
     time_commitment_ok: false, time_commitment_note: "", financial_ack: true,
