@@ -137,6 +137,11 @@ export function QuizPlayer({
           style={{ width: `${pct}%` }}
         />
       </div>
+      {q.image_url && (
+        <div className="flex justify-center rounded-sm border border-rule bg-background p-6">
+          <img src={q.image_url} alt="" className="max-h-48 w-auto object-contain" />
+        </div>
+      )}
       <h2 className="serif text-2xl leading-snug">{q.question}</h2>
       <div className="space-y-2">
         {q.choices.map((c, i) => (
