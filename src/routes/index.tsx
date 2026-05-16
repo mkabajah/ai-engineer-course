@@ -608,6 +608,7 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             </defs>
           </svg>
         </motion.div>
+      </motion.div>
     </div>
   );
 }
