@@ -177,16 +177,6 @@ function ApplyPage() {
                 onChange={(e) => set("time_commitment_note", e.target.value)}
                 className="min-h-[70px]"
               />
-              <label className="flex items-start gap-3 pt-2">
-                <Checkbox
-                  checked={form.financial_ack}
-                  onCheckedChange={(v) => set("financial_ack", !!v)}
-                  className="mt-1"
-                />
-                <span className="text-sm">
-                  I acknowledge program tuition is <strong>120,000 NIS</strong> (payment plans available). *
-                </span>
-              </label>
             </div>
           </div>
         )}
