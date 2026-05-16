@@ -114,10 +114,9 @@ function Hero() {
         }}
       />
 
-      <Rocket />
-
-
       <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+        <Rocket />
+
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
