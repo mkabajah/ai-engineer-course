@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 export const Route = createFileRoute("/")({ component: Landing });
 
 const STACK = [
-  "MCP", "LangGraph", "Claude Agent SDK", "RAG + Reranking", "AWS Bedrock",
-  "Pydantic v2", "FastAPI", "pgvector", "LangSmith", "OWASP LLM Top 10",
-  "Computer Use", "Realtime Voice", "Prompt Caching", "Skills", "AgentCore",
+  "Generative AI", "Agentic AI", "RAG", "MCP", "Claude", "AWS Bedrock",
+  "Cloud Services", "Prompt Engineering", "LangGraph", "Claude Agent SDK",
+  "Skills", "AgentCore", "Vector Search", "Fine-Tuning", "Evals",
+  "Interview Mastery", "Cursor", "OpenAI", "Gemini", "Tool Use",
 ];
 
 const PHASES = [
