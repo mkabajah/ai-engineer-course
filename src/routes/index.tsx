@@ -80,9 +80,46 @@ function Nav() {
 
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const rocketRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const [adjust, setAdjust] = useState({ x: 0, scale: 1 });
+
+  useEffect(() => {
+    const SAFE_GAP = 24;
+    const measure = () => {
+      const h = headlineRef.current;
+      const r = rocketRef.current;
+      if (!h || !r) return;
+      // Reset before measuring to get natural positions
+      r.style.transform = "translate(0px, -50%) scale(1)";
+      const hRect = h.getBoundingClientRect();
+      const rRect = r.getBoundingClientRect();
+      const overlap = hRect.right + SAFE_GAP - rRect.left;
+      if (overlap > 0) {
+        const maxShift = Math.max(0, rRect.width * 0.4);
+        const x = Math.min(overlap, maxShift);
+        const remaining = overlap - x;
+        const scale = remaining > 0
+          ? Math.max(0.55, 1 - remaining / rRect.width)
+          : 1;
+        setAdjust({ x, scale });
+      } else {
+        setAdjust({ x: 0, scale: 1 });
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (headlineRef.current) ro.observe(headlineRef.current);
+    if (ref.current) ro.observe(ref.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
   return (
     <section ref={ref} className="relative overflow-hidden">
@@ -115,7 +152,7 @@ function Hero() {
       />
 
       <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
-        <Rocket />
+        <Rocket rocketRef={rocketRef} adjust={adjust} />
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -127,7 +164,7 @@ function Hero() {
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%] transition-[max-width,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
+        <h1 ref={headlineRef} className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%] transition-[max-width,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <AnimatedLine delay={0.15}>Stop building</AnimatedLine>
           <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
           <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
@@ -415,11 +452,13 @@ function CTA() {
   );
 }
 
-function Rocket() {
+function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivElement | null>; adjust: { x: number; scale: number } }) {
   return (
     <div
+      ref={rocketRef}
       aria-hidden
-      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] -translate-y-1/2 z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px] transition-[width,right,top] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+      style={{ transform: `translate(${adjust.x}px, -50%) scale(${adjust.scale})`, transformOrigin: "right center" }}
+      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px] transition-[width,right,top,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
