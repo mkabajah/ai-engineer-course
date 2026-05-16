@@ -80,9 +80,46 @@ function Nav() {
 
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const rocketRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const [adjust, setAdjust] = useState({ x: 0, scale: 1 });
+
+  useEffect(() => {
+    const SAFE_GAP = 24;
+    const measure = () => {
+      const h = headlineRef.current;
+      const r = rocketRef.current;
+      if (!h || !r) return;
+      // Reset before measuring to get natural positions
+      r.style.transform = "translate(0px, -50%) scale(1)";
+      const hRect = h.getBoundingClientRect();
+      const rRect = r.getBoundingClientRect();
+      const overlap = hRect.right + SAFE_GAP - rRect.left;
+      if (overlap > 0) {
+        const maxShift = Math.max(0, rRect.width * 0.4);
+        const x = Math.min(overlap, maxShift);
+        const remaining = overlap - x;
+        const scale = remaining > 0
+          ? Math.max(0.55, 1 - remaining / rRect.width)
+          : 1;
+        setAdjust({ x, scale });
+      } else {
+        setAdjust({ x: 0, scale: 1 });
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (headlineRef.current) ro.observe(headlineRef.current);
+    if (ref.current) ro.observe(ref.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
   return (
     <section ref={ref} className="relative overflow-hidden">
