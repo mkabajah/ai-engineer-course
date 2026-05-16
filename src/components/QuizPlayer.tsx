@@ -34,7 +34,7 @@ export function QuizPlayer({
     (async () => {
       const { data, error } = await supabase
         .from("quiz_questions")
-        .select("id, question, choices, time_limit_seconds, order_index")
+        .select("id, question, choices, time_limit_seconds, order_index, image_url")
         .eq("active", true)
         .order("order_index", { ascending: true });
       if (error) {
@@ -47,6 +47,7 @@ export function QuizPlayer({
         choices: Array.isArray(q.choices) ? (q.choices as string[]) : [],
         time_limit_seconds: q.time_limit_seconds,
         order_index: q.order_index,
+        image_url: (q as { image_url: string | null }).image_url ?? null,
       }));
       setQuestions(qs);
     })();
