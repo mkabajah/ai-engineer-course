@@ -66,7 +66,7 @@ function ApplyPage() {
 
   const canProceed = useMemo(() => {
     if (step === 0)
-      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok && form.financial_ack;
+      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok;
     if (step === 1) return true;
     if (step === 2)
       return (
