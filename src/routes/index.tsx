@@ -127,7 +127,7 @@ function Hero() {
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 className="display text-[11vw] md:text-[6rem] lg:text-[6.75rem] leading-[0.9]">
+        <h1 className="display text-[11vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[62%]">
           <AnimatedLine delay={0.15}>Stop building</AnimatedLine>
           <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
           <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
