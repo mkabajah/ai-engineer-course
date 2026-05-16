@@ -14,16 +14,272 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_scores: {
+        Row: {
+          application_id: string
+          created_at: string
+          dimension: string
+          id: string
+          rationale: string | null
+          score: number
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          dimension: string
+          id?: string
+          rationale?: string | null
+          score: number
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          dimension?: string
+          id?: string
+          rationale?: string | null
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_scores_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          admin_notes: string | null
+          city: string | null
+          created_at: string
+          education_degree: string | null
+          education_institution: string | null
+          email: string
+          employment_role: string | null
+          employment_status: string | null
+          english_level: number | null
+          english_sample: string | null
+          essay_curiosity: string | null
+          essay_fit: string | null
+          essay_shipping: string | null
+          financial_ack: boolean | null
+          full_name: string
+          github_url: string | null
+          graduation_year: number | null
+          id: string
+          languages: string | null
+          linkedin_url: string | null
+          llm_experience: boolean | null
+          llm_experience_desc: string | null
+          location_pref: string | null
+          phone: string | null
+          portfolio_url: string | null
+          quiz_avg_time_seconds: number | null
+          quiz_completed_at: string | null
+          quiz_correct_count: number | null
+          quiz_total_count: number | null
+          stage: string
+          status: string
+          time_commitment_note: string | null
+          time_commitment_ok: boolean | null
+          total_score: number | null
+          updated_at: string
+          video_path: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          city?: string | null
+          created_at?: string
+          education_degree?: string | null
+          education_institution?: string | null
+          email: string
+          employment_role?: string | null
+          employment_status?: string | null
+          english_level?: number | null
+          english_sample?: string | null
+          essay_curiosity?: string | null
+          essay_fit?: string | null
+          essay_shipping?: string | null
+          financial_ack?: boolean | null
+          full_name: string
+          github_url?: string | null
+          graduation_year?: number | null
+          id?: string
+          languages?: string | null
+          linkedin_url?: string | null
+          llm_experience?: boolean | null
+          llm_experience_desc?: string | null
+          location_pref?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          quiz_avg_time_seconds?: number | null
+          quiz_completed_at?: string | null
+          quiz_correct_count?: number | null
+          quiz_total_count?: number | null
+          stage?: string
+          status?: string
+          time_commitment_note?: string | null
+          time_commitment_ok?: boolean | null
+          total_score?: number | null
+          updated_at?: string
+          video_path?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          city?: string | null
+          created_at?: string
+          education_degree?: string | null
+          education_institution?: string | null
+          email?: string
+          employment_role?: string | null
+          employment_status?: string | null
+          english_level?: number | null
+          english_sample?: string | null
+          essay_curiosity?: string | null
+          essay_fit?: string | null
+          essay_shipping?: string | null
+          financial_ack?: boolean | null
+          full_name?: string
+          github_url?: string | null
+          graduation_year?: number | null
+          id?: string
+          languages?: string | null
+          linkedin_url?: string | null
+          llm_experience?: boolean | null
+          llm_experience_desc?: string | null
+          location_pref?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          quiz_avg_time_seconds?: number | null
+          quiz_completed_at?: string | null
+          quiz_correct_count?: number | null
+          quiz_total_count?: number | null
+          stage?: string
+          status?: string
+          time_commitment_note?: string | null
+          time_commitment_ok?: boolean | null
+          total_score?: number | null
+          updated_at?: string
+          video_path?: string | null
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          active: boolean
+          choices: Json
+          correct_index: number
+          created_at: string
+          id: string
+          order_index: number
+          question: string
+          time_limit_seconds: number
+        }
+        Insert: {
+          active?: boolean
+          choices: Json
+          correct_index: number
+          created_at?: string
+          id?: string
+          order_index?: number
+          question: string
+          time_limit_seconds?: number
+        }
+        Update: {
+          active?: boolean
+          choices?: Json
+          correct_index?: number
+          created_at?: string
+          id?: string
+          order_index?: number
+          question?: string
+          time_limit_seconds?: number
+        }
+        Relationships: []
+      }
+      quiz_responses: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          is_correct: boolean | null
+          question_id: string
+          selected_index: number | null
+          time_taken_seconds: number | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          question_id: string
+          selected_index?: number | null
+          time_taken_seconds?: number | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean | null
+          question_id?: string
+          selected_index?: number | null
+          time_taken_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_responses_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +406,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin"],
+    },
   },
 } as const
