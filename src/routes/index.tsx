@@ -437,7 +437,7 @@ function Rocket() {
           animate={{ scaleY: [0.8, 1.4, 0.9, 1.3, 0.8], opacity: [0.7, 1, 0.8, 1, 0.7] }}
           transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            height: 120,
+            height: 220,
             background:
               "linear-gradient(to bottom, var(--primary), color-mix(in oklab, var(--primary) 60%, orange), transparent)",
             filter: "blur(6px)",
