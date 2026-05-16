@@ -543,6 +543,71 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             </linearGradient>
           </defs>
         </svg>
+
+        {/* Astronaut — the AI engineer */}
+        <motion.div
+          className="absolute -left-[55%] sm:-left-[60%] top-[20%] w-[55%] sm:w-[60%]"
+          animate={{ y: [0, -14, 0], rotate: [-6, 4, -6] }}
+          transition={{
+            y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+            rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
+          }}
+        >
+          <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
+            {/* Tether line back to rocket */}
+            <path
+              d="M 130 90 Q 145 80, 160 95"
+              stroke="var(--primary)"
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+              opacity="0.6"
+              fill="none"
+            />
+            {/* Backpack */}
+            <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
+            {/* Body / suit */}
+            <path
+              d="M50 70 Q 50 58, 70 58 Q 90 58, 90 70 L 90 118 Q 90 130, 80 130 L 60 130 Q 50 130, 50 118 Z"
+              fill="var(--background)"
+              stroke="var(--foreground)"
+              strokeWidth="1.5"
+            />
+            {/* Chest control panel */}
+            <rect x="60" y="92" width="20" height="14" rx="2" fill="var(--primary)" opacity="0.85" />
+            <circle cx="65" cy="99" r="1.5" fill="var(--background)" />
+            <circle cx="70" cy="99" r="1.5" fill="var(--background)" />
+            <circle cx="75" cy="99" r="1.5" fill="var(--background)" />
+            {/* Arms */}
+            <path d="M50 80 Q 32 92, 36 112" stroke="var(--foreground)" strokeWidth="6" strokeLinecap="round" fill="none" />
+            <path d="M90 80 Q 108 88, 112 102" stroke="var(--foreground)" strokeWidth="6" strokeLinecap="round" fill="none" />
+            {/* Gloves */}
+            <circle cx="36" cy="114" r="6" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
+            <circle cx="114" cy="104" r="6" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
+            {/* Legs */}
+            <path d="M60 130 L 56 158" stroke="var(--foreground)" strokeWidth="8" strokeLinecap="round" />
+            <path d="M80 130 L 84 158" stroke="var(--foreground)" strokeWidth="8" strokeLinecap="round" />
+            {/* Boots */}
+            <ellipse cx="54" cy="162" rx="8" ry="4" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
+            <ellipse cx="86" cy="162" rx="8" ry="4" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
+            {/* Helmet */}
+            <circle cx="70" cy="40" r="26" fill="var(--background)" stroke="var(--foreground)" strokeWidth="1.5" />
+            {/* Visor */}
+            <path
+              d="M 50 38 Q 70 18, 90 38 Q 88 52, 70 56 Q 52 52, 50 38 Z"
+              fill="url(#visorGrad)"
+              stroke="var(--foreground)"
+              strokeWidth="1.2"
+            />
+            {/* Visor highlight */}
+            <ellipse cx="60" cy="32" rx="6" ry="3" fill="var(--background)" opacity="0.7" />
+            <defs>
+              <linearGradient id="visorGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="var(--primary)" />
+                <stop offset="100%" stopColor="var(--foreground)" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
       </motion.div>
     </div>
   );
