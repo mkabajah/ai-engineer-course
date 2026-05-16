@@ -55,7 +55,7 @@ function ApplyPage() {
     full_name: "", email: "", phone: "", city: "", location_pref: "remote",
     education_degree: "", education_institution: "", graduation_year: "",
     employment_status: "", employment_role: "", english_level: "4", english_sample: "",
-    time_commitment_ok: false, time_commitment_note: "", financial_ack: false,
+    time_commitment_ok: false, time_commitment_note: "", financial_ack: true,
     github_url: "", linkedin_url: "", portfolio_url: "", languages: "",
     llm_experience: false, llm_experience_desc: "",
     essay_shipping: "", essay_curiosity: "", essay_fit: "",
