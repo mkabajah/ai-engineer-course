@@ -114,18 +114,18 @@ function Hero() {
         }}
       />
 
-      <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-20 pb-28 md:pt-32 md:pb-40">
+      <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="label-eyebrow mb-8 flex items-center gap-3"
+          className="label-eyebrow mb-6 flex items-center gap-3"
         >
           <span className="inline-block h-px w-8 bg-primary" />
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 className="display text-[14vw] md:text-[8.5rem] leading-[0.88]">
+        <h1 className="display text-[11vw] md:text-[6rem] lg:text-[6.75rem] leading-[0.9]">
           <AnimatedLine delay={0.15}>Stop building</AnimatedLine>
           <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
           <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
@@ -136,7 +136,7 @@ function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85, duration: 0.6 }}
-          className="mt-10 max-w-xl text-base md:text-lg text-muted-foreground leading-relaxed"
+          className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
         >
           A 20-week, 40-session program that turns engineers into production AI engineers — RAG with eval gates,
           agents with MCP, cloud deployments on AWS, and 7 mock interviews calibrated to real hiring bars.
@@ -146,11 +146,11 @@ function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.6 }}
-          className="mt-12 flex flex-wrap items-center gap-6"
+          className="mt-8 flex flex-wrap items-center gap-6"
         >
           <Link
             to="/apply"
-            className="group relative inline-flex items-center gap-3 overflow-hidden rounded-sm bg-primary px-7 py-4 text-sm font-medium text-primary-foreground"
+            className="group relative inline-flex items-center gap-3 overflow-hidden rounded-sm bg-primary px-7 py-4 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow"
           >
             <span className="relative z-10">Begin application</span>
             <motion.span
@@ -169,7 +169,7 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-rule pt-8"
+          className="mt-10 grid grid-cols-4 gap-6 border-t border-rule pt-6"
         >
           {STATS.map((s, i) => (
             <motion.div
@@ -178,8 +178,8 @@ function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3 + i * 0.08, duration: 0.5 }}
             >
-              <div className="display text-5xl md:text-6xl">{s.k}</div>
-              <div className="label-eyebrow mt-2">{s.label}</div>
+              <div className="display text-3xl md:text-4xl">{s.k}</div>
+              <div className="label-eyebrow mt-1.5">{s.label}</div>
             </motion.div>
           ))}
         </motion.div>
