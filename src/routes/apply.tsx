@@ -148,17 +148,21 @@ function ApplyPage() {
               <Field label="Phone"><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
               <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} /></Field>
             </Row>
-            <Field label="Attending in-person or remote?">
-              <select
-                value={form.location_pref}
-                onChange={(e) => set("location_pref", e.target.value)}
-                className="h-10 w-full rounded-sm border border-input bg-background px-3 text-sm"
-              >
-                <option value="remote">Remote</option>
-                <option value="in-person">In person</option>
-                <option value="either">Either works</option>
-              </select>
-            </Field>
+            <div className="rounded-sm border border-rule bg-card p-4 space-y-3">
+              <p className="text-sm leading-relaxed">
+                The course is delivered <strong>online</strong>, with a few <strong>in-person sessions</strong> held at <strong>Hasoub Campus, Arrara</strong>. Attendance at the in-person sessions is expected.
+              </p>
+              <label className="flex items-start gap-3">
+                <Checkbox
+                  checked={form.location_pref === "confirmed"}
+                  onCheckedChange={(v) => set("location_pref", v ? "confirmed" : "")}
+                  className="mt-1"
+                />
+                <span className="text-sm">
+                  I confirm I can attend the in-person sessions at Hasoub Campus, Arrara. *
+                </span>
+              </label>
+            </div>
 
             <div className="rule pt-8 space-y-4">
               <label className="flex items-start gap-3">
@@ -210,8 +214,13 @@ function ApplyPage() {
               <Field label="Project link (deploy/repo/video)"><Input value={form.portfolio_url} onChange={(e) => set("portfolio_url", e.target.value)} /></Field>
             </Row>
             <Field label="Programming languages used in a project >1 month"><Input value={form.languages} onChange={(e) => set("languages", e.target.value)} placeholder="e.g. Python, TypeScript, Go" /></Field>
-            <Field label="One paragraph in English (spot-check)">
-              <Textarea value={form.english_sample} onChange={(e) => set("english_sample", e.target.value)} className="min-h-[90px]" />
+            <Field label="Short bio — why should we choose you for this course? (in English)">
+              <Textarea
+                value={form.english_sample}
+                onChange={(e) => set("english_sample", e.target.value)}
+                className="min-h-[140px]"
+                placeholder="Tell us who you are, what drives you, and why you're the right fit for this cohort."
+              />
             </Field>
             <label className="flex items-start gap-3">
               <Checkbox
