@@ -15,6 +15,7 @@ type Q = {
   time_limit_seconds: number;
   order_index: number;
   active: boolean;
+  image_url: string | null;
 };
 
 function Questions() {
