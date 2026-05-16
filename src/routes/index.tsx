@@ -114,10 +114,9 @@ function Hero() {
         }}
       />
 
-      <Rocket />
-
-
       <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+        <Rocket />
+
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -128,7 +127,7 @@ function Hero() {
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 className="display text-[11vw] md:text-[6rem] lg:text-[6.75rem] leading-[0.9]">
+        <h1 className="display text-[11vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[62%]">
           <AnimatedLine delay={0.15}>Stop building</AnimatedLine>
           <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
           <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
@@ -420,7 +419,7 @@ function Rocket() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute right-2 md:right-10 lg:right-16 top-1/2 -translate-y-1/2 hidden md:block z-10"
+      className="pointer-events-none absolute right-0 md:right-4 lg:right-6 top-1/2 -translate-y-1/2 hidden md:block z-10"
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
@@ -438,7 +437,7 @@ function Rocket() {
           animate={{ scaleY: [0.8, 1.4, 0.9, 1.3, 0.8], opacity: [0.7, 1, 0.8, 1, 0.7] }}
           transition={{ duration: 0.5, repeat: Infinity, ease: "easeInOut" }}
           style={{
-            height: 120,
+            height: 220,
             background:
               "linear-gradient(to bottom, var(--primary), color-mix(in oklab, var(--primary) 60%, orange), transparent)",
             filter: "blur(6px)",
@@ -466,7 +465,7 @@ function Rocket() {
         ))}
 
         {/* Rocket SVG */}
-        <svg width="120" height="200" viewBox="0 0 120 200" fill="none" className="relative drop-shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+        <svg width="220" height="370" viewBox="0 0 120 200" fill="none" className="relative drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           {/* Body */}
           <path
             d="M60 8 C 80 28, 90 70, 90 110 L 90 150 L 30 150 L 30 110 C 30 70, 40 28, 60 8 Z"
