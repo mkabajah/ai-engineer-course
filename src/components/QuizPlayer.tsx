@@ -13,6 +13,7 @@ type Question = {
   choices: string[];
   time_limit_seconds: number;
   order_index: number;
+  image_url: string | null;
 };
 
 export function QuizPlayer({
@@ -33,7 +34,7 @@ export function QuizPlayer({
     (async () => {
       const { data, error } = await supabase
         .from("quiz_questions")
-        .select("id, question, choices, time_limit_seconds, order_index")
+        .select("id, question, choices, time_limit_seconds, order_index, image_url")
         .eq("active", true)
         .order("order_index", { ascending: true });
       if (error) {
@@ -46,6 +47,7 @@ export function QuizPlayer({
         choices: Array.isArray(q.choices) ? (q.choices as string[]) : [],
         time_limit_seconds: q.time_limit_seconds,
         order_index: q.order_index,
+        image_url: (q as { image_url: string | null }).image_url ?? null,
       }));
       setQuestions(qs);
     })();
@@ -135,6 +137,11 @@ export function QuizPlayer({
           style={{ width: `${pct}%` }}
         />
       </div>
+      {q.image_url && (
+        <div className="flex justify-center rounded-sm border border-rule bg-background p-6">
+          <img src={q.image_url} alt="" className="max-h-48 w-auto object-contain" />
+        </div>
+      )}
       <h2 className="serif text-2xl leading-snug">{q.question}</h2>
       <div className="space-y-2">
         {q.choices.map((c, i) => (

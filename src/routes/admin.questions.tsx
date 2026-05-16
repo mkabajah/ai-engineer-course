@@ -15,6 +15,7 @@ type Q = {
   time_limit_seconds: number;
   order_index: number;
   active: boolean;
+  image_url: string | null;
 };
 
 function Questions() {
@@ -31,6 +32,7 @@ function Questions() {
     const { error } = await supabase.from("quiz_questions").update({
       question: q.question, choices: q.choices, correct_index: q.correct_index,
       time_limit_seconds: q.time_limit_seconds, order_index: q.order_index, active: q.active,
+      image_url: q.image_url,
     }).eq("id", q.id);
     if (error) toast.error(error.message); else toast.success("Saved.");
   };
@@ -65,6 +67,14 @@ function Questions() {
         {items.map((q) => (
           <div key={q.id} className="rounded-sm border border-rule bg-card p-6 space-y-4">
             <Textarea value={q.question} onChange={(e) => setItems(items.map((x) => x.id === q.id ? { ...x, question: e.target.value } : x))} className="min-h-[70px] serif text-lg" />
+            <Input
+              placeholder="Image URL (optional)"
+              value={q.image_url ?? ""}
+              onChange={(e) => setItems(items.map((x) => x.id === q.id ? { ...x, image_url: e.target.value || null } : x))}
+            />
+            {q.image_url && (
+              <img src={q.image_url} alt="" className="max-h-32 w-auto object-contain border border-rule rounded-sm p-2" />
+            )}
             <div className="space-y-2">
               {q.choices.map((c, i) => (
                 <div key={i} className="flex items-center gap-2">

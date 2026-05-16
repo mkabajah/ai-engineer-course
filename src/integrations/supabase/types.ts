@@ -173,6 +173,7 @@ export type Database = {
           correct_index: number
           created_at: string
           id: string
+          image_url: string | null
           order_index: number
           question: string
           time_limit_seconds: number
@@ -183,6 +184,7 @@ export type Database = {
           correct_index: number
           created_at?: string
           id?: string
+          image_url?: string | null
           order_index?: number
           question: string
           time_limit_seconds?: number
@@ -193,6 +195,7 @@ export type Database = {
           correct_index?: number
           created_at?: string
           id?: string
+          image_url?: string | null
           order_index?: number
           question?: string
           time_limit_seconds?: number
