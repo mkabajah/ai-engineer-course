@@ -465,7 +465,7 @@ function Rocket() {
         ))}
 
         {/* Rocket SVG */}
-        <svg width="120" height="200" viewBox="0 0 120 200" fill="none" className="relative drop-shadow-[0_10px_30px_rgba(0,0,0,0.4)]">
+        <svg width="220" height="370" viewBox="0 0 120 200" fill="none" className="relative drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           {/* Body */}
           <path
             d="M60 8 C 80 28, 90 70, 90 110 L 90 150 L 30 150 L 30 110 C 30 70, 40 28, 60 8 Z"
