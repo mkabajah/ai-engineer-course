@@ -452,11 +452,13 @@ function CTA() {
   );
 }
 
-function Rocket() {
+function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivElement | null>; adjust: { x: number; scale: number } }) {
   return (
     <div
+      ref={rocketRef}
       aria-hidden
-      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] -translate-y-1/2 z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px] transition-[width,right,top] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+      style={{ transform: `translate(${adjust.x}px, -50%) scale(${adjust.scale})`, transformOrigin: "right center" }}
+      className="pointer-events-none absolute right-[4%] sm:right-[6%] md:right-[8%] lg:right-[10%] xl:right-[12%] top-[42%] sm:top-[40%] md:top-[38%] z-10 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] xl:w-[260px] transition-[width,right,top,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
