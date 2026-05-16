@@ -32,6 +32,7 @@ function Questions() {
     const { error } = await supabase.from("quiz_questions").update({
       question: q.question, choices: q.choices, correct_index: q.correct_index,
       time_limit_seconds: q.time_limit_seconds, order_index: q.order_index, active: q.active,
+      image_url: q.image_url,
     }).eq("id", q.id);
     if (error) toast.error(error.message); else toast.success("Saved.");
   };
