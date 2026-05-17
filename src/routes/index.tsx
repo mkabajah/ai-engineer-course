@@ -638,6 +638,31 @@ function Rocket({
           </defs>
         </svg>
 
+        {/* Tether — smooth cord from rocket to astronaut */}
+        <svg
+          aria-hidden
+          className="absolute left-0 top-0 w-full h-full overflow-visible pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
+          <motion.path
+            d="M 10 45 C -10 55, -25 60, -35 55"
+            stroke="var(--primary)"
+            strokeWidth="0.6"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.7"
+            animate={{
+              d: [
+                "M 10 45 C -10 55, -25 60, -35 55",
+                "M 10 45 C -8 58, -22 65, -35 58",
+                "M 10 45 C -10 55, -25 60, -35 55",
+              ],
+            }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </svg>
+
         {/* Astronaut — the AI engineer */}
         <motion.div
           className="absolute -left-[55%] sm:-left-[60%] top-[20%] w-[55%] sm:w-[60%]"
