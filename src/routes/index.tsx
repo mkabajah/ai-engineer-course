@@ -553,45 +553,16 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
           }}
         >
-          <svg viewBox="0 0 140 180" fill="none" style={{ overflow: "visible" }} className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
-            {/* Oxygen tether — helmet to rocket (outer glow) */}
-            <motion.path
+          <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
+            {/* Tether line back to rocket */}
+            <path
+              d="M 130 90 Q 145 80, 160 95"
               stroke="var(--primary)"
-              strokeWidth="4"
-              opacity="0.22"
-              strokeLinecap="round"
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+              opacity="0.6"
               fill="none"
-              animate={{
-                d: [
-                  "M 96 42 C 150 30, 210 50, 262 78",
-                  "M 96 42 C 150 18, 215 38, 262 78",
-                  "M 96 42 C 150 30, 210 50, 262 78",
-                ],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* Oxygen tether — helmet to rocket (hose) */}
-            <motion.path
-              stroke="var(--primary)"
-              strokeWidth="1.8"
-              strokeDasharray="5 4"
-              opacity="0.95"
-              strokeLinecap="round"
-              fill="none"
-              animate={{
-                d: [
-                  "M 96 42 C 150 30, 210 50, 262 78",
-                  "M 96 42 C 150 18, 215 38, 262 78",
-                  "M 96 42 C 150 30, 210 50, 262 78",
-                ],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            {/* Helmet connector nub */}
-            <circle cx="96" cy="42" r="3" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="0.8" />
-            {/* Rocket-side connector nub */}
-            <circle cx="262" cy="78" r="2.5" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="0.8" />
-
             {/* Backpack */}
             <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
             {/* Body / suit */}
@@ -638,6 +609,31 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           </svg>
         </motion.div>
 
+        {/* Wire / tether connecting rocket to astronaut */}
+        <motion.svg
+          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
+          viewBox="0 0 200 80"
+          preserveAspectRatio="none"
+          fill="none"
+          animate={{ rotate: [-1.5, 1.5, -1.5] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        >
+            <path
+              d="M 40 40 Q 80 10, 120 45 T 180 40"
+              stroke="var(--foreground)"
+              strokeWidth="1.2"
+              strokeDasharray="4 4"
+              opacity="0.55"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 40 40 Q 80 10, 120 45 T 180 40"
+              stroke="var(--primary)"
+              strokeWidth="0.8"
+              opacity="0.7"
+              strokeLinecap="round"
+            />
+        </motion.svg>
       </motion.div>
     </div>
   );
