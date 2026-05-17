@@ -608,6 +608,32 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             </defs>
           </svg>
         </motion.div>
+
+        {/* Wire / tether connecting rocket to astronaut */}
+        <motion.svg
+          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
+          viewBox="0 0 200 80"
+          preserveAspectRatio="none"
+          fill="none"
+          animate={{ rotate: [-1.5, 1.5, -1.5] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        >
+            <path
+              d="M 40 40 Q 80 10, 120 45 T 180 40"
+              stroke="var(--foreground)"
+              strokeWidth="1.2"
+              strokeDasharray="4 4"
+              opacity="0.55"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 40 40 Q 80 10, 120 45 T 180 40"
+              stroke="var(--primary)"
+              strokeWidth="0.8"
+              opacity="0.7"
+              strokeLinecap="round"
+            />
+        </motion.svg>
       </motion.div>
     </div>
   );
