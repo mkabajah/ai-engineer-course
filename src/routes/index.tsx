@@ -662,15 +662,8 @@ function Rocket({
           />
         </svg>
 
-        {/* Astronaut — the AI engineer */}
-        <motion.div
-          className="absolute -left-[55%] sm:-left-[60%] top-[20%] w-[55%] sm:w-[60%]"
-          animate={{ y: [0, -14, 0], rotate: [-6, 4, -6] }}
-          transition={{
-            y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-            rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
-          }}
-        >
+        {/* Astronaut — the AI engineer (static, tether stays anchored) */}
+        <div className="absolute -left-[55%] sm:-left-[60%] top-[20%] w-[55%] sm:w-[60%]">
           <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
             {/* Backpack */}
             <rect
@@ -753,7 +746,7 @@ function Rocket({
               </linearGradient>
             </defs>
           </svg>
-        </motion.div>
+        </div>
       </motion.div>
     </div>
   );
