@@ -517,6 +517,9 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           <circle cx="56" cy="74" r="4" fill="var(--primary)" opacity="0.6" />
           {/* Body stripe */}
           <rect x="30" y="120" width="60" height="6" fill="var(--primary)" opacity="0.8" />
+          {/* Oxygen port (cable connects here) */}
+          <circle cx="34" cy="100" r="3.2" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1" />
+          <circle cx="34" cy="100" r="1.3" fill="var(--background)" />
           {/* Brand */}
           <text
             x="60"
