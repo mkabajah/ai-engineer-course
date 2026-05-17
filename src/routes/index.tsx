@@ -228,10 +228,10 @@ function Hero() {
 
 function AnimatedLine({ children, delay }: { children: React.ReactNode; delay: number }) {
   return (
-    <span className="block mx-0 my-[2px] overflow-hidden">
+    <span className=\"block mx-0 my-[8px] overflow-hidden\">
       <motion.span
-        className="block"
-        initial={{ y: "100%" }}
+        className=\"block\"
+        initial={{ y: \"100%\" }}
         animate={{ y: 0 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay }}
       >
