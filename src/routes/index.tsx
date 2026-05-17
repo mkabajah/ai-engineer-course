@@ -610,30 +610,42 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
         </motion.div>
 
         {/* Wire / tether connecting rocket to astronaut */}
-        <motion.svg
+        <svg
           className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
           viewBox="0 0 200 80"
           preserveAspectRatio="none"
           fill="none"
-          animate={{ rotate: [-1.5, 1.5, -1.5] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
-            <path
-              d="M 40 40 Q 80 10, 120 45 T 180 40"
-              stroke="var(--foreground)"
-              strokeWidth="1.2"
-              strokeDasharray="4 4"
-              opacity="0.55"
-              strokeLinecap="round"
-            />
-            <path
-              d="M 40 40 Q 80 10, 120 45 T 180 40"
-              stroke="var(--primary)"
-              strokeWidth="0.8"
-              opacity="0.7"
-              strokeLinecap="round"
-            />
-        </motion.svg>
+          <motion.path
+            stroke="var(--foreground)"
+            strokeWidth="1.2"
+            strokeDasharray="4 4"
+            opacity="0.55"
+            strokeLinecap="round"
+            animate={{
+              d: [
+                "M 40 40 Q 80 18, 120 46 T 180 40",
+                "M 40 40 Q 80 6,  120 38 T 180 26",
+                "M 40 40 Q 80 18, 120 46 T 180 40",
+              ],
+            }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.path
+            stroke="var(--primary)"
+            strokeWidth="0.8"
+            opacity="0.7"
+            strokeLinecap="round"
+            animate={{
+              d: [
+                "M 40 40 Q 80 18, 120 46 T 180 40",
+                "M 40 40 Q 80 6,  120 38 T 180 26",
+                "M 40 40 Q 80 18, 120 46 T 180 40",
+              ],
+            }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </svg>
       </motion.div>
     </div>
   );
