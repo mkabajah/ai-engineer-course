@@ -177,8 +177,7 @@ function Hero() {
           transition={{ delay: 0.85, duration: 0.6 }}
           className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
         >
-          A 20-week, 40-session program that turns engineers into production AI engineers — RAG with eval gates,
-          agents with MCP, cloud deployments on AWS, and 7 mock interviews calibrated to real hiring bars.
+          Go beyond 
         </motion.p>
 
         <motion.div
