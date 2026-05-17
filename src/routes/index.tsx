@@ -622,43 +622,6 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           </svg>
         </motion.div>
 
-        {/* Wire / tether connecting rocket to astronaut */}
-        <svg
-          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
-          viewBox="0 0 200 80"
-          preserveAspectRatio="none"
-          fill="none"
-        >
-          <motion.path
-            stroke="var(--foreground)"
-            strokeWidth="1.2"
-            strokeDasharray="4 4"
-            opacity="0.55"
-            strokeLinecap="round"
-            animate={{
-              d: [
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-                "M 40 40 Q 80 6,  120 38 T 180 26",
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-              ],
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.path
-            stroke="var(--primary)"
-            strokeWidth="0.8"
-            opacity="0.7"
-            strokeLinecap="round"
-            animate={{
-              d: [
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-                "M 40 40 Q 80 6,  120 38 T 180 26",
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-              ],
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </svg>
       </motion.div>
     </div>
   );
