@@ -177,8 +177,8 @@ function Hero() {
           transition={{ delay: 0.85, duration: 0.6 }}
           className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
         >
-          A 20-week, 40-session program that turns engineers into production AI engineers — RAG with eval gates,
-          agents with MCP, cloud deployments on AWS, and 7 mock interviews calibrated to real hiring bars.
+          A 20-week, 40-session intensive program for graduates and junior engineers to become AI-powered engineers — learning how to design, build, and deploy real production AI systems using RAG, agents with MCP, AWS cloud infrastructure, evaluation pipelines, and modern AI engineering practices.{"\n"}
+          Includes hands-on projects, production-grade workflows, and 7 mock interviews aligned with real corporate hiring standards.
         </motion.p>
 
         <motion.div
