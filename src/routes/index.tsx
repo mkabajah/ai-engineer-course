@@ -554,15 +554,6 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           }}
         >
           <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
-            {/* Tether line back to rocket */}
-            <path
-              d="M 130 90 Q 145 80, 160 95"
-              stroke="var(--primary)"
-              strokeWidth="1.5"
-              strokeDasharray="3 3"
-              opacity="0.6"
-              fill="none"
-            />
             {/* Backpack */}
             <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
             {/* Body / suit */}
