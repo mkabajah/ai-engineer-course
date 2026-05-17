@@ -555,26 +555,42 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
         >
           <svg viewBox="0 0 140 180" fill="none" style={{ overflow: "visible" }} className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
             {/* Oxygen tether — helmet to rocket (outer glow) */}
-            <path
-              d="M 96 42 C 140 30, 190 70, 230 138"
+            <motion.path
               stroke="var(--primary)"
-              strokeWidth="3.5"
-              opacity="0.25"
+              strokeWidth="4"
+              opacity="0.22"
               strokeLinecap="round"
               fill="none"
+              animate={{
+                d: [
+                  "M 96 42 C 150 30, 210 50, 262 78",
+                  "M 96 42 C 150 18, 215 38, 262 78",
+                  "M 96 42 C 150 30, 210 50, 262 78",
+                ],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             {/* Oxygen tether — helmet to rocket (hose) */}
-            <path
-              d="M 96 42 C 140 30, 190 70, 230 138"
+            <motion.path
               stroke="var(--primary)"
               strokeWidth="1.8"
               strokeDasharray="5 4"
-              opacity="0.9"
+              opacity="0.95"
               strokeLinecap="round"
               fill="none"
+              animate={{
+                d: [
+                  "M 96 42 C 150 30, 210 50, 262 78",
+                  "M 96 42 C 150 18, 215 38, 262 78",
+                  "M 96 42 C 150 30, 210 50, 262 78",
+                ],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             {/* Helmet connector nub */}
             <circle cx="96" cy="42" r="3" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="0.8" />
+            {/* Rocket-side connector nub */}
+            <circle cx="262" cy="78" r="2.5" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="0.8" />
 
             {/* Backpack */}
             <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
