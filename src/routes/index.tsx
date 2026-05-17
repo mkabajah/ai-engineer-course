@@ -612,31 +612,48 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           </svg>
         </motion.div>
 
-        {/* Wire / tether connecting rocket to astronaut */}
-        <motion.svg
-          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
+        {/* Oxygen cable — coiled hose with zero-g drift */}
+        <svg
+          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[22%] w-[110%] sm:w-[115%] h-[45%]"
           viewBox="0 0 200 80"
           preserveAspectRatio="none"
           fill="none"
-          animate={{ rotate: [-1.5, 1.5, -1.5] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
-            <path
-              d="M 40 40 Q 80 10, 120 45 T 180 40"
-              stroke="var(--foreground)"
-              strokeWidth="1.2"
-              strokeDasharray="4 4"
-              opacity="0.55"
-              strokeLinecap="round"
-            />
-            <path
-              d="M 40 40 Q 80 10, 120 45 T 180 40"
-              stroke="var(--primary)"
-              strokeWidth="0.8"
-              opacity="0.7"
-              strokeLinecap="round"
-            />
-        </motion.svg>
+          {/* Outer hose */}
+          <motion.path
+            stroke="var(--foreground)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.55"
+            animate={{
+              d: [
+                "M 26 42 q 4 -9 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 44",
+                "M 26 46 q 4 -11 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 42",
+                "M 26 40 q 4 -8 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 46",
+                "M 26 42 q 4 -9 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 44",
+              ],
+            }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* Inner highlight strand */}
+          <motion.path
+            stroke="var(--primary)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.85"
+            animate={{
+              d: [
+                "M 26 42 q 4 -9 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 44",
+                "M 26 46 q 4 -11 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 42",
+                "M 26 40 q 4 -8 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 46",
+                "M 26 42 q 4 -9 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 t 8 0 L 153 44",
+              ],
+            }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </svg>
       </motion.div>
     </div>
   );
