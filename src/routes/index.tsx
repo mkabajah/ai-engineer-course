@@ -553,16 +553,29 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" },
           }}
         >
-          <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
-            {/* Tether line back to rocket */}
+          <svg viewBox="0 0 140 180" fill="none" style={{ overflow: "visible" }} className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
+            {/* Oxygen tether — helmet to rocket (outer glow) */}
             <path
-              d="M 130 90 Q 145 80, 160 95"
+              d="M 96 42 C 140 30, 190 70, 230 138"
               stroke="var(--primary)"
-              strokeWidth="1.5"
-              strokeDasharray="3 3"
-              opacity="0.6"
+              strokeWidth="3.5"
+              opacity="0.25"
+              strokeLinecap="round"
               fill="none"
             />
+            {/* Oxygen tether — helmet to rocket (hose) */}
+            <path
+              d="M 96 42 C 140 30, 190 70, 230 138"
+              stroke="var(--primary)"
+              strokeWidth="1.8"
+              strokeDasharray="5 4"
+              opacity="0.9"
+              strokeLinecap="round"
+              fill="none"
+            />
+            {/* Helmet connector nub */}
+            <circle cx="96" cy="42" r="3" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="0.8" />
+
             {/* Backpack */}
             <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
             {/* Body / suit */}
@@ -609,43 +622,6 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
           </svg>
         </motion.div>
 
-        {/* Wire / tether connecting rocket to astronaut */}
-        <svg
-          className="pointer-events-none absolute -left-[55%] sm:-left-[60%] top-[25%] w-[110%] sm:w-[115%] h-[40%]"
-          viewBox="0 0 200 80"
-          preserveAspectRatio="none"
-          fill="none"
-        >
-          <motion.path
-            stroke="var(--foreground)"
-            strokeWidth="1.2"
-            strokeDasharray="4 4"
-            opacity="0.55"
-            strokeLinecap="round"
-            animate={{
-              d: [
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-                "M 40 40 Q 80 6,  120 38 T 180 26",
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-              ],
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.path
-            stroke="var(--primary)"
-            strokeWidth="0.8"
-            opacity="0.7"
-            strokeLinecap="round"
-            animate={{
-              d: [
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-                "M 40 40 Q 80 6,  120 38 T 180 26",
-                "M 40 40 Q 80 18, 120 46 T 180 40",
-              ],
-            }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </svg>
       </motion.div>
     </div>
   );
