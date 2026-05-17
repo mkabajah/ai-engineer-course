@@ -746,7 +746,7 @@ function Rocket({
               </linearGradient>
             </defs>
           </svg>
-        </motion.div>
+        </div>
       </motion.div>
     </div>
   );
