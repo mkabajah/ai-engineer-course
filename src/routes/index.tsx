@@ -638,25 +638,24 @@ function Rocket({
           </defs>
         </svg>
 
-        {/* Tether — smooth cord from rocket to astronaut */}
+        {/* Oxygen tether — connects astronaut to rocket */}
         <svg
           aria-hidden
-          className="absolute left-0 top-0 w-full h-full overflow-visible pointer-events-none"
+          className="absolute inset-0 w-full h-full overflow-visible pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
         >
           <motion.path
-            d="M 10 45 C -10 55, -25 60, -35 55"
             stroke="var(--primary)"
-            strokeWidth="0.6"
+            strokeWidth="0.8"
             strokeLinecap="round"
             fill="none"
-            opacity="0.7"
+            opacity="0.85"
             animate={{
               d: [
-                "M 10 45 C -10 55, -25 60, -35 55",
-                "M 10 45 C -8 58, -22 65, -35 58",
-                "M 10 45 C -10 55, -25 60, -35 55",
+                "M 29 55 C 20 62, 5 58, -10 48",
+                "M 29 55 C 18 66, 2 64, -10 52",
+                "M 29 55 C 20 62, 5 58, -10 48",
               ],
             }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
