@@ -5,18 +5,59 @@ import { useEffect, useRef, useState } from "react";
 export const Route = createFileRoute("/")({ component: Landing });
 
 const STACK = [
-  "Generative AI", "Agentic AI", "RAG", "MCP", "Claude", "AWS Bedrock",
-  "Cloud Services", "Prompt Engineering", "LangGraph", "Claude Agent SDK",
-  "Skills", "AgentCore", "Vector Search", "Fine-Tuning", "Evals",
-  "Interview Mastery", "Cursor", "OpenAI", "Gemini", "Tool Use",
+  "Generative AI",
+  "Agentic AI",
+  "RAG",
+  "MCP",
+  "Claude",
+  "AWS Bedrock",
+  "Cloud Services",
+  "Prompt Engineering",
+  "LangGraph",
+  "Claude Agent SDK",
+  "Skills",
+  "AgentCore",
+  "Vector Search",
+  "Fine-Tuning",
+  "Evals",
+  "Interview Mastery",
+  "Cursor",
+  "OpenAI",
+  "Gemini",
+  "Tool Use",
 ];
 
 const PHASES = [
-  { n: "01", title: "Engineering Foundations", weeks: "Weeks 1–4", body: "Python, FastAPI, design patterns, CI/CD, spec-driven dev — backend discipline before AI complexity." },
-  { n: "02", title: "GenAI & Measurable RAG", weeks: "Weeks 5–9", body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals, prompt caching, cost dashboards." },
-  { n: "03", title: "Agents & MCP", weeks: "Weeks 10–13", body: "LangGraph orchestration, MCP servers, Claude Agent SDK + Skills, HITL governance, trajectory evals." },
-  { n: "04", title: "Cloud Computing (AWS)", weeks: "Weeks 14–16", body: "AWS Services ( Lambda, S3, RDS, Dynamo, Bedrock, AgentCore ..etc), observability, OWASP LLM Top 10, red-team your own capstone." },
-  { n: "05", title: "Interview Mastery & Capstone", weeks: "Weeks 17–20", body: "7 mock interviews calibrated to real bars + Capstone Demo Day with industry panel." },
+  {
+    n: "01",
+    title: "Engineering Foundations",
+    weeks: "Weeks 1–4",
+    body: "Python, FastAPI, design patterns, CI/CD, spec-driven dev — backend discipline before AI complexity.",
+  },
+  {
+    n: "02",
+    title: "GenAI & Measurable RAG",
+    weeks: "Weeks 5–9",
+    body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals, prompt caching, cost dashboards.",
+  },
+  {
+    n: "03",
+    title: "Agents & MCP",
+    weeks: "Weeks 10–13",
+    body: "LangGraph orchestration, MCP servers, Claude Agent SDK + Skills, HITL governance, trajectory evals.",
+  },
+  {
+    n: "04",
+    title: "Cloud Computing (AWS)",
+    weeks: "Weeks 14–16",
+    body: "AWS Services ( Lambda, S3, RDS, Dynamo, Bedrock, AgentCore ..etc), observability, OWASP LLM Top 10, red-team your own capstone.",
+  },
+  {
+    n: "05",
+    title: "Interview Mastery & Capstone",
+    weeks: "Weeks 17–20",
+    body: "7 mock interviews calibrated to real bars + Capstone Demo Day with industry panel.",
+  },
 ];
 
 const STATS = [
@@ -69,7 +110,10 @@ function Nav() {
           <Link to="/apply" className="text-xs uppercase tracking-widest hover:text-primary transition-colors">
             Apply
           </Link>
-          <Link to="/admin/login" className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            to="/admin/login"
+            className="text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
+          >
             Admin
           </Link>
         </div>
@@ -102,9 +146,7 @@ function Hero() {
         const maxShift = Math.max(0, rRect.width * 0.4);
         const x = Math.min(overlap, maxShift);
         const remaining = overlap - x;
-        const scale = remaining > 0
-          ? Math.max(0.55, 1 - remaining / rRect.width)
-          : 1;
+        const scale = remaining > 0 ? Math.max(0.55, 1 - remaining / rRect.width) : 1;
         setAdjust({ x, scale });
       } else {
         setAdjust({ x: 0, scale: 1 });
@@ -151,7 +193,10 @@ function Hero() {
         }}
       />
 
-      <motion.div style={{ y, opacity }} className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+      <motion.div
+        style={{ y, opacity }}
+        className="relative mx-auto max-w-6xl px-6 pt-8 pb-10 md:pt-12 md:pb-16 min-h-[calc(100vh-80px)] flex flex-col justify-center"
+      >
         <Rocket rocketRef={rocketRef} adjust={adjust} />
 
         <motion.div
@@ -164,21 +209,17 @@ function Hero() {
           Production AI Systems · Hiring Conversion · 20 weeks
         </motion.div>
 
-        <h1 ref={headlineRef} className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%] transition-[max-width,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]">
-          <AnimatedLine delay={0.15}>ready.</AnimatedLine>
-          <AnimatedLine delay={0.3}><em className="italic text-primary">tutorials.</em></AnimatedLine>
-          <AnimatedLine delay={0.45}>Start shipping</AnimatedLine>
-          <AnimatedLine delay={0.6}>production AI.</AnimatedLine>
-        </h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.85, duration: 0.6 }}
-          className="mt-6 max-w-xl text-sm md:text-base text-muted-foreground leading-relaxed"
+        <h1
+          ref={headlineRef}
+          className="display text-[10vw] sm:text-[8vw] md:text-[5rem] lg:text-[6rem] leading-[0.9] max-w-[70%] sm:max-w-[68%] md:max-w-[65%] lg:max-w-[62%] transition-[max-width,font-size] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
         >
-          Go beyond 
-        </motion.p>
+          <AnimatedLine delay={0.15}>Go beyond</AnimatedLine>
+          <AnimatedLine delay={0.3}>
+            <em className="italic text-primary">tutorials.</em>
+          </AnimatedLine>
+          <AnimatedLine delay={0.45}>Become industry-</AnimatedLine>
+          <AnimatedLine delay={0.6}>ready.</AnimatedLine>
+        </h1>
 
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -196,7 +237,9 @@ function Hero() {
               className="relative z-10"
               animate={{ x: [0, 4, 0] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            >→</motion.span>
+            >
+              →
+            </motion.span>
             <span className="absolute inset-0 bg-foreground/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </Link>
           <span className="text-xs text-muted-foreground">~35 minutes · No account required</span>
@@ -250,7 +293,10 @@ function Marquee() {
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
       >
         {[...STACK, ...STACK].map((s, i) => (
-          <span key={i} className="font-mono text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-12">
+          <span
+            key={i}
+            className="font-mono text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-12"
+          >
             {s}
             <span className="inline-block h-1 w-1 rounded-full bg-primary" />
           </span>
@@ -262,9 +308,21 @@ function Marquee() {
 
 function Problem() {
   const items = [
-    { stat: "0", label: "AI-system experience", body: "CS programs cover algorithms — not RAG pipelines, agents, or MCP." },
-    { stat: "1/12", label: "Interview-to-offer rate", body: "Strong graduates fail interviews that test system design and AI judgment." },
-    { stat: "6+ mo.", label: "Time-to-employability", body: "Self-study works, but takes too long and misses the patterns hiring managers test for." },
+    {
+      stat: "0",
+      label: "AI-system experience",
+      body: "CS programs cover algorithms — not RAG pipelines, agents, or MCP.",
+    },
+    {
+      stat: "1/12",
+      label: "Interview-to-offer rate",
+      body: "Strong graduates fail interviews that test system design and AI judgment.",
+    },
+    {
+      stat: "6+ mo.",
+      label: "Time-to-employability",
+      body: "Self-study works, but takes too long and misses the patterns hiring managers test for.",
+    },
   ];
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
@@ -331,7 +389,19 @@ function Phases() {
   );
 }
 
-function PhaseRow({ n, title, weeks, body, index }: { n: string; title: string; weeks: string; body: string; index: number }) {
+function PhaseRow({
+  n,
+  title,
+  weeks,
+  body,
+  index,
+}: {
+  n: string;
+  title: string;
+  weeks: string;
+  body: string;
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -30 }}
@@ -351,16 +421,30 @@ function PhaseRow({ n, title, weeks, body, index }: { n: string; title: string; 
         aria-hidden
         className="absolute right-0 top-1/2 -translate-y-1/2 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
         initial={false}
-      >→</motion.span>
+      >
+        →
+      </motion.span>
     </motion.div>
   );
 }
 
 function Capstone() {
   const tracks = [
-    { tag: "A Track", title: "Community & Social Impact", body: "Youth Career AI Advisor · Community Services Navigator · Arabic-first public-services chatbot." },
-    { tag: "B Track", title: "Industry Engineering Systems", body: "AI Code Review · Root-Cause Analysis agent · Spec-to-Code · DevEx browser-use agent." },
-    { tag: "C Track", title: "Open Industry Problem", body: "Sourced from a partner company. Higher bar, real stakes, possible hiring pipeline." },
+    {
+      tag: "A Track",
+      title: "Community & Social Impact",
+      body: "Youth Career AI Advisor · Community Services Navigator · Arabic-first public-services chatbot.",
+    },
+    {
+      tag: "B Track",
+      title: "Industry Engineering Systems",
+      body: "AI Code Review · Root-Cause Analysis agent · Spec-to-Code · DevEx browser-use agent.",
+    },
+    {
+      tag: "C Track",
+      title: "Open Industry Problem",
+      body: "Sourced from a partner company. Higher bar, real stakes, possible hiring pipeline.",
+    },
   ];
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
@@ -401,7 +485,8 @@ function Capstone() {
         transition={{ duration: 0.7, delay: 0.3 }}
         className="mt-12 text-xs uppercase tracking-widest text-muted-foreground"
       >
-        Every capstone ships: production LLM service · measurable RAG · agent + MCP · cloud deployment · cost model · security review · Demo Day
+        Every capstone ships: production LLM service · measurable RAG · agent + MCP · cloud deployment · cost model ·
+        security review · Demo Day
       </motion.p>
     </section>
   );
@@ -425,7 +510,8 @@ function CTA() {
           transition={{ duration: 0.7 }}
           className="display text-5xl md:text-7xl"
         >
-          The objective is not theoretical AI knowledge.<br />
+          The objective is not theoretical AI knowledge.
+          <br />
           The objective is <em className="italic text-primary">employability.</em>
         </motion.h2>
         <motion.div
@@ -440,10 +526,9 @@ function CTA() {
             className="group inline-flex items-center gap-3 rounded-sm bg-primary px-8 py-4 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity"
           >
             Apply for the next cohort
-            <motion.span
-              animate={{ x: [0, 5, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            >→</motion.span>
+            <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}>
+              →
+            </motion.span>
           </Link>
         </motion.div>
       </div>
@@ -451,7 +536,13 @@ function CTA() {
   );
 }
 
-function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivElement | null>; adjust: { x: number; scale: number } }) {
+function Rocket({
+  rocketRef,
+  adjust,
+}: {
+  rocketRef: React.RefObject<HTMLDivElement | null>;
+  adjust: { x: number; scale: number };
+}) {
   return (
     <div
       ref={rocketRef}
@@ -503,7 +594,11 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
         ))}
 
         {/* Rocket SVG */}
-        <svg viewBox="0 0 120 200" fill="none" className="relative w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <svg
+          viewBox="0 0 120 200"
+          fill="none"
+          className="relative w-full h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+        >
           {/* Body */}
           <path
             d="M60 8 C 80 28, 90 70, 90 110 L 90 150 L 30 150 L 30 110 C 30 70, 40 28, 60 8 Z"
@@ -554,7 +649,16 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
         >
           <svg viewBox="0 0 140 180" fill="none" className="w-full h-auto drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
             {/* Backpack */}
-            <rect x="42" y="70" width="56" height="46" rx="6" fill="var(--card)" stroke="var(--foreground)" strokeWidth="1.5" />
+            <rect
+              x="42"
+              y="70"
+              width="56"
+              height="46"
+              rx="6"
+              fill="var(--card)"
+              stroke="var(--foreground)"
+              strokeWidth="1.5"
+            />
             {/* Body / suit */}
             <path
               d="M50 70 Q 50 58, 70 58 Q 90 58, 90 70 L 90 118 Q 90 130, 80 130 L 60 130 Q 50 130, 50 118 Z"
@@ -568,8 +672,20 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             <circle cx="70" cy="99" r="1.5" fill="var(--background)" />
             <circle cx="75" cy="99" r="1.5" fill="var(--background)" />
             {/* Arms */}
-            <path d="M50 80 Q 32 92, 36 112" stroke="var(--foreground)" strokeWidth="6" strokeLinecap="round" fill="none" />
-            <path d="M90 80 Q 108 88, 112 102" stroke="var(--foreground)" strokeWidth="6" strokeLinecap="round" fill="none" />
+            <path
+              d="M50 80 Q 32 92, 36 112"
+              stroke="var(--foreground)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <path
+              d="M90 80 Q 108 88, 112 102"
+              stroke="var(--foreground)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              fill="none"
+            />
             {/* Gloves */}
             <circle cx="36" cy="114" r="6" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
             <circle cx="114" cy="104" r="6" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
@@ -577,8 +693,24 @@ function Rocket({ rocketRef, adjust }: { rocketRef: React.RefObject<HTMLDivEleme
             <path d="M60 130 L 56 158" stroke="var(--foreground)" strokeWidth="8" strokeLinecap="round" />
             <path d="M80 130 L 84 158" stroke="var(--foreground)" strokeWidth="8" strokeLinecap="round" />
             {/* Boots */}
-            <ellipse cx="54" cy="162" rx="8" ry="4" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
-            <ellipse cx="86" cy="162" rx="8" ry="4" fill="var(--primary)" stroke="var(--foreground)" strokeWidth="1.2" />
+            <ellipse
+              cx="54"
+              cy="162"
+              rx="8"
+              ry="4"
+              fill="var(--primary)"
+              stroke="var(--foreground)"
+              strokeWidth="1.2"
+            />
+            <ellipse
+              cx="86"
+              cy="162"
+              rx="8"
+              ry="4"
+              fill="var(--primary)"
+              stroke="var(--foreground)"
+              strokeWidth="1.2"
+            />
             {/* Helmet */}
             <circle cx="70" cy="40" r="26" fill="var(--background)" stroke="var(--foreground)" strokeWidth="1.5" />
             {/* Visor */}
