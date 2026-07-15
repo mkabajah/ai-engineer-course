@@ -88,8 +88,9 @@ function Landing() {
       <CTA />
       <footer className="border-t border-rule">
         <div className="mx-auto max-w-6xl px-6 py-8 flex items-center justify-between text-xs text-muted-foreground">
-          <span>© AI Engineer Career Accelerator</span>
-          <span className="font-mono">Updated for May 2026</span>
+          <span>© HasoubLabs · AI Engineer Career Accelerator</span>
+          <span className="font-mono">Cohort · Aug 14 → Nov 30, 2026</span>
+
         </div>
       </footer>
     </main>
