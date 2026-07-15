@@ -31,43 +31,50 @@ const STACK = [
 
 const PHASES = [
   {
+    n: "00",
+    title: "Kickoff & Project Setup",
+    weeks: "Week 1",
+    body: "Program orientation, capstone team formation, tooling & environment setup for the 17-week build.",
+  },
+  {
     n: "01",
-    title: "Engineering Foundations",
-    weeks: "Weeks 1–4",
-    body: "Python, FastAPI, design patterns, CI/CD, spec-driven dev — backend discipline before AI complexity.",
+    title: "AI Development with Claude Code",
+    weeks: "Weeks 2–4",
+    body: "Spec-driven development with Kiro, system design, and shipping production-quality code with Claude Code as your pair.",
   },
   {
     n: "02",
     title: "GenAI & Measurable RAG",
-    weeks: "Weeks 5–9",
-    body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals, prompt caching, cost dashboards.",
+    weeks: "Weeks 5–8",
+    body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals — build a measurable RAG system end-to-end.",
   },
   {
     n: "03",
     title: "Agents & MCP",
-    weeks: "Weeks 10–13",
-    body: "LangGraph orchestration, MCP servers, Claude Agent SDK + Skills, HITL governance, trajectory evals.",
+    weeks: "Weeks 8–11",
+    body: "LangGraph orchestration, MCP servers, Claude Agent SDK, HITL governance, and red-teaming your own agent.",
   },
   {
     n: "04",
-    title: "Cloud Computing (AWS)",
-    weeks: "Weeks 14–16",
-    body: "AWS Services ( Lambda, S3, RDS, Dynamo, Bedrock, AgentCore ..etc), observability, OWASP LLM Top 10, red-team your own capstone.",
+    title: "AWS Cloud Practitioner",
+    weeks: "Weeks 11–14",
+    body: "AWS core services (Lambda, S3, RDS, DynamoDB, Bedrock, AgentCore), observability, staging deploy of your capstone.",
   },
   {
     n: "05",
-    title: "Interview Mastery & Capstone",
-    weeks: "Weeks 17–20",
-    body: "7 mock interviews calibrated to real bars + Capstone Demo Day with industry panel.",
+    title: "Soft Skills, Leadership & Interviews",
+    weeks: "Weeks 14–17",
+    body: "Communication, leadership, and mock interviews conducted by AWS engineers — Demo Day closes the program.",
   },
 ];
 
 const STATS = [
-  { k: "20", label: "weeks" },
-  { k: "40", label: "sessions" },
-  { k: "210", label: "hours total" },
-  { k: "7", label: "mock interviews" },
+  { k: "17", label: "weeks" },
+  { k: "33", label: "core sessions" },
+  { k: "86", label: "live hours" },
+  { k: "9", label: "F2F blocks" },
 ];
+
 
 function Landing() {
   return (
