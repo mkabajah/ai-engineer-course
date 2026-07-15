@@ -111,10 +111,13 @@ function Nav() {
       className={`sticky top-0 z-50 backdrop-blur-md transition-colors ${scrolled ? "bg-background/80 border-b border-rule" : "bg-transparent"}`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <div className="serif text-xl flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
-          AI Engineer Accelerator
-        </div>
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logoAsset.url} alt="HasoubLabs" className="h-8 w-auto" />
+          <span className="hidden sm:inline text-xs uppercase tracking-[0.2em] text-muted-foreground border-l border-rule pl-3">
+            AI Engineer Accelerator
+          </span>
+        </Link>
+
         <div className="flex items-center gap-6">
           <Link to="/apply" className="text-xs uppercase tracking-widest hover:text-primary transition-colors">
             Apply
