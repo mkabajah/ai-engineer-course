@@ -469,7 +469,7 @@ function Capstone() {
       >
         <div className="label-eyebrow mb-6">Capstone</div>
         <h2 className="display text-5xl md:text-7xl max-w-3xl">
-          Teams of 2–3 · runs the full <em className="italic text-primary">20 weeks.</em>
+          Teams of 4–6 · one integrated platform: <em className="italic text-primary">Hasoub Talent Bridge.</em>
         </h2>
       </motion.div>
 
