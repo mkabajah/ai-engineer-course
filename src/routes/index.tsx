@@ -444,21 +444,32 @@ function PhaseRow({
 function Capstone() {
   const tracks = [
     {
-      tag: "A Track",
-      title: "Community & Social Impact",
-      body: "Youth Career AI Advisor · Community Services Navigator · Arabic-first public-services chatbot.",
+      tag: "Subsystem 1",
+      title: "Intelligent Candidate Intake",
+      body: "RAG-powered onboarding: resume parsing, skill extraction, and grounded candidate profiles.",
     },
     {
-      tag: "B Track",
-      title: "Industry Engineering Systems",
-      body: "AI Code Review · Root-Cause Analysis agent · Spec-to-Code · DevEx browser-use agent.",
+      tag: "Subsystem 2",
+      title: "Matching & Ranking Engine",
+      body: "Hybrid retrieval + rerankers to match candidates to roles with measurable relevance metrics.",
     },
     {
-      tag: "C Track",
-      title: "Open Industry Problem",
-      body: "Sourced from a partner company. Higher bar, real stakes, possible hiring pipeline.",
+      tag: "Subsystem 3",
+      title: "Agentic Interview Coach",
+      body: "Claude Agent SDK + MCP tools running mock interviews, scoring, and structured feedback.",
+    },
+    {
+      tag: "Subsystem 4",
+      title: "Employer Insights Console",
+      body: "Analytics, evals dashboards, and cost/observability panels for the hiring team.",
+    },
+    {
+      tag: "Subsystem 5",
+      title: "Cloud, Security & Ops",
+      body: "AWS deploy (Lambda, S3, RDS, Bedrock), OWASP LLM Top 10 hardening, red-team review.",
     },
   ];
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <motion.div
