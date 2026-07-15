@@ -385,7 +385,7 @@ function Phases() {
         >
           <div>
             <div className="label-eyebrow mb-6">Program structure</div>
-            <h2 className="display text-5xl md:text-7xl">5 phases · 40 sessions.</h2>
+            <h2 className="display text-5xl md:text-7xl">6 modules · 33 sessions.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
             Every week feeds the capstone. Every assessment is an artifact you can defend in an interview.
