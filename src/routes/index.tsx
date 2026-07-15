@@ -219,7 +219,7 @@ function Hero() {
           className="label-eyebrow mb-6 flex items-center gap-3"
         >
           <span className="inline-block h-px w-8 bg-primary" />
-          Production AI Systems · Hiring Conversion · 20 weeks
+          Production AI Systems · Hiring Conversion · 17 weeks
         </motion.div>
 
         <h1
