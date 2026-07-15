@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import logoAsset from "@/assets/hasoub-labs.png.asset.json";
+
 
 export const Route = createFileRoute("/")({ component: Landing });
 
@@ -29,43 +31,50 @@ const STACK = [
 
 const PHASES = [
   {
+    n: "00",
+    title: "Kickoff & Project Setup",
+    weeks: "Week 1",
+    body: "Program orientation, capstone team formation, tooling & environment setup for the 17-week build.",
+  },
+  {
     n: "01",
-    title: "Engineering Foundations",
-    weeks: "Weeks 1–4",
-    body: "Python, FastAPI, design patterns, CI/CD, spec-driven dev — backend discipline before AI complexity.",
+    title: "AI Development with Claude Code",
+    weeks: "Weeks 2–4",
+    body: "Spec-driven development with Kiro, system design, and shipping production-quality code with Claude Code as your pair.",
   },
   {
     n: "02",
     title: "GenAI & Measurable RAG",
-    weeks: "Weeks 5–9",
-    body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals, prompt caching, cost dashboards.",
+    weeks: "Weeks 5–8",
+    body: "Hybrid retrieval, reranking, citation grounding, RAGAS evals — build a measurable RAG system end-to-end.",
   },
   {
     n: "03",
     title: "Agents & MCP",
-    weeks: "Weeks 10–13",
-    body: "LangGraph orchestration, MCP servers, Claude Agent SDK + Skills, HITL governance, trajectory evals.",
+    weeks: "Weeks 8–11",
+    body: "LangGraph orchestration, MCP servers, Claude Agent SDK, HITL governance, and red-teaming your own agent.",
   },
   {
     n: "04",
-    title: "Cloud Computing (AWS)",
-    weeks: "Weeks 14–16",
-    body: "AWS Services ( Lambda, S3, RDS, Dynamo, Bedrock, AgentCore ..etc), observability, OWASP LLM Top 10, red-team your own capstone.",
+    title: "AWS Cloud Practitioner",
+    weeks: "Weeks 11–14",
+    body: "AWS core services (Lambda, S3, RDS, DynamoDB, Bedrock, AgentCore), observability, staging deploy of your capstone.",
   },
   {
     n: "05",
-    title: "Interview Mastery & Capstone",
-    weeks: "Weeks 17–20",
-    body: "7 mock interviews calibrated to real bars + Capstone Demo Day with industry panel.",
+    title: "Soft Skills, Leadership & Interviews",
+    weeks: "Weeks 14–17",
+    body: "Communication, leadership, and mock interviews conducted by AWS engineers — Demo Day closes the program.",
   },
 ];
 
 const STATS = [
-  { k: "20", label: "weeks" },
-  { k: "40", label: "sessions" },
-  { k: "210", label: "hours total" },
-  { k: "7", label: "mock interviews" },
+  { k: "17", label: "weeks" },
+  { k: "33", label: "core sessions" },
+  { k: "86", label: "live hours" },
+  { k: "9", label: "F2F blocks" },
 ];
+
 
 function Landing() {
   return (
@@ -79,8 +88,9 @@ function Landing() {
       <CTA />
       <footer className="border-t border-rule">
         <div className="mx-auto max-w-6xl px-6 py-8 flex items-center justify-between text-xs text-muted-foreground">
-          <span>© AI Engineer Career Accelerator</span>
-          <span className="font-mono">Updated for May 2026</span>
+          <span>© HasoubLabs · AI Engineer Career Accelerator</span>
+          <span className="font-mono">Cohort · Aug 14 → Nov 30, 2026</span>
+
         </div>
       </footer>
     </main>
@@ -102,10 +112,13 @@ function Nav() {
       className={`sticky top-0 z-50 backdrop-blur-md transition-colors ${scrolled ? "bg-background/80 border-b border-rule" : "bg-transparent"}`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <div className="serif text-xl flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-primary animate-pulse" />
-          AI Engineer Accelerator
-        </div>
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logoAsset.url} alt="HasoubLabs" className="h-8 w-auto" />
+          <span className="hidden sm:inline text-xs uppercase tracking-[0.2em] text-muted-foreground border-l border-rule pl-3">
+            AI Engineer Accelerator
+          </span>
+        </Link>
+
         <div className="flex items-center gap-6">
           <Link to="/apply" className="text-xs uppercase tracking-widest hover:text-primary transition-colors">
             Apply
@@ -206,7 +219,7 @@ function Hero() {
           className="label-eyebrow mb-6 flex items-center gap-3"
         >
           <span className="inline-block h-px w-8 bg-primary" />
-          Production AI Systems · Hiring Conversion · 20 weeks
+          Production AI Systems · Hiring Conversion · 17 weeks
         </motion.div>
 
         <h1
@@ -372,7 +385,7 @@ function Phases() {
         >
           <div>
             <div className="label-eyebrow mb-6">Program structure</div>
-            <h2 className="display text-5xl md:text-7xl">5 phases · 40 sessions.</h2>
+            <h2 className="display text-5xl md:text-7xl">6 modules · 33 sessions.</h2>
           </div>
           <p className="max-w-sm text-sm text-muted-foreground">
             Every week feeds the capstone. Every assessment is an artifact you can defend in an interview.
@@ -431,21 +444,32 @@ function PhaseRow({
 function Capstone() {
   const tracks = [
     {
-      tag: "A Track",
-      title: "Community & Social Impact",
-      body: "Youth Career AI Advisor · Community Services Navigator · Arabic-first public-services chatbot.",
+      tag: "Subsystem 1",
+      title: "Intelligent Candidate Intake",
+      body: "RAG-powered onboarding: resume parsing, skill extraction, and grounded candidate profiles.",
     },
     {
-      tag: "B Track",
-      title: "Industry Engineering Systems",
-      body: "AI Code Review · Root-Cause Analysis agent · Spec-to-Code · DevEx browser-use agent.",
+      tag: "Subsystem 2",
+      title: "Matching & Ranking Engine",
+      body: "Hybrid retrieval + rerankers to match candidates to roles with measurable relevance metrics.",
     },
     {
-      tag: "C Track",
-      title: "Open Industry Problem",
-      body: "Sourced from a partner company. Higher bar, real stakes, possible hiring pipeline.",
+      tag: "Subsystem 3",
+      title: "Agentic Interview Coach",
+      body: "Claude Agent SDK + MCP tools running mock interviews, scoring, and structured feedback.",
+    },
+    {
+      tag: "Subsystem 4",
+      title: "Employer Insights Console",
+      body: "Analytics, evals dashboards, and cost/observability panels for the hiring team.",
+    },
+    {
+      tag: "Subsystem 5",
+      title: "Cloud, Security & Ops",
+      body: "AWS deploy (Lambda, S3, RDS, Bedrock), OWASP LLM Top 10 hardening, red-team review.",
     },
   ];
+
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <motion.div
@@ -456,11 +480,11 @@ function Capstone() {
       >
         <div className="label-eyebrow mb-6">Capstone</div>
         <h2 className="display text-5xl md:text-7xl max-w-3xl">
-          Teams of 2–3 · runs the full <em className="italic text-primary">20 weeks.</em>
+          Teams of 4–6 · one integrated platform: <em className="italic text-primary">Hasoub Talent Bridge.</em>
         </h2>
       </motion.div>
 
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tracks.map((t, i) => (
           <motion.div
             key={t.tag}
