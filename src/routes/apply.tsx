@@ -211,16 +211,17 @@ function ApplyPage() {
                 <Heading eyebrow="Step 01" title="Tell us who you are" />
                 <Row>
                   <Field label="Full name *">
-                    <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} />
+                    <Input maxLength={120} value={form.full_name} onChange={(e) => set("full_name", e.target.value)} />
                   </Field>
                   <Field label="Email *">
-                    <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <Input type="email" maxLength={200} value={form.email} onChange={(e) => set("email", e.target.value)} />
                   </Field>
                 </Row>
                 <Row>
-                  <Field label="Phone"><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
-                  <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} /></Field>
+                  <Field label="Phone"><Input maxLength={40} value={form.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
+                  <Field label="City"><Input maxLength={120} value={form.city} onChange={(e) => set("city", e.target.value)} /></Field>
                 </Row>
+
                 <Card>
                   <p className="text-sm leading-relaxed">
                     The course is delivered <strong>online</strong>, with a few <strong>in-person sessions</strong> held at <strong>Hasoub Campus, Arrara</strong>. Attendance at the in-person sessions is expected.
