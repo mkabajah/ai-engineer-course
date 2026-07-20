@@ -439,9 +439,8 @@ function Essay({ prompt, value, onChange }: { prompt: string; value: string; onC
         </span>
         <span className="text-muted-foreground">{chars}/3000 · target ~150–250 words</span>
       </div>
+    </div>
 
-        <span className="text-muted-foreground">target ~150–250</span>
-      </div>
     </div>
   );
 }
