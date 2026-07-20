@@ -51,20 +51,39 @@ function ApplyPage() {
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((prev) => ({ ...prev, [k]: v }));
 
+  const isValidUrl = (v: string) => v === "" || /^https?:\/\/[^\s]+\.[^\s]+/i.test(v.trim());
+  const githubOk = isValidUrl(form.github_url);
+  const portfolioOk = isValidUrl(form.portfolio_url);
+
   const canProceed = useMemo(() => {
     if (step === 0)
-      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok && form.location_pref === "confirmed";
+      return (
+        form.full_name.trim().length >= 2 &&
+        form.full_name.trim().length <= 120 &&
+        /^\S+@\S+\.\S+$/.test(form.email.trim()) &&
+        form.email.trim().length <= 200 &&
+        form.time_commitment_ok &&
+        form.location_pref === "confirmed"
+      );
     if (step === 1)
-      return form.english_sample.trim().length >= 30;
+      return (
+        form.english_sample.trim().length >= 30 &&
+        form.english_sample.trim().length <= 1500 &&
+        githubOk &&
+        portfolioOk
+      );
     if (step === 2)
       return (
         form.essay_shipping.trim().length >= 50 &&
+        form.essay_shipping.length <= 3000 &&
         form.essay_curiosity.trim().length >= 50 &&
-        form.essay_fit.trim().length >= 50
+        form.essay_curiosity.length <= 3000 &&
+        form.essay_fit.trim().length >= 50 &&
+        form.essay_fit.length <= 3000
       );
     if (step === 3) return videoPath !== null;
     return true;
-  }, [step, form, videoPath]);
+  }, [step, form, videoPath, githubOk, portfolioOk]);
 
   const submit = async () => {
     setSubmitting(true);
@@ -192,16 +211,17 @@ function ApplyPage() {
                 <Heading eyebrow="Step 01" title="Tell us who you are" />
                 <Row>
                   <Field label="Full name *">
-                    <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} />
+                    <Input maxLength={120} value={form.full_name} onChange={(e) => set("full_name", e.target.value)} />
                   </Field>
                   <Field label="Email *">
-                    <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <Input type="email" maxLength={200} value={form.email} onChange={(e) => set("email", e.target.value)} />
                   </Field>
                 </Row>
                 <Row>
-                  <Field label="Phone"><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
-                  <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} /></Field>
+                  <Field label="Phone"><Input maxLength={40} value={form.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
+                  <Field label="City"><Input maxLength={120} value={form.city} onChange={(e) => set("city", e.target.value)} /></Field>
                 </Row>
+
                 <Card>
                   <p className="text-sm leading-relaxed">
                     The course is delivered <strong>online</strong>, with a few <strong>in-person sessions</strong> held at <strong>Hasoub Campus, Arrara</strong>. Attendance at the in-person sessions is expected.
@@ -232,8 +252,9 @@ function ApplyPage() {
                   <Textarea
                     placeholder="Briefly: how will you make the time?"
                     value={form.time_commitment_note}
-                    onChange={(e) => set("time_commitment_note", e.target.value)}
+                    onChange={(e) => set("time_commitment_note", e.target.value.slice(0, 600))}
                     className="mt-3 min-h-[70px]"
+                    maxLength={600}
                   />
                 </Card>
               </div>
@@ -248,14 +269,31 @@ function ApplyPage() {
                 />
                 <Row>
                   <Field label="GitHub URL">
-                    <Input value={form.github_url} onChange={(e) => set("github_url", e.target.value)} placeholder="https://github.com/…" />
+                    <Input
+                      maxLength={300}
+                      value={form.github_url}
+                      onChange={(e) => set("github_url", e.target.value)}
+                      placeholder="https://github.com/…"
+                      aria-invalid={!githubOk}
+                      className={!githubOk ? "border-destructive focus-visible:ring-destructive" : ""}
+                    />
+                    {!githubOk && <p className="text-xs text-destructive">Must be a full URL starting with http(s)://</p>}
                   </Field>
                   <Field label="Project link (deploy / repo / video)">
-                    <Input value={form.portfolio_url} onChange={(e) => set("portfolio_url", e.target.value)} placeholder="https://…" />
+                    <Input
+                      maxLength={300}
+                      value={form.portfolio_url}
+                      onChange={(e) => set("portfolio_url", e.target.value)}
+                      placeholder="https://…"
+                      aria-invalid={!portfolioOk}
+                      className={!portfolioOk ? "border-destructive focus-visible:ring-destructive" : ""}
+                    />
+                    {!portfolioOk && <p className="text-xs text-destructive">Must be a full URL starting with http(s)://</p>}
                   </Field>
                 </Row>
                 <Field label="Programming languages used in a project >1 month">
                   <Input
+                    maxLength={300}
                     value={form.languages}
                     onChange={(e) => set("languages", e.target.value)}
                     placeholder="e.g. Python, TypeScript, Go"
@@ -264,13 +302,21 @@ function ApplyPage() {
                 <Field label="Short bio — why should we choose you for this course? (in English) *">
                   <Textarea
                     value={form.english_sample}
-                    onChange={(e) => set("english_sample", e.target.value)}
+                    onChange={(e) => set("english_sample", e.target.value.slice(0, 1500))}
                     className="min-h-[160px]"
                     placeholder="Who you are, what drives you, and why you're the right fit for this cohort."
+                    maxLength={1500}
                   />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span className={form.english_sample.trim().length < 30 ? "text-destructive" : ""}>
+                      {form.english_sample.trim().length} chars {form.english_sample.trim().length < 30 ? "(min 30)" : ""}
+                    </span>
+                    <span>{form.english_sample.length}/1500</span>
+                  </div>
                 </Field>
               </div>
             )}
+
 
             {step === 2 && (
               <div className="space-y-10">
@@ -375,18 +421,28 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Essay({ prompt, value, onChange }: { prompt: string; value: string; onChange: (v: string) => void }) {
   const words = value.trim() ? value.trim().split(/\s+/).length : 0;
+  const chars = value.length;
   const inRange = words >= 150 && words <= 250;
+  const tooShort = value.trim().length < 50;
   return (
     <div className="space-y-3">
       <p className="serif text-xl italic leading-snug">“{prompt}”</p>
-      <Textarea value={value} onChange={(e) => onChange(e.target.value)} className="min-h-[200px] font-sans" />
+      <Textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value.slice(0, 3000))}
+        maxLength={3000}
+        className="min-h-[200px] font-sans"
+      />
       <div className="flex justify-between text-xs">
-        <span className={inRange ? "text-primary" : "text-muted-foreground"}>{words} words</span>
-        <span className="text-muted-foreground">target ~150–250</span>
+        <span className={tooShort ? "text-destructive" : inRange ? "text-primary" : "text-muted-foreground"}>
+          {words} words {tooShort ? "(min 50 chars)" : ""}
+        </span>
+        <span className="text-muted-foreground">{chars}/3000 · target ~150–250 words</span>
       </div>
     </div>
   );
 }
+
 
 function Summary({ form, videoPath }: { form: FormState; videoPath: string | null }) {
   return (

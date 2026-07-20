@@ -13,11 +13,10 @@ type Row = {
   full_name: string;
   email: string;
   github_url: string | null;
+  portfolio_url: string | null;
   stage: string;
   status: string;
   total_score: number | null;
-  quiz_correct_count: number;
-  quiz_total_count: number;
   video_path: string | null;
   created_at: string;
 };
@@ -34,7 +33,7 @@ function Dashboard() {
     (async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, full_name, email, github_url, stage, status, total_score, quiz_correct_count, quiz_total_count, video_path, created_at")
+        .select("id, full_name, email, github_url, portfolio_url, stage, status, total_score, video_path, created_at")
         .order("created_at", { ascending: false })
         .limit(500);
       setRows((data ?? []) as Row[]);
@@ -121,7 +120,7 @@ function Dashboard() {
               <th className="px-4 py-3 text-left">Candidate</th>
               <th className="px-4 py-3 text-left">Email</th>
               <th className="px-4 py-3 text-left">Stage</th>
-              <th className="px-4 py-3 text-right">Quiz</th>
+              <th className="px-4 py-3 text-left">Submitted</th>
               <th className="px-4 py-3 text-right">AI score</th>
               <th className="px-4 py-3"></th>
             </tr>
@@ -129,17 +128,18 @@ function Dashboard() {
           <tbody>
             {filtered.map((r) => (
               <tr key={r.id} className="border-b border-rule last:border-0 hover:bg-accent/50">
-                <td className="px-4 py-3">
-                  <div className="font-medium">{r.full_name}</div>
+                <td className="px-4 py-3 max-w-[240px]">
+                  <div className="font-medium truncate">{r.full_name}</div>
                   <div className="text-xs text-muted-foreground flex gap-2">
                     {r.video_path && <span>● video</span>}
                     {r.github_url && <span>● github</span>}
+                    {r.portfolio_url && <span>● project</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{r.email}</td>
+                <td className="px-4 py-3 text-muted-foreground max-w-[220px] truncate">{r.email}</td>
                 <td className="px-4 py-3"><StageBadge stage={r.stage} /></td>
-                <td className="px-4 py-3 text-right font-mono text-xs">
-                  {r.quiz_total_count ? `${r.quiz_correct_count}/${r.quiz_total_count}` : "—"}
+                <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                  {new Date(r.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <span className={`serif text-2xl ${r.total_score == null ? "text-muted-foreground" : ""}`}>
@@ -147,7 +147,7 @@ function Dashboard() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4">
+                  <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4 whitespace-nowrap">
                     Open →
                   </Link>
                 </td>

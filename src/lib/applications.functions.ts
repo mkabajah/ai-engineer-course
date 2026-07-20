@@ -3,32 +3,43 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(300)
+  .refine(
+    (v) => v === "" || /^https?:\/\/[^\s]+\.[^\s]+/i.test(v),
+    { message: "Must be a valid URL starting with http(s)://" },
+  )
+  .optional()
+  .nullable();
+
 const ApplicationInput = z.object({
-  full_name: z.string().min(2).max(120),
-  email: z.string().email().max(200),
-  phone: z.string().max(40).optional().nullable(),
-  city: z.string().max(120).optional().nullable(),
-  location_pref: z.string().max(60).optional().nullable(),
+  full_name: z.string().trim().min(2).max(120),
+  email: z.string().trim().toLowerCase().email().max(200),
+  phone: z.string().trim().max(40).optional().nullable(),
+  city: z.string().trim().max(120).optional().nullable(),
+  location_pref: z.string().trim().max(60).optional().nullable(),
   education_degree: z.string().max(120).optional().nullable(),
   education_institution: z.string().max(160).optional().nullable(),
   graduation_year: z.number().int().min(1950).max(2050).optional().nullable(),
   employment_status: z.string().max(60).optional().nullable(),
   employment_role: z.string().max(160).optional().nullable(),
   english_level: z.number().int().min(1).max(5).optional().nullable(),
-  english_sample: z.string().max(800).optional().nullable(),
-  time_commitment_ok: z.boolean(),
-  time_commitment_note: z.string().max(600).optional().nullable(),
+  english_sample: z.string().trim().min(30).max(1500).optional().nullable(),
+  time_commitment_ok: z.literal(true, { errorMap: () => ({ message: "Time commitment must be confirmed" }) }),
+  time_commitment_note: z.string().trim().max(600).optional().nullable(),
   financial_ack: z.boolean(),
-  github_url: z.string().max(300).optional().nullable(),
-  linkedin_url: z.string().max(300).optional().nullable(),
-  portfolio_url: z.string().max(300).optional().nullable(),
-  languages: z.string().max(300).optional().nullable(),
+  github_url: optionalUrl,
+  linkedin_url: optionalUrl,
+  portfolio_url: optionalUrl,
+  languages: z.string().trim().max(300).optional().nullable(),
   llm_experience: z.boolean(),
   llm_experience_desc: z.string().max(800).optional().nullable(),
-  essay_shipping: z.string().min(20).max(3000),
-  essay_curiosity: z.string().min(20).max(3000),
-  essay_fit: z.string().min(20).max(3000),
-  video_path: z.string().max(400).optional().nullable(),
+  essay_shipping: z.string().trim().min(50).max(3000),
+  essay_curiosity: z.string().trim().min(50).max(3000),
+  essay_fit: z.string().trim().min(50).max(3000),
+  video_path: z.string().trim().min(1).max(400),
   quiz: z
     .array(
       z.object({
@@ -37,7 +48,9 @@ const ApplicationInput = z.object({
         time_taken_seconds: z.number().nonnegative(),
       }),
     )
-    .max(50),
+    .max(50)
+    .optional()
+    .default([]),
 });
 
 export const submitApplication = createServerFn({ method: "POST" })
@@ -119,8 +132,8 @@ Weights for the final composite (you do NOT need to compute it):
 - shipping (30%): Has shipped at least one project end-to-end. Can articulate the tradeoffs they made.
 - curiosity (25%): Genuine AI curiosity — specific, non-obvious insight, not regurgitated marketing.
 - fit (20%): Self-awareness. Clearly understands what they want. Names what would waste their time.
-- communication (15%): Clear, structured, no fluff. Specific over vague.
-- portfolio (10%): Real GitHub/portfolio signal. Any AI/RAG/agent project = bonus.
+- communication (15%): Clear, structured English, no fluff. Specific over vague. Judged mainly from the short bio + essays.
+- portfolio (10%): Real GitHub/project link with substance. Any AI/RAG/agent/MCP project = bonus.
 
 Return STRICT JSON: { "shipping": {"score": <0-10>, "rationale": "<2 sentences>"}, "curiosity": {...}, "fit": {...}, "communication": {...}, "portfolio": {...} }`;
 
@@ -130,12 +143,14 @@ async function scoreInternal(applicationId: string) {
 
   const { data: app } = await supabaseAdmin
     .from("applications")
-    .select("essay_shipping, essay_curiosity, essay_fit, github_url, portfolio_url, llm_experience, llm_experience_desc, languages")
+    .select("essay_shipping, essay_curiosity, essay_fit, github_url, portfolio_url, english_sample, languages")
     .eq("id", applicationId)
     .single();
   if (!app) return;
 
-  const userContent = `Essay 1 (shipping): ${app.essay_shipping}
+  const userContent = `Short bio (English): ${app.english_sample || "(none)"}
+
+Essay 1 (shipping): ${app.essay_shipping}
 
 Essay 2 (curiosity): ${app.essay_curiosity}
 
@@ -143,9 +158,8 @@ Essay 3 (fit): ${app.essay_fit}
 
 Portfolio signals:
 - GitHub: ${app.github_url || "(none)"}
-- Portfolio/project: ${app.portfolio_url || "(none)"}
-- Languages used >1 month: ${app.languages || "(none)"}
-- LLM experience: ${app.llm_experience ? "yes" : "no"} ${app.llm_experience_desc ? "- " + app.llm_experience_desc : ""}`;
+- Project link: ${app.portfolio_url || "(none)"}
+- Programming languages used >1 month: ${app.languages || "(none)"}`;
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
