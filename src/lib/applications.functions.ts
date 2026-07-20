@@ -3,32 +3,43 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(300)
+  .refine(
+    (v) => v === "" || /^https?:\/\/[^\s]+\.[^\s]+/i.test(v),
+    { message: "Must be a valid URL starting with http(s)://" },
+  )
+  .optional()
+  .nullable();
+
 const ApplicationInput = z.object({
-  full_name: z.string().min(2).max(120),
-  email: z.string().email().max(200),
-  phone: z.string().max(40).optional().nullable(),
-  city: z.string().max(120).optional().nullable(),
-  location_pref: z.string().max(60).optional().nullable(),
+  full_name: z.string().trim().min(2).max(120),
+  email: z.string().trim().toLowerCase().email().max(200),
+  phone: z.string().trim().max(40).optional().nullable(),
+  city: z.string().trim().max(120).optional().nullable(),
+  location_pref: z.string().trim().max(60).optional().nullable(),
   education_degree: z.string().max(120).optional().nullable(),
   education_institution: z.string().max(160).optional().nullable(),
   graduation_year: z.number().int().min(1950).max(2050).optional().nullable(),
   employment_status: z.string().max(60).optional().nullable(),
   employment_role: z.string().max(160).optional().nullable(),
   english_level: z.number().int().min(1).max(5).optional().nullable(),
-  english_sample: z.string().max(800).optional().nullable(),
-  time_commitment_ok: z.boolean(),
-  time_commitment_note: z.string().max(600).optional().nullable(),
+  english_sample: z.string().trim().min(30).max(1500).optional().nullable(),
+  time_commitment_ok: z.literal(true, { errorMap: () => ({ message: "Time commitment must be confirmed" }) }),
+  time_commitment_note: z.string().trim().max(600).optional().nullable(),
   financial_ack: z.boolean(),
-  github_url: z.string().max(300).optional().nullable(),
-  linkedin_url: z.string().max(300).optional().nullable(),
-  portfolio_url: z.string().max(300).optional().nullable(),
-  languages: z.string().max(300).optional().nullable(),
+  github_url: optionalUrl,
+  linkedin_url: optionalUrl,
+  portfolio_url: optionalUrl,
+  languages: z.string().trim().max(300).optional().nullable(),
   llm_experience: z.boolean(),
   llm_experience_desc: z.string().max(800).optional().nullable(),
-  essay_shipping: z.string().min(20).max(3000),
-  essay_curiosity: z.string().min(20).max(3000),
-  essay_fit: z.string().min(20).max(3000),
-  video_path: z.string().max(400).optional().nullable(),
+  essay_shipping: z.string().trim().min(50).max(3000),
+  essay_curiosity: z.string().trim().min(50).max(3000),
+  essay_fit: z.string().trim().min(50).max(3000),
+  video_path: z.string().trim().min(1).max(400),
   quiz: z
     .array(
       z.object({
@@ -37,7 +48,9 @@ const ApplicationInput = z.object({
         time_taken_seconds: z.number().nonnegative(),
       }),
     )
-    .max(50),
+    .max(50)
+    .optional()
+    .default([]),
 });
 
 export const submitApplication = createServerFn({ method: "POST" })
