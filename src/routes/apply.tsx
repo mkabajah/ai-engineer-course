@@ -252,8 +252,9 @@ function ApplyPage() {
                   <Textarea
                     placeholder="Briefly: how will you make the time?"
                     value={form.time_commitment_note}
-                    onChange={(e) => set("time_commitment_note", e.target.value)}
+                    onChange={(e) => set("time_commitment_note", e.target.value.slice(0, 600))}
                     className="mt-3 min-h-[70px]"
+                    maxLength={600}
                   />
                 </Card>
               </div>
@@ -268,14 +269,31 @@ function ApplyPage() {
                 />
                 <Row>
                   <Field label="GitHub URL">
-                    <Input value={form.github_url} onChange={(e) => set("github_url", e.target.value)} placeholder="https://github.com/…" />
+                    <Input
+                      maxLength={300}
+                      value={form.github_url}
+                      onChange={(e) => set("github_url", e.target.value)}
+                      placeholder="https://github.com/…"
+                      aria-invalid={!githubOk}
+                      className={!githubOk ? "border-destructive focus-visible:ring-destructive" : ""}
+                    />
+                    {!githubOk && <p className="text-xs text-destructive">Must be a full URL starting with http(s)://</p>}
                   </Field>
                   <Field label="Project link (deploy / repo / video)">
-                    <Input value={form.portfolio_url} onChange={(e) => set("portfolio_url", e.target.value)} placeholder="https://…" />
+                    <Input
+                      maxLength={300}
+                      value={form.portfolio_url}
+                      onChange={(e) => set("portfolio_url", e.target.value)}
+                      placeholder="https://…"
+                      aria-invalid={!portfolioOk}
+                      className={!portfolioOk ? "border-destructive focus-visible:ring-destructive" : ""}
+                    />
+                    {!portfolioOk && <p className="text-xs text-destructive">Must be a full URL starting with http(s)://</p>}
                   </Field>
                 </Row>
                 <Field label="Programming languages used in a project >1 month">
                   <Input
+                    maxLength={300}
                     value={form.languages}
                     onChange={(e) => set("languages", e.target.value)}
                     placeholder="e.g. Python, TypeScript, Go"
@@ -284,13 +302,21 @@ function ApplyPage() {
                 <Field label="Short bio — why should we choose you for this course? (in English) *">
                   <Textarea
                     value={form.english_sample}
-                    onChange={(e) => set("english_sample", e.target.value)}
+                    onChange={(e) => set("english_sample", e.target.value.slice(0, 1500))}
                     className="min-h-[160px]"
                     placeholder="Who you are, what drives you, and why you're the right fit for this cohort."
+                    maxLength={1500}
                   />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span className={form.english_sample.trim().length < 30 ? "text-destructive" : ""}>
+                      {form.english_sample.trim().length} chars {form.english_sample.trim().length < 30 ? "(min 30)" : ""}
+                    </span>
+                    <span>{form.english_sample.length}/1500</span>
+                  </div>
                 </Field>
               </div>
             )}
+
 
             {step === 2 && (
               <div className="space-y-10">
