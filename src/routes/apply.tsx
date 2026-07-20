@@ -421,13 +421,25 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Essay({ prompt, value, onChange }: { prompt: string; value: string; onChange: (v: string) => void }) {
   const words = value.trim() ? value.trim().split(/\s+/).length : 0;
+  const chars = value.length;
   const inRange = words >= 150 && words <= 250;
+  const tooShort = value.trim().length < 50;
   return (
     <div className="space-y-3">
       <p className="serif text-xl italic leading-snug">“{prompt}”</p>
-      <Textarea value={value} onChange={(e) => onChange(e.target.value)} className="min-h-[200px] font-sans" />
+      <Textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value.slice(0, 3000))}
+        maxLength={3000}
+        className="min-h-[200px] font-sans"
+      />
       <div className="flex justify-between text-xs">
-        <span className={inRange ? "text-primary" : "text-muted-foreground"}>{words} words</span>
+        <span className={tooShort ? "text-destructive" : inRange ? "text-primary" : "text-muted-foreground"}>
+          {words} words {tooShort ? "(min 50 chars)" : ""}
+        </span>
+        <span className="text-muted-foreground">{chars}/3000 · target ~150–250 words</span>
+      </div>
+
         <span className="text-muted-foreground">target ~150–250</span>
       </div>
     </div>
