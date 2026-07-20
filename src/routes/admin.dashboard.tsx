@@ -13,11 +13,10 @@ type Row = {
   full_name: string;
   email: string;
   github_url: string | null;
+  portfolio_url: string | null;
   stage: string;
   status: string;
   total_score: number | null;
-  quiz_correct_count: number;
-  quiz_total_count: number;
   video_path: string | null;
   created_at: string;
 };
@@ -34,7 +33,7 @@ function Dashboard() {
     (async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, full_name, email, github_url, stage, status, total_score, quiz_correct_count, quiz_total_count, video_path, created_at")
+        .select("id, full_name, email, github_url, portfolio_url, stage, status, total_score, video_path, created_at")
         .order("created_at", { ascending: false })
         .limit(500);
       setRows((data ?? []) as Row[]);
