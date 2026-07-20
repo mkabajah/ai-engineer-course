@@ -28,10 +28,13 @@ function Detail() {
   const [scores, setScores] = useState<Score[]>([]);
   const [quiz, setQuiz] = useState<{ resp: QuizResp; q: Question | null }[]>([]);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [notes, setNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
 
   const load = async () => {
     const { data: a } = await supabase.from("applications").select("*").eq("id", id).maybeSingle();
     setApp(a as App | null);
+    setNotes(((a as App | null)?.admin_notes as string | null) ?? "");
     const { data: s } = await supabase.from("ai_scores").select("dimension, score, rationale").eq("application_id", id);
     setScores((s ?? []) as Score[]);
     const { data: qr } = await supabase
@@ -73,6 +76,15 @@ function Detail() {
   const setStage = async (stage: string) => {
     await stageFn({ data: { id, stage: stage as "applied" } });
     load();
+  };
+  const saveNotes = async () => {
+    setSavingNotes(true);
+    try {
+      await stageFn({ data: { id, admin_notes: notes } });
+      toast.success("Notes saved");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    } finally { setSavingNotes(false); }
   };
 
   return (
@@ -170,6 +182,24 @@ function Detail() {
             ) : (
               <p className="text-sm text-muted-foreground">No video submitted.</p>
             )}
+          </div>
+
+          <div className="rounded-sm border border-rule bg-card p-6">
+            <div className="label-eyebrow mb-3">Admin notes</div>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={6}
+              placeholder="Interview notes, red flags, follow-ups…"
+              className="w-full rounded-sm border border-input bg-background p-3 text-sm"
+            />
+            <button
+              onClick={saveNotes}
+              disabled={savingNotes}
+              className="mt-3 rounded-sm bg-primary px-4 py-2 text-xs uppercase tracking-wider text-primary-foreground disabled:opacity-50"
+            >
+              {savingNotes ? "Saving…" : "Save notes"}
+            </button>
           </div>
         </div>
       </div>

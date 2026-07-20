@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { exportApplicationsCsv } from "@/lib/admins.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
 
@@ -24,6 +27,8 @@ function Dashboard() {
   const [q, setQ] = useState("");
   const [stage, setStage] = useState<string>("all");
   const [sort, setSort] = useState<"score" | "date">("score");
+  const [exporting, setExporting] = useState(false);
+  const exportFn = useServerFn(exportApplicationsCsv);
 
   useEffect(() => {
     (async () => {
@@ -49,14 +54,36 @@ function Dashboard() {
     return r;
   }, [rows, q, stage, sort]);
 
+  const doExport = async (which: "admitted" | "current" | "all") => {
+    setExporting(true);
+    try {
+      const stageArg = which === "admitted" ? "admitted" : which === "current" ? stage : "all";
+      const { csv, count } = await exportFn({ data: { stage: stageArg } });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `applicants-${stageArg}-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${count} row(s)`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-10">
-      <div className="flex items-end justify-between gap-6 mb-8">
+      <div className="flex items-end justify-between gap-6 mb-8 flex-wrap">
         <div>
           <div className="label-eyebrow">Candidates</div>
           <h1 className="display text-5xl mt-2">{rows?.length ?? "—"} applicants</h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Input placeholder="Search name or email…" value={q} onChange={(e) => setQ(e.target.value)} className="w-64" />
           <select value={stage} onChange={(e) => setStage(e.target.value)} className="h-10 rounded-sm border border-input bg-background px-3 text-sm">
             <option value="all">All stages</option>
@@ -70,6 +97,20 @@ function Dashboard() {
             <option value="score">By score</option>
             <option value="date">By date</option>
           </select>
+          <button
+            onClick={() => doExport("admitted")}
+            disabled={exporting}
+            className="h-10 rounded-sm bg-primary px-4 text-xs uppercase tracking-wider text-primary-foreground disabled:opacity-50"
+          >
+            Export admitted
+          </button>
+          <button
+            onClick={() => doExport("current")}
+            disabled={exporting}
+            className="h-10 rounded-sm border border-rule bg-card px-4 text-xs uppercase tracking-wider hover:bg-accent disabled:opacity-50"
+          >
+            Export view
+          </button>
         </div>
       </div>
 
