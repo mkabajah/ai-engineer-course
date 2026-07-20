@@ -132,8 +132,8 @@ Weights for the final composite (you do NOT need to compute it):
 - shipping (30%): Has shipped at least one project end-to-end. Can articulate the tradeoffs they made.
 - curiosity (25%): Genuine AI curiosity — specific, non-obvious insight, not regurgitated marketing.
 - fit (20%): Self-awareness. Clearly understands what they want. Names what would waste their time.
-- communication (15%): Clear, structured, no fluff. Specific over vague.
-- portfolio (10%): Real GitHub/portfolio signal. Any AI/RAG/agent project = bonus.
+- communication (15%): Clear, structured English, no fluff. Specific over vague. Judged mainly from the short bio + essays.
+- portfolio (10%): Real GitHub/project link with substance. Any AI/RAG/agent/MCP project = bonus.
 
 Return STRICT JSON: { "shipping": {"score": <0-10>, "rationale": "<2 sentences>"}, "curiosity": {...}, "fit": {...}, "communication": {...}, "portfolio": {...} }`;
 
@@ -143,12 +143,14 @@ async function scoreInternal(applicationId: string) {
 
   const { data: app } = await supabaseAdmin
     .from("applications")
-    .select("essay_shipping, essay_curiosity, essay_fit, github_url, portfolio_url, llm_experience, llm_experience_desc, languages")
+    .select("essay_shipping, essay_curiosity, essay_fit, github_url, portfolio_url, english_sample, languages")
     .eq("id", applicationId)
     .single();
   if (!app) return;
 
-  const userContent = `Essay 1 (shipping): ${app.essay_shipping}
+  const userContent = `Short bio (English): ${app.english_sample || "(none)"}
+
+Essay 1 (shipping): ${app.essay_shipping}
 
 Essay 2 (curiosity): ${app.essay_curiosity}
 
@@ -156,9 +158,8 @@ Essay 3 (fit): ${app.essay_fit}
 
 Portfolio signals:
 - GitHub: ${app.github_url || "(none)"}
-- Portfolio/project: ${app.portfolio_url || "(none)"}
-- Languages used >1 month: ${app.languages || "(none)"}
-- LLM experience: ${app.llm_experience ? "yes" : "no"} ${app.llm_experience_desc ? "- " + app.llm_experience_desc : ""}`;
+- Project link: ${app.portfolio_url || "(none)"}
+- Programming languages used >1 month: ${app.languages || "(none)"}`;
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
