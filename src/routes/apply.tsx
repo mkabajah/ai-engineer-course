@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { VideoUploader } from "@/components/VideoUploader";
-import hasoubLogo from "@/assets/hasoub-labs.png";
+import hasoubLogoAsset from "@/assets/hasoub-labs.png.asset.json";
+const hasoubLogo = hasoubLogoAsset.url;
 
 export const Route = createFileRoute("/apply")({ component: ApplyPage });
 
