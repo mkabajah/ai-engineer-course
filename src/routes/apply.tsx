@@ -51,20 +51,39 @@ function ApplyPage() {
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((prev) => ({ ...prev, [k]: v }));
 
+  const isValidUrl = (v: string) => v === "" || /^https?:\/\/[^\s]+\.[^\s]+/i.test(v.trim());
+  const githubOk = isValidUrl(form.github_url);
+  const portfolioOk = isValidUrl(form.portfolio_url);
+
   const canProceed = useMemo(() => {
     if (step === 0)
-      return form.full_name.length >= 2 && /\S+@\S+\.\S+/.test(form.email) && form.time_commitment_ok && form.location_pref === "confirmed";
+      return (
+        form.full_name.trim().length >= 2 &&
+        form.full_name.trim().length <= 120 &&
+        /^\S+@\S+\.\S+$/.test(form.email.trim()) &&
+        form.email.trim().length <= 200 &&
+        form.time_commitment_ok &&
+        form.location_pref === "confirmed"
+      );
     if (step === 1)
-      return form.english_sample.trim().length >= 30;
+      return (
+        form.english_sample.trim().length >= 30 &&
+        form.english_sample.trim().length <= 1500 &&
+        githubOk &&
+        portfolioOk
+      );
     if (step === 2)
       return (
         form.essay_shipping.trim().length >= 50 &&
+        form.essay_shipping.length <= 3000 &&
         form.essay_curiosity.trim().length >= 50 &&
-        form.essay_fit.trim().length >= 50
+        form.essay_curiosity.length <= 3000 &&
+        form.essay_fit.trim().length >= 50 &&
+        form.essay_fit.length <= 3000
       );
     if (step === 3) return videoPath !== null;
     return true;
-  }, [step, form, videoPath]);
+  }, [step, form, videoPath, githubOk, portfolioOk]);
 
   const submit = async () => {
     setSubmitting(true);
