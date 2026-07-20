@@ -28,6 +28,8 @@ function Detail() {
   const [scores, setScores] = useState<Score[]>([]);
   const [quiz, setQuiz] = useState<{ resp: QuizResp; q: Question | null }[]>([]);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [notes, setNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
 
   const load = async () => {
     const { data: a } = await supabase.from("applications").select("*").eq("id", id).maybeSingle();

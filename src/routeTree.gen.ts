@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminQuestionsRouteImport } from './routes/admin.questions'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
 
 const ThanksRoute = ThanksRouteImport.update({
@@ -53,6 +54,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/applications/$id',
   path: '/applications/$id',
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/thanks': typeof ThanksRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/thanks': typeof ThanksRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
   '/thanks': typeof ThanksRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/apply'
     | '/thanks'
+    | '/admin/admins'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/questions'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/apply'
     | '/thanks'
+    | '/admin/admins'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/questions'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/apply'
     | '/thanks'
+    | '/admin/admins'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/questions'
@@ -181,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
       path: '/applications/$id'
@@ -192,6 +211,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminQuestionsRoute: typeof AdminQuestionsRoute
@@ -199,6 +219,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminQuestionsRoute: AdminQuestionsRoute,
