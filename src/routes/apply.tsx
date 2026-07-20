@@ -440,10 +440,9 @@ function Essay({ prompt, value, onChange }: { prompt: string; value: string; onC
         <span className="text-muted-foreground">{chars}/3000 · target ~150–250 words</span>
       </div>
     </div>
-
-    </div>
   );
 }
+
 
 function Summary({ form, videoPath }: { form: FormState; videoPath: string | null }) {
   return (
