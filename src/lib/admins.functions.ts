@@ -69,6 +69,29 @@ export const removeAdmin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const deleteApplication = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // fetch video path to remove from storage
+    const { data: app } = await supabaseAdmin
+      .from("applications")
+      .select("video_path")
+      .eq("id", data.id)
+      .maybeSingle();
+    // best-effort child deletes (in case no FK cascade)
+    await supabaseAdmin.from("ai_scores").delete().eq("application_id", data.id);
+    await supabaseAdmin.from("quiz_responses").delete().eq("application_id", data.id);
+    const { error } = await supabaseAdmin.from("applications").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    if (app?.video_path) {
+      await supabaseAdmin.storage.from("applicant-videos").remove([app.video_path]);
+    }
+    return { ok: true };
+  });
+
 export const exportApplicationsCsv = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { stage?: string }) =>
