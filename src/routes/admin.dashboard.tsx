@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { exportApplicationsCsv } from "@/lib/admins.functions";
+import { exportApplicationsCsv, deleteApplication } from "@/lib/admins.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
