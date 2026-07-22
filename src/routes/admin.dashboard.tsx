@@ -28,6 +28,18 @@ function Dashboard() {
   const [sort, setSort] = useState<"score" | "date">("score");
   const [exporting, setExporting] = useState(false);
   const exportFn = useServerFn(exportApplicationsCsv);
+  const deleteFn = useServerFn(deleteApplication);
+
+  const doDelete = async (r: Row) => {
+    if (!confirm(`Delete application from ${r.full_name}? This cannot be undone.`)) return;
+    try {
+      await deleteFn({ data: { id: r.id } });
+      setRows((prev) => (prev ?? []).filter((x) => x.id !== r.id));
+      toast.success("Application deleted");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+    }
+  };
 
   useEffect(() => {
     (async () => {
