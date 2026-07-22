@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { exportApplicationsCsv } from "@/lib/admins.functions";
+import { exportApplicationsCsv, deleteApplication } from "@/lib/admins.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
@@ -28,6 +28,18 @@ function Dashboard() {
   const [sort, setSort] = useState<"score" | "date">("score");
   const [exporting, setExporting] = useState(false);
   const exportFn = useServerFn(exportApplicationsCsv);
+  const deleteFn = useServerFn(deleteApplication);
+
+  const doDelete = async (r: Row) => {
+    if (!confirm(`Delete application from ${r.full_name}? This cannot be undone.`)) return;
+    try {
+      await deleteFn({ data: { id: r.id } });
+      setRows((prev) => (prev ?? []).filter((x) => x.id !== r.id));
+      toast.success("Application deleted");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Delete failed");
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -147,9 +159,18 @@ function Dashboard() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4 whitespace-nowrap">
-                    Open →
-                  </Link>
+                  <div className="flex items-center justify-end gap-3 whitespace-nowrap">
+                    <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4">
+                      Open →
+                    </Link>
+                    <button
+                      onClick={() => doDelete(r)}
+                      className="text-xs text-destructive hover:underline underline-offset-4"
+                      aria-label={`Delete ${r.full_name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
