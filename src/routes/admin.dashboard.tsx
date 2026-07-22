@@ -159,9 +159,18 @@ function Dashboard() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4 whitespace-nowrap">
-                    Open →
-                  </Link>
+                  <div className="flex items-center justify-end gap-3 whitespace-nowrap">
+                    <Link to="/admin/applications/$id" params={{ id: r.id }} className="text-xs underline underline-offset-4">
+                      Open →
+                    </Link>
+                    <button
+                      onClick={() => doDelete(r)}
+                      className="text-xs text-destructive hover:underline underline-offset-4"
+                      aria-label={`Delete ${r.full_name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
