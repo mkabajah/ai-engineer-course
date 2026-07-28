@@ -101,7 +101,9 @@ function Dashboard() {
             <option value="applied">Applied</option>
             <option value="takehome">Take-home</option>
             <option value="interview">Interview</option>
+            <option value="passed">Passed</option>
             <option value="admitted">Admitted</option>
+            <option value="accepted_paid">Accepted (Paid)</option>
             <option value="rejected">Rejected</option>
           </select>
           <select value={sort} onChange={(e) => setSort(e.target.value as "score" | "date")} className="h-10 rounded-sm border border-input bg-background px-3 text-sm">
