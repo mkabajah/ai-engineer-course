@@ -191,8 +191,11 @@ function StageBadge({ stage }: { stage: string }) {
     applied: "bg-muted text-muted-foreground",
     takehome: "bg-accent text-accent-foreground",
     interview: "bg-primary/15 text-primary",
+    passed: "bg-blue-500/15 text-blue-600",
     admitted: "bg-primary text-primary-foreground",
+    accepted_paid: "bg-green-600 text-white",
     rejected: "bg-destructive/15 text-destructive",
   };
-  return <span className={`rounded-sm px-2 py-1 text-xs ${colors[stage] ?? colors.applied}`}>{stage}</span>;
+  const label = stage === "accepted_paid" ? "accepted (paid)" : stage;
+  return <span className={`rounded-sm px-2 py-1 text-xs whitespace-nowrap ${colors[stage] ?? colors.applied}`}>{label}</span>;
 }
