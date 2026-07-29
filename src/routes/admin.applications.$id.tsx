@@ -81,16 +81,16 @@ function Detail() {
           <div className="mt-2 text-xs text-muted-foreground">Submitted {createdAt}</div>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {[
-            { v: "applied", label: "applied" },
-            { v: "interview", label: "interview" },
-            { v: "passed", label: "passed" },
-            { v: "admitted", label: "admitted" },
-            { v: "accepted_paid", label: "accepted (paid)" },
-            { v: "rejected", label: "rejected" },
-          ].map((s) => (
-            <button key={s.v} onClick={() => setStage(s.v)}
-              className={`rounded-sm border border-rule px-3 py-1.5 text-xs uppercase tracking-wider ${app.stage === s.v ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-accent"}`}>
+          {STAGES.map((s) => (
+            <button
+              key={s.v}
+              onClick={() => setStage(s.v)}
+              className={`rounded-full border px-4 py-1.5 text-xs font-medium uppercase tracking-wide transition-colors ${
+                app.stage === s.v
+                  ? stageActiveClasses(s.v)
+                  : `${stageColorClasses(s.v)} hover:opacity-80`
+              }`}
+            >
               {s.label}
             </button>
           ))}
