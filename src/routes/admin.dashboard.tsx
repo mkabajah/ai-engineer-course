@@ -186,16 +186,22 @@ function Dashboard() {
   );
 }
 
+const STAGE_COLORS: Record<string, string> = {
+  applied: "bg-slate-100 text-slate-600 border-slate-200",
+  takehome: "bg-amber-100 text-amber-700 border-amber-200",
+  interview: "bg-violet-100 text-violet-700 border-violet-200",
+  passed: "bg-sky-100 text-sky-700 border-sky-200",
+  admitted: "bg-[#DE3D4D]/15 text-[#DE3D4D] border-[#DE3D4D]/25",
+  accepted_paid: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  rejected: "bg-red-100 text-red-700 border-red-200",
+};
+
 function StageBadge({ stage }: { stage: string }) {
-  const colors: Record<string, string> = {
-    applied: "bg-muted text-muted-foreground",
-    takehome: "bg-accent text-accent-foreground",
-    interview: "bg-primary/15 text-primary",
-    passed: "bg-blue-500/15 text-blue-600",
-    admitted: "bg-primary text-primary-foreground",
-    accepted_paid: "bg-green-600 text-white",
-    rejected: "bg-destructive/15 text-destructive",
-  };
   const label = stage === "accepted_paid" ? "accepted (paid)" : stage;
-  return <span className={`rounded-sm px-2 py-1 text-xs whitespace-nowrap ${colors[stage] ?? colors.applied}`}>{label}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${STAGE_COLORS[stage] ?? STAGE_COLORS.applied}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+      {label}
+    </span>
+  );
 }
