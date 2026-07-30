@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { exportApplicationsCsv, deleteApplication } from "@/lib/admins.functions";
+import { updateApplicationStage } from "@/lib/applications.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
