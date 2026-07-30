@@ -30,6 +30,20 @@ function Dashboard() {
   const [exporting, setExporting] = useState(false);
   const exportFn = useServerFn(exportApplicationsCsv);
   const deleteFn = useServerFn(deleteApplication);
+  const stageFn = useServerFn(updateApplicationStage);
+
+  const changeStage = async (r: Row, next: string) => {
+    const prev = r.stage;
+    setRows((rows) => (rows ?? []).map((x) => (x.id === r.id ? { ...x, stage: next } : x)));
+    try {
+      await stageFn({ data: { id: r.id, stage: next as "applied" } });
+      toast.success(`${r.full_name} → ${next === "accepted_paid" ? "accepted (paid)" : next}`);
+    } catch (e) {
+      setRows((rows) => (rows ?? []).map((x) => (x.id === r.id ? { ...x, stage: prev } : x)));
+      toast.error(e instanceof Error ? e.message : "Failed to update stage");
+    }
+  };
+
 
   const doDelete = async (r: Row) => {
     if (!confirm(`Delete application from ${r.full_name}? This cannot be undone.`)) return;
