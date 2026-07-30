@@ -172,7 +172,7 @@ function Dashboard() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground max-w-[220px] truncate">{r.email}</td>
-                <td className="px-4 py-3"><StageBadge stage={r.stage} /></td>
+                <td className="px-4 py-3"><StageSelect stage={r.stage} onChange={(v) => changeStage(r, v)} /></td>
                 <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
                   {new Date(r.created_at).toLocaleDateString()}
                 </td>
