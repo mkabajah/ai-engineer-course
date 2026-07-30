@@ -217,12 +217,33 @@ const STAGE_COLORS: Record<string, string> = {
   rejected: "bg-red-100 text-red-700 border-red-200",
 };
 
-function StageBadge({ stage }: { stage: string }) {
-  const label = stage === "accepted_paid" ? "accepted (paid)" : stage;
+const STAGE_OPTIONS: { v: string; label: string }[] = [
+  { v: "applied", label: "Applied" },
+  { v: "takehome", label: "Take-home" },
+  { v: "interview", label: "Interview" },
+  { v: "passed", label: "Passed" },
+  { v: "admitted", label: "Admitted" },
+  { v: "accepted_paid", label: "Accepted (Paid)" },
+  { v: "rejected", label: "Rejected" },
+];
+
+function StageSelect({ stage, onChange }: { stage: string; onChange: (v: string) => void }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${STAGE_COLORS[stage] ?? STAGE_COLORS.applied}`}>
+    <div className={`relative inline-flex items-center gap-1.5 rounded-full border pl-2.5 pr-6 py-1 text-xs font-medium uppercase tracking-wide ${STAGE_COLORS[stage] ?? STAGE_COLORS.applied}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {label}
-    </span>
+      <span className="whitespace-nowrap">{stage === "accepted_paid" ? "accepted (paid)" : stage}</span>
+      <span aria-hidden className="pointer-events-none absolute right-2 text-[9px] opacity-70">▼</span>
+      <select
+        value={stage}
+        aria-label="Change stage"
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      >
+        {STAGE_OPTIONS.map((o) => (
+          <option key={o.v} value={o.v}>{o.label}</option>
+        ))}
+      </select>
+    </div>
   );
 }
+
