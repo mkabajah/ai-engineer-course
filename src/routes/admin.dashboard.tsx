@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { exportApplicationsCsv, deleteApplication } from "@/lib/admins.functions";
+import { updateApplicationStage } from "@/lib/applications.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
@@ -29,6 +30,20 @@ function Dashboard() {
   const [exporting, setExporting] = useState(false);
   const exportFn = useServerFn(exportApplicationsCsv);
   const deleteFn = useServerFn(deleteApplication);
+  const stageFn = useServerFn(updateApplicationStage);
+
+  const changeStage = async (r: Row, next: string) => {
+    const prev = r.stage;
+    setRows((rows) => (rows ?? []).map((x) => (x.id === r.id ? { ...x, stage: next } : x)));
+    try {
+      await stageFn({ data: { id: r.id, stage: next as "applied" } });
+      toast.success(`${r.full_name} → ${next === "accepted_paid" ? "accepted (paid)" : next}`);
+    } catch (e) {
+      setRows((rows) => (rows ?? []).map((x) => (x.id === r.id ? { ...x, stage: prev } : x)));
+      toast.error(e instanceof Error ? e.message : "Failed to update stage");
+    }
+  };
+
 
   const doDelete = async (r: Row) => {
     if (!confirm(`Delete application from ${r.full_name}? This cannot be undone.`)) return;
@@ -92,8 +107,14 @@ function Dashboard() {
       <div className="flex items-end justify-between gap-6 mb-8 flex-wrap">
         <div>
           <div className="label-eyebrow">Candidates</div>
-          <h1 className="display text-5xl mt-2">{rows?.length ?? "—"} applicants</h1>
+          <h1 className="display text-5xl mt-2">{filtered.length} applicants</h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {rows ? `Showing ${filtered.length} of ${rows.length}` : "Loading…"}
+            {stage !== "all" && ` · stage: ${stage === "accepted_paid" ? "accepted (paid)" : stage}`}
+            {q.trim() && ` · search: "${q.trim()}"`}
+          </p>
         </div>
+
         <div className="flex items-center gap-3 flex-wrap">
           <Input placeholder="Search name or email…" value={q} onChange={(e) => setQ(e.target.value)} className="w-64" />
           <select value={stage} onChange={(e) => setStage(e.target.value)} className="h-10 rounded-sm border border-input bg-background px-3 text-sm">
@@ -151,7 +172,7 @@ function Dashboard() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground max-w-[220px] truncate">{r.email}</td>
-                <td className="px-4 py-3"><StageBadge stage={r.stage} /></td>
+                <td className="px-4 py-3"><StageSelect stage={r.stage} onChange={(v) => changeStage(r, v)} /></td>
                 <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
                   {new Date(r.created_at).toLocaleDateString()}
                 </td>
@@ -196,12 +217,33 @@ const STAGE_COLORS: Record<string, string> = {
   rejected: "bg-red-100 text-red-700 border-red-200",
 };
 
-function StageBadge({ stage }: { stage: string }) {
-  const label = stage === "accepted_paid" ? "accepted (paid)" : stage;
+const STAGE_OPTIONS: { v: string; label: string }[] = [
+  { v: "applied", label: "Applied" },
+  { v: "takehome", label: "Take-home" },
+  { v: "interview", label: "Interview" },
+  { v: "passed", label: "Passed" },
+  { v: "admitted", label: "Admitted" },
+  { v: "accepted_paid", label: "Accepted (Paid)" },
+  { v: "rejected", label: "Rejected" },
+];
+
+function StageSelect({ stage, onChange }: { stage: string; onChange: (v: string) => void }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium uppercase tracking-wide ${STAGE_COLORS[stage] ?? STAGE_COLORS.applied}`}>
+    <div className={`relative inline-flex items-center gap-1.5 rounded-full border pl-2.5 pr-6 py-1 text-xs font-medium uppercase tracking-wide ${STAGE_COLORS[stage] ?? STAGE_COLORS.applied}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {label}
-    </span>
+      <span className="whitespace-nowrap">{stage === "accepted_paid" ? "accepted (paid)" : stage}</span>
+      <span aria-hidden className="pointer-events-none absolute right-2 text-[9px] opacity-70">▼</span>
+      <select
+        value={stage}
+        aria-label="Change stage"
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      >
+        {STAGE_OPTIONS.map((o) => (
+          <option key={o.v} value={o.v}>{o.label}</option>
+        ))}
+      </select>
+    </div>
   );
 }
+
