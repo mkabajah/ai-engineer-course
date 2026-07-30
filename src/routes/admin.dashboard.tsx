@@ -107,8 +107,14 @@ function Dashboard() {
       <div className="flex items-end justify-between gap-6 mb-8 flex-wrap">
         <div>
           <div className="label-eyebrow">Candidates</div>
-          <h1 className="display text-5xl mt-2">{rows?.length ?? "—"} applicants</h1>
+          <h1 className="display text-5xl mt-2">{filtered.length} applicants</h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {rows ? `Showing ${filtered.length} of ${rows.length}` : "Loading…"}
+            {stage !== "all" && ` · stage: ${stage === "accepted_paid" ? "accepted (paid)" : stage}`}
+            {q.trim() && ` · search: "${q.trim()}"`}
+          </p>
         </div>
+
         <div className="flex items-center gap-3 flex-wrap">
           <Input placeholder="Search name or email…" value={q} onChange={(e) => setQ(e.target.value)} className="w-64" />
           <select value={stage} onChange={(e) => setStage(e.target.value)} className="h-10 rounded-sm border border-input bg-background px-3 text-sm">
