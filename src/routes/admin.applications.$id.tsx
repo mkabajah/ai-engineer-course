@@ -234,6 +234,7 @@ const STAGES: { v: string; label: string }[] = [
   { v: "passed", label: "passed" },
   { v: "admitted", label: "admitted" },
   { v: "accepted_paid", label: "accepted (paid)" },
+  { v: "wont_participate", label: "won't participate" },
   { v: "rejected", label: "rejected" },
 ];
 
@@ -243,6 +244,7 @@ const STAGE_STYLES: Record<string, { base: string; active: string }> = {
   passed: { base: "bg-sky-100 text-sky-700 border-sky-200", active: "bg-sky-600 text-white border-sky-600" },
   admitted: { base: "bg-[#DE3D4D]/15 text-[#DE3D4D] border-[#DE3D4D]/25", active: "bg-[#DE3D4D] text-white border-[#DE3D4D]" },
   accepted_paid: { base: "bg-emerald-100 text-emerald-700 border-emerald-200", active: "bg-emerald-600 text-white border-emerald-600" },
+  wont_participate: { base: "bg-orange-100 text-orange-700 border-orange-200", active: "bg-orange-600 text-white border-orange-600" },
   rejected: { base: "bg-red-100 text-red-700 border-red-200", active: "bg-red-600 text-white border-red-600" },
 };
 function stageColorClasses(v: string) { return (STAGE_STYLES[v] ?? STAGE_STYLES.applied).base; }

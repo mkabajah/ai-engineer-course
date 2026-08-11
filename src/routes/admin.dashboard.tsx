@@ -125,6 +125,7 @@ function Dashboard() {
             <option value="passed">Passed</option>
             <option value="admitted">Admitted</option>
             <option value="accepted_paid">Accepted (Paid)</option>
+            <option value="wont_participate">Won't Participate</option>
             <option value="rejected">Rejected</option>
           </select>
           <select value={sort} onChange={(e) => setSort(e.target.value as "score" | "date")} className="h-10 rounded-sm border border-input bg-background px-3 text-sm">
@@ -214,6 +215,7 @@ const STAGE_COLORS: Record<string, string> = {
   passed: "bg-sky-100 text-sky-700 border-sky-200",
   admitted: "bg-[#DE3D4D]/15 text-[#DE3D4D] border-[#DE3D4D]/25",
   accepted_paid: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  wont_participate: "bg-orange-100 text-orange-700 border-orange-200",
   rejected: "bg-red-100 text-red-700 border-red-200",
 };
 
@@ -224,6 +226,7 @@ const STAGE_OPTIONS: { v: string; label: string }[] = [
   { v: "passed", label: "Passed" },
   { v: "admitted", label: "Admitted" },
   { v: "accepted_paid", label: "Accepted (Paid)" },
+  { v: "wont_participate", label: "Won't Participate" },
   { v: "rejected", label: "Rejected" },
 ];
 

@@ -237,7 +237,7 @@ export const updateApplicationStage = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        stage: z.enum(["applied", "takehome", "interview", "passed", "admitted", "accepted_paid", "rejected"]).optional(),
+        stage: z.enum(["applied", "takehome", "interview", "passed", "admitted", "accepted_paid", "wont_participate", "rejected"]).optional(),
         status: z.enum(["pending", "reviewing", "shortlisted", "rejected"]).optional(),
         admin_notes: z.string().max(5000).optional(),
       })
