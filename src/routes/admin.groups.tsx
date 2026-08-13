@@ -253,6 +253,19 @@ function GroupsPage() {
           : `${eligible.length} eligible candidate(s) · ${groupCount} group(s) of ~${size}`}
       </div>
 
+      <div className="mt-4 max-w-3xl rounded-sm border border-rule bg-card p-4 text-xs leading-relaxed text-muted-foreground">
+        <span className="font-medium text-foreground">AI total eval</span> is each
+        applicant's composite score (0–10). It blends five AI-graded dimensions with
+        these weights: <span className="text-amber-600">Shipping 30%</span> (shipped
+        end-to-end work), <span className="text-violet-600">Curiosity 25%</span> (genuine AI
+        insight), <span className="text-sky-600">Fit 20%</span> (self-awareness),{" "}
+        <span className="text-emerald-600">Communication 15%</span> (clear English), and{" "}
+        <span className="text-[#DE3D4D]">Portfolio 10%</span> (real project links). The{" "}
+        <span className="font-medium text-foreground">group average</span> shown per card is
+        the mean of its members' composite scores — a quick read on overall team
+        strength. Each candidate's coloured tag shows their single strongest dimension.
+      </div>
+
       <AnimatePresence>
         {drawing && (
           <motion.div
@@ -292,7 +305,7 @@ function GroupsPage() {
                 <div className="flex items-baseline justify-between">
                   <h2 className="serif text-2xl">Group {i + 1}</h2>
                   <span className="text-xs text-muted-foreground">
-                    avg{" "}
+                    AI total eval{" "}
                     {(
                       g.reduce((s, c) => s + (c.total_score ?? 0), 0) / Math.max(1, g.length)
                     ).toFixed(1)}
@@ -311,18 +324,13 @@ function GroupsPage() {
                         <div className="truncate text-sm font-medium">{c.full_name}</div>
                         <div className="truncate text-xs text-muted-foreground">{c.email}</div>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span
-                          className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide ${
-                            DIM_COLORS[c.strength ?? "unknown"] ?? DIM_COLORS.unknown
-                          }`}
-                        >
-                          {c.strength ?? "—"}
-                        </span>
-                        <span className="serif text-lg">
-                          {c.total_score != null ? c.total_score.toFixed(1) : "—"}
-                        </span>
-                      </div>
+                      <span
+                        className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide ${
+                          DIM_COLORS[c.strength ?? "unknown"] ?? DIM_COLORS.unknown
+                        }`}
+                      >
+                        {c.strength ?? "—"}
+                      </span>
                     </motion.li>
                   ))}
                 </ul>
