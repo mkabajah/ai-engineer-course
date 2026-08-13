@@ -45,6 +45,7 @@ function AdminLayout() {
           <Link to="/admin/dashboard" className="serif text-lg">AI Accelerator — Admin</Link>
           <nav className="flex items-center gap-6 text-xs uppercase tracking-widest text-muted-foreground">
             <Link to="/admin/dashboard" activeProps={{ className: "text-foreground" }}>Candidates</Link>
+            <Link to="/admin/groups" activeProps={{ className: "text-foreground" }}>Groups</Link>
             <Link to="/admin/questions" activeProps={{ className: "text-foreground" }}>Questions</Link>
             <Link to="/admin/admins" activeProps={{ className: "text-foreground" }}>Admins</Link>
             <button
