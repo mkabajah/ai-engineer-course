@@ -253,6 +253,19 @@ function GroupsPage() {
           : `${eligible.length} eligible candidate(s) · ${groupCount} group(s) of ~${size}`}
       </div>
 
+      <div className="mt-4 max-w-3xl rounded-sm border border-rule bg-card p-4 text-xs leading-relaxed text-muted-foreground">
+        <span className="font-medium text-foreground">AI total eval</span> is each
+        applicant's composite score (0–10). It blends five AI-graded dimensions with
+        these weights: <span className="text-amber-600">Shipping 30%</span> (shipped
+        end-to-end work), <span className="text-violet-600">Curiosity 25%</span> (genuine AI
+        insight), <span className="text-sky-600">Fit 20%</span> (self-awareness),{" "}
+        <span className="text-emerald-600">Communication 15%</span> (clear English), and{" "}
+        <span className="text-[#DE3D4D]">Portfolio 10%</span> (real project links). The{" "}
+        <span className="font-medium text-foreground">group average</span> shown per card is
+        the mean of its members' composite scores — a quick read on overall team
+        strength. Each candidate's coloured tag shows their single strongest dimension.
+      </div>
+
       <AnimatePresence>
         {drawing && (
           <motion.div
