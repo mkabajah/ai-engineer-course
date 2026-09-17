@@ -128,6 +128,50 @@ export const getMySubmission = createServerFn({ method: "POST" })
     return row ?? null;
   });
 
+export type LeaderboardRow = {
+  id: string;
+  participant_name: string;
+  github_username: string;
+  repo_full_name: string | null;
+  eval_status: string;
+  points: number | null;
+  is_final: boolean;
+  merge_state: string | null;
+  updated_at: string;
+};
+
+export const getLeaderboard = createServerFn({ method: "GET" })
+  .inputValidator((input: { slug: string }) =>
+    z.object({ slug: z.string().min(1).max(60) }).parse(input),
+  )
+  .handler(async ({ data }): Promise<LeaderboardRow[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: challenge } = await supabaseAdmin
+      .from("challenges")
+      .select("id")
+      .eq("slug", data.slug)
+      .maybeSingle();
+    if (!challenge) return [];
+    const { data: rows } = await supabaseAdmin
+      .from("challenge_submissions")
+      .select(
+        "id, participant_name, github_username, repo_full_name, eval_status, ai_score, instructor_score, merge_state, updated_at",
+      )
+      .eq("challenge_id", challenge.id)
+      .order("updated_at", { ascending: true });
+    return (rows ?? []).map((r: any) => ({
+      id: r.id,
+      participant_name: r.participant_name,
+      github_username: r.github_username,
+      repo_full_name: r.repo_full_name,
+      eval_status: r.eval_status,
+      points: r.instructor_score ?? r.ai_score ?? null,
+      is_final: r.instructor_score != null,
+      merge_state: r.merge_state,
+      updated_at: r.updated_at,
+    }));
+  });
+
 /* ------------------------------- submission ------------------------------- */
 
 const SubmitInput = z.object({
