@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowUpRight, Check, Github, Lightbulb, Sparkles } from "lucide-react";
+import { ArrowUpRight, Bot, Check, CircleCheck, FileCode2, Github, Lightbulb, ScanSearch, Sparkles } from "lucide-react";
 import { ChallengeCountdown } from "@/components/ChallengeCountdown";
 import { getChallenge, getMySubmission, submitEntry, type PublicChallenge } from "@/lib/challenge.functions";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,68 @@ const PROJECT_GUIDE: Record<string, { bestFor: string; challenge: string; setup:
   },
 };
 
+const REVIEW_STAGES = [
+  { label: "Validating your GitHub link", detail: "Confirming the pull request or commit is public and readable.", icon: Github },
+  { label: "Fetching the change", detail: "Loading repository context and the changed files from GitHub.", icon: ScanSearch },
+  { label: "Reading the actual diff", detail: "Looking at what changed—not judging by size or title.", icon: FileCode2 },
+  { label: "Evaluating quality fairly", detail: "Checking usefulness, focus, verification, relevance, and clarity.", icon: Bot },
+  { label: "Preparing your review", detail: "Calibrating the provisional mark and confidence level.", icon: Sparkles },
+];
+
+function ReviewProgress({ startedAt }: { startedAt: number }) {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 700);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const elapsed = Math.max(0, now - startedAt);
+  const activeIndex = Math.min(REVIEW_STAGES.length - 1, Math.floor(elapsed / 3200));
+
+  return (
+    <div className="ai-review-panel overflow-hidden rounded-md border border-primary/30 bg-card" role="status" aria-live="polite">
+      <div className="relative border-b border-rule px-5 py-5 sm:px-6">
+        <div className="ai-review-scan" aria-hidden="true" />
+        <div className="relative flex items-start gap-4">
+          <div className="ai-review-orbit grid h-12 w-12 shrink-0 place-items-center rounded-full border border-primary/30 bg-background text-primary">
+            <Bot className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <p className="label-eyebrow text-primary">AI review in progress</p>
+            <h3 className="mt-1 text-xl sm:text-2xl">Analyzing your contribution</h3>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              The evaluator is reading the GitHub diff and gathering evidence for a fair provisional mark.
+            </p>
+          </div>
+        </div>
+      </div>
+      <ol className="grid gap-0 px-5 py-3 sm:px-6">
+        {REVIEW_STAGES.map((stage, index) => {
+          const Icon = stage.icon;
+          const done = index < activeIndex;
+          const active = index === activeIndex;
+          return (
+            <li key={stage.label} className={`ai-review-step flex gap-3 border-b border-rule py-3 last:border-0 ${active ? "is-active" : ""}`}>
+              <span className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border ${done ? "border-emerald-300 bg-emerald-100 text-emerald-700" : active ? "border-primary bg-primary/10 text-primary" : "border-rule bg-background text-muted-foreground"}`}>
+                {done ? <CircleCheck className="h-4 w-4" aria-hidden="true" /> : <Icon className="h-3.5 w-3.5" aria-hidden="true" />}
+              </span>
+              <span className="min-w-0">
+                <span className={`block text-sm font-semibold ${index > activeIndex ? "text-muted-foreground" : "text-foreground"}`}>{stage.label}</span>
+                {(active || done) && <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{stage.detail}</span>}
+              </span>
+              {active && <span className="ai-review-dots ml-auto mt-2 shrink-0" aria-hidden="true"><i /><i /><i /></span>}
+            </li>
+          );
+        })}
+      </ol>
+      <p className="border-t border-rule bg-background/70 px-5 py-3 text-xs leading-relaxed text-muted-foreground sm:px-6">
+        Contribution size does not earn points by itself. A focused, useful, well-verified fix can score higher than a large change.
+      </p>
+    </div>
+  );
+}
+
 function tokenKey(slug: string) {
   return `challenge-token-${slug}`;
 }
@@ -153,6 +215,7 @@ function ChallengePage() {
   const [username, setUsername] = useState("");
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
+  const [analysisStartedAt, setAnalysisStartedAt] = useState<number | null>(null);
 
   // load + poll challenge (keeps everyone on the instructor's clock)
   useEffect(() => {
@@ -233,6 +296,7 @@ function ChallengePage() {
     e.preventDefault();
     if (busy) return;
     setBusy(true);
+    setAnalysisStartedAt(Date.now());
     try {
       const token = localStorage.getItem(tokenKey(slug));
       const res = await submitEntry({
@@ -251,6 +315,7 @@ function ChallengePage() {
       toast.error((err as Error).message);
     } finally {
       setBusy(false);
+      setAnalysisStartedAt(null);
     }
   }
 
@@ -464,6 +529,12 @@ function ChallengePage() {
               </form>
             </section>
 
+            {busy && analysisStartedAt !== null && (
+              <section className="challenge-reveal" aria-label="AI contribution review">
+                <ReviewProgress startedAt={analysisStartedAt} />
+              </section>
+            )}
+
             {/* confirmation */}
             {submission && (
               <section>
@@ -493,9 +564,7 @@ function ChallengePage() {
                     {submission.link_url}
                   </a>
                   {submission.eval_status === "evaluating" && (
-                    <p className="text-sm text-muted-foreground">
-                      Reading the diff on GitHub and reviewing it… this usually takes under a minute.
-                    </p>
+                    <ReviewProgress startedAt={analysisStartedAt ?? Date.now()} />
                   )}
                   {submission.ai_review && (
                     <div className="rounded-sm bg-card p-4">
