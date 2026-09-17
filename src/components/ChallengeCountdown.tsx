@@ -41,13 +41,21 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
               ? "focused"
               : "calm";
   const color = `var(--timer-${urgency})`;
+  const animate = finalPush && !reduced;
 
   const R = 132;
   const C = 2 * Math.PI * R;
 
   return (
-    <div className="relative mx-auto w-full max-w-[340px]">
-      {finalPush && !reduced && (
+    <div
+      className={`challenge-timer relative mx-auto w-full max-w-[340px]${animate ? " challenge-timer--critical" : ""}`}
+    >
+      {animate && <span className="timer-critical-glow" aria-hidden="true" />}
+      {animate &&
+        [0, 1, 2].map((i) => (
+          <span key={i} className="timer-burst-ring" aria-hidden="true" />
+        ))}
+      {!animate && (
         <span className="challenge-timer-pulse pointer-events-none absolute inset-0 -z-10 rounded-full bg-primary/10" />
       )}
       <svg viewBox="0 0 300 300" className="w-full" role="img" aria-label={`Time remaining ${mm}:${ss}`}>
@@ -65,19 +73,21 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
           transform="rotate(-90 150 150)"
           style={{ transition: reduced ? "none" : "stroke-dashoffset 0.9s linear, stroke 0.4s ease" }}
         />
-        <text
-          x="150"
-          y="150"
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontFamily="var(--font-mono)"
-          fontSize="70"
-          fontWeight="500"
-          fill={color}
-          style={{ fontVariantNumeric: "tabular-nums" }}
-        >
-          {`${mm}:${ss}`}
-        </text>
+        <g className={animate ? "timer-beat-text" : undefined}>
+          <text
+            x="150"
+            y="150"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontFamily="var(--font-mono)"
+            fontSize="70"
+            fontWeight="500"
+            fill={color}
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
+            {`${mm}:${ss}`}
+          </text>
+        </g>
         <text
           x="150"
           y="205"
