@@ -565,6 +565,27 @@ export const adminSaveSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const adminClearSubmissions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { slug: string; resetTimer?: boolean }) =>
+    z.object({ slug: z.string().min(1).max(60), resetTimer: z.boolean().optional() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin.from("challenges").select("id").eq("slug", data.slug).maybeSingle();
+    if (!row) throw new Error("Challenge not found");
+    const { error } = await supabaseAdmin.from("challenge_submissions").delete().eq("challenge_id", row.id);
+    if (error) throw new Error(error.message);
+    if (data.resetTimer !== false) {
+      await supabaseAdmin
+        .from("challenges")
+        .update({ state: "not_started", start_at: null, end_at: null, paused_at: null })
+        .eq("id", row.id);
+    }
+    return { ok: true };
+  });
+
 export const adminControl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { slug: string; action: string; minutes?: number }) =>
