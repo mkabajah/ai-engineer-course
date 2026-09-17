@@ -331,11 +331,16 @@
   }
   .motivation-track,
   .challenge-timer-pulse,
+  .timer-critical-glow,
+  .timer-burst-ring,
+  .timer-beat-text,
+  .challenge-timer--critical,
   .ai-review-scan,
   .ai-review-orbit,
   .ai-review-dots i {
     animation: none;
   }
+  .challenge-timer--critical { transform: none; }
   .ai-review-step { transition: none; }
   .ai-review-step.is-active { transform: none; }
 }
