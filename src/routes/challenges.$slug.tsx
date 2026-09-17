@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowUpRight, Bot, Check, CircleCheck, FileCode2, Github, Lightbulb, ScanSearch, Sparkles } from "lucide-react";
+import { ArrowUpRight, Bot, Check, CircleCheck, FileCode2, Github, Lightbulb, ScanSearch, Sparkles, Trophy } from "lucide-react";
 import { ChallengeCountdown } from "@/components/ChallengeCountdown";
-import { getChallenge, getMySubmission, submitEntry, type PublicChallenge } from "@/lib/challenge.functions";
+import {
+  getChallenge,
+  getLeaderboard,
+  getMySubmission,
+  submitEntry,
+  type LeaderboardRow,
+  type PublicChallenge,
+} from "@/lib/challenge.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -199,6 +206,119 @@ function ReviewProgress({ startedAt }: { startedAt: number }) {
   );
 }
 
+type SortKey = "points" | "name" | "status";
+
+function Leaderboard({ rows, highlightId }: { rows: LeaderboardRow[]; highlightId?: string | null }) {
+  const [sort, setSort] = useState<SortKey>("points");
+  const [asc, setAsc] = useState(false);
+
+  const sorted = useMemo(() => {
+    const copy = [...rows];
+    copy.sort((a, b) => {
+      let d = 0;
+      if (sort === "points") d = (a.points ?? -1) - (b.points ?? -1);
+      else if (sort === "name") d = a.participant_name.localeCompare(b.participant_name);
+      else d = a.eval_status.localeCompare(b.eval_status);
+      if (d === 0) d = (a.points ?? -1) - (b.points ?? -1);
+      return asc ? d : -d;
+    });
+    return copy;
+  }, [rows, sort, asc]);
+
+  function toggle(key: SortKey) {
+    if (key === sort) setAsc((v) => !v);
+    else {
+      setSort(key);
+      setAsc(key === "name");
+    }
+  }
+
+  const arrow = (key: SortKey) => (sort === key ? (asc ? "↑" : "↓") : "");
+
+  return (
+    <section className="challenge-reveal rounded-2xl border border-rule bg-card p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="label-eyebrow flex items-center gap-2">
+          <Trophy className="h-4 w-4 text-primary" /> Leaderboard
+        </h2>
+        <span className="text-xs text-muted-foreground">
+          {rows.length} participant{rows.length === 1 ? "" : "s"}
+        </span>
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">No submissions yet — be the first on the board.</p>
+      ) : (
+        <div className="-mx-5 mt-4 overflow-x-auto sm:mx-0">
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-rule text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-2 font-medium">#</th>
+                <th className="px-3 py-2 font-medium">
+                  <button type="button" onClick={() => toggle("name")} className="hover:text-foreground">
+                    Participant {arrow("name")}
+                  </button>
+                </th>
+                <th className="px-3 py-2 font-medium">Project</th>
+                <th className="px-3 py-2 font-medium">
+                  <button type="button" onClick={() => toggle("status")} className="hover:text-foreground">
+                    Status {arrow("status")}
+                  </button>
+                </th>
+                <th className="px-3 py-2 text-right font-medium">
+                  <button type="button" onClick={() => toggle("points")} className="hover:text-foreground">
+                    Points {arrow("points")}
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((r, i) => (
+                <tr
+                  key={r.id}
+                  className={`border-b border-rule/60 last:border-0 ${
+                    r.id === highlightId ? "bg-primary/5" : ""
+                  }`}
+                >
+                  <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{i + 1}</td>
+                  <td className="px-3 py-2">
+                    <div className="font-medium">{r.participant_name}</div>
+                    <div className="text-xs text-muted-foreground">@{r.github_username}</div>
+                  </td>
+                  <td className="px-3 py-2 text-xs text-muted-foreground">{r.repo_full_name ?? "—"}</td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${
+                        EVAL_STYLE[r.eval_status] ?? "border-slate-200 bg-slate-100 text-slate-600"
+                      }`}
+                    >
+                      {EVAL_LABEL[r.eval_status] ?? r.eval_status}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    {r.points == null ? (
+                      <span className="text-muted-foreground">—</span>
+                    ) : (
+                      <span className="font-mono text-base font-semibold">
+                        {r.points}
+                        <span className="text-xs text-muted-foreground">/100</span>
+                        {r.is_final && <span className="ml-1 text-[10px] uppercase text-primary">final</span>}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p className="mt-3 px-1 text-xs text-muted-foreground">
+        AI scores are provisional until your instructor confirms them — confirmed marks are labelled final.
+      </p>
+    </section>
+  );
+}
+
 function tokenKey(slug: string) {
   return `challenge-token-${slug}`;
 }
@@ -217,6 +337,7 @@ function ChallengePage() {
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [analysisStartedAt, setAnalysisStartedAt] = useState<number | null>(null);
+  const [board, setBoard] = useState<LeaderboardRow[]>([]);
 
   // load + poll challenge (keeps everyone on the instructor's clock)
   useEffect(() => {
@@ -241,6 +362,23 @@ function ChallengePage() {
     };
     load();
     const iv = setInterval(load, 5000);
+    return () => {
+      alive = false;
+      clearInterval(iv);
+    };
+  }, [slug]);
+
+  // leaderboard
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      getLeaderboard({ data: { slug } })
+        .then((rows) => {
+          if (alive) setBoard(rows);
+        })
+        .catch(() => {});
+    load();
+    const iv = setInterval(load, 8000);
     return () => {
       alive = false;
       clearInterval(iv);
@@ -598,6 +736,8 @@ function ChallengePage() {
                 </div>
               </section>
             )}
+
+            <Leaderboard rows={board} highlightId={submission?.id} />
           </div>
 
           {/* timer */}
