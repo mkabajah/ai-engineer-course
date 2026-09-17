@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   remainingMs: number;
   totalMs: number;
   state: "not_started" | "live" | "paused" | "finished";
+  className?: string;
 };
 
 function useReducedMotion() {
@@ -18,7 +20,7 @@ function useReducedMotion() {
   return reduced;
 }
 
-export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
+export function ChallengeCountdown({ remainingMs, totalMs, state, className }: Props) {
   const reduced = useReducedMotion();
   const clamped = Math.max(0, remainingMs);
   const pct = totalMs > 0 ? Math.max(0, Math.min(1, clamped / totalMs)) : 0;
@@ -48,7 +50,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
 
   return (
     <div
-      className={`challenge-timer relative mx-auto w-full max-w-[340px]${animate ? " challenge-timer--critical" : ""}`}
+      className={cn("challenge-timer relative mx-auto w-full max-w-[340px]", animate && "challenge-timer--critical", className)}
     >
       {animate && <span className="timer-critical-glow" aria-hidden="true" />}
       {animate &&
