@@ -455,7 +455,12 @@ export const adminControl = createServerFn({ method: "POST" })
     const { data: row } = await supabaseAdmin.from("challenges").select("*").eq("slug", data.slug).maybeSingle();
     if (!row) throw new Error("Challenge not found");
     const now = new Date();
-    let patch: Record<string, unknown> = {};
+    let patch: {
+      state?: string;
+      start_at?: string | null;
+      end_at?: string | null;
+      paused_at?: string | null;
+    } = {};
 
     switch (data.action) {
       case "start": {
