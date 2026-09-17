@@ -737,7 +737,16 @@ function ChallengePage() {
               </section>
             )}
 
-            <Leaderboard rows={board} highlightId={submission?.id} />
+            {closed ? (
+              <Leaderboard rows={board} highlightId={submission?.id} />
+            ) : (
+              <section className="challenge-reveal rounded-2xl border border-dashed border-rule bg-card/50 p-6 text-center">
+                <Trophy className="mx-auto h-6 w-6 text-muted-foreground/50" aria-hidden="true" />
+                <p className="mt-2 text-sm text-muted-foreground">
+                  The leaderboard appears here once the challenge finishes.
+                </p>
+              </section>
+            )}
           </div>
 
           {/* timer */}
