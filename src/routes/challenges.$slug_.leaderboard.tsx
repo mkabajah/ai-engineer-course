@@ -5,7 +5,7 @@ import { ChallengeLeaderboard } from "@/components/ChallengeLeaderboard";
 import { Button } from "@/components/ui/button";
 import { getChallenge, getLeaderboard, type LeaderboardRow, type PublicChallenge } from "@/lib/challenge.functions";
 
-export const Route = createFileRoute("/challenges/$slug/leaderboard")({
+export const Route = createFileRoute("/challenges/$slug_/leaderboard")({
   component: ChallengeLeaderboardPage,
   head: () => ({
     meta: [

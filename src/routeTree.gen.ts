@@ -20,7 +20,7 @@ import { Route as AdminGroupsRouteImport } from './routes/admin.groups'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
-import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug.leaderboard'
+import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
 
 const ThanksRoute = ThanksRouteImport.update({
@@ -80,9 +80,9 @@ const AdminAdminsRoute = AdminAdminsRouteImport.update({
 } as any)
 const ChallengesSlugLeaderboardRoute =
   ChallengesSlugLeaderboardRouteImport.update({
-    id: '/leaderboard',
-    path: '/leaderboard',
-    getParentRoute: () => ChallengesSlugRoute,
+    id: '/challenges/$slug_/leaderboard',
+    path: '/challenges/$slug/leaderboard',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/applications/$id',
@@ -101,7 +101,7 @@ export interface FileRoutesByFullPath {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
-  '/challenges/$slug': typeof ChallengesSlugRouteWithChildren
+  '/challenges/$slug': typeof ChallengesSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
@@ -116,7 +116,7 @@ export interface FileRoutesByTo {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
-  '/challenges/$slug': typeof ChallengesSlugRouteWithChildren
+  '/challenges/$slug': typeof ChallengesSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
@@ -132,9 +132,9 @@ export interface FileRoutesById {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
-  '/challenges/$slug': typeof ChallengesSlugRouteWithChildren
+  '/challenges/$slug': typeof ChallengesSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
-  '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
+  '/challenges/$slug_/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,7 +181,7 @@ export interface FileRouteTypes {
     | '/admin/questions'
     | '/challenges/$slug'
     | '/admin/applications/$id'
-    | '/challenges/$slug/leaderboard'
+    | '/challenges/$slug_/leaderboard'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -189,7 +189,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
   ThanksRoute: typeof ThanksRoute
-  ChallengesSlugRoute: typeof ChallengesSlugRouteWithChildren
+  ChallengesSlugRoute: typeof ChallengesSlugRoute
+  ChallengesSlugLeaderboardRoute: typeof ChallengesSlugLeaderboardRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -271,12 +272,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/challenges/$slug/leaderboard': {
-      id: '/challenges/$slug/leaderboard'
-      path: '/leaderboard'
+    '/challenges/$slug_/leaderboard': {
+      id: '/challenges/$slug_/leaderboard'
+      path: '/challenges/$slug/leaderboard'
       fullPath: '/challenges/$slug/leaderboard'
       preLoaderRoute: typeof ChallengesSlugLeaderboardRouteImport
-      parentRoute: typeof ChallengesSlugRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
@@ -310,24 +311,13 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface ChallengesSlugRouteChildren {
-  ChallengesSlugLeaderboardRoute: typeof ChallengesSlugLeaderboardRoute
-}
-
-const ChallengesSlugRouteChildren: ChallengesSlugRouteChildren = {
-  ChallengesSlugLeaderboardRoute: ChallengesSlugLeaderboardRoute,
-}
-
-const ChallengesSlugRouteWithChildren = ChallengesSlugRoute._addFileChildren(
-  ChallengesSlugRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
   ThanksRoute: ThanksRoute,
-  ChallengesSlugRoute: ChallengesSlugRouteWithChildren,
+  ChallengesSlugRoute: ChallengesSlugRoute,
+  ChallengesSlugLeaderboardRoute: ChallengesSlugLeaderboardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
