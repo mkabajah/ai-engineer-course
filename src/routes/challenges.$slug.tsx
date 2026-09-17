@@ -41,6 +41,7 @@ type Submission = {
   merge_state: string | null;
   instructor_score: number | null;
   instructor_notes: string | null;
+  updated_at?: string;
 };
 
 const STATE_STYLE: Record<string, string> = {
@@ -260,6 +261,7 @@ function ChallengePage() {
       .then((s) => {
         if (s) {
           setSubmission(s as Submission);
+          if (s.eval_status === "evaluating") setAnalysisStartedAt(Date.now());
           setName(s.participant_name);
           setUsername(s.github_username);
           setUrl(s.link_url);
@@ -564,10 +566,10 @@ function ChallengePage() {
                     {submission.link_url}
                   </a>
                   {submission.eval_status === "evaluating" && (
-                    <ReviewProgress startedAt={analysisStartedAt ?? Date.now()} />
+                    <ReviewProgress startedAt={analysisStartedAt ?? new Date(submission.updated_at ?? Date.now()).getTime()} />
                   )}
                   {submission.ai_review && (
-                    <div className="rounded-sm bg-card p-4">
+                    <div className="challenge-reveal rounded-sm bg-card p-4">
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <span className="label-eyebrow">Provisional review</span>
                         {submission.instructor_score != null ? (
