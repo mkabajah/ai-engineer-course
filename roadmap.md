@@ -7,3 +7,5 @@
 - [x] Keep submissions open to other public GitHub projects.
 - [x] Show animated GitHub fetching and AI review stages after submission.
 - [x] Apply a transparent, evidence-based 100-point PR evaluation rubric.
+- [x] Enlarge and raise the participant countdown without changing admin.
+- [x] Add a dedicated animated challenge leaderboard page and entry button.
