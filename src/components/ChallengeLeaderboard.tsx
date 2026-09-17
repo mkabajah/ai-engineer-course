@@ -87,7 +87,6 @@ export function ChallengeLeaderboard({ rows, highlightId, featured = false }: Pr
               <article
                 key={row.id}
                 className={`leaderboard-podium-card border border-rule bg-background p-4 text-center ${place === 1 ? "sm:order-2 sm:pb-7 sm:pt-7" : place === 2 ? "sm:order-1" : "sm:order-3"}`}
-                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className={`mx-auto grid place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary ${place === 1 ? "h-14 w-14" : "h-11 w-11"}`}>
                   {place === 1 ? <Trophy className="h-6 w-6" /> : place === 2 ? <Medal className="h-5 w-5" /> : <Award className="h-5 w-5" />}

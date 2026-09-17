@@ -231,6 +231,9 @@
   animation: leaderboard-rise 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+.leaderboard-podium-card:nth-child(2) { animation-delay: 100ms; }
+.leaderboard-podium-card:nth-child(3) { animation-delay: 200ms; }
+
 .challenge-reveal {
   animation: challenge-reveal 0.6s ease-out both;
 }
