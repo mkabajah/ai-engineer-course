@@ -30,7 +30,7 @@ function ChallengeLeaderboardPage() {
       const [nextChallenge, nextRows] = await Promise.all([
         getChallenge({ data: { slug } }),
         getLeaderboard({ data: { slug } }),
-      ]).catch(() => [null, []] as const);
+      ]).catch((): [PublicChallenge | null, LeaderboardRow[]] => [null, []]);
       if (!alive) return;
       setChallenge(nextChallenge);
       setRows(nextRows);
