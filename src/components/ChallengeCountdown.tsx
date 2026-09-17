@@ -48,7 +48,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
 
   return (
     <div
-      className={`challenge-timer relative mx-auto w-full max-w-[440px]${animate ? " challenge-timer--critical" : ""}`}
+      className={`challenge-timer relative mx-auto w-full max-w-[340px]${animate ? " challenge-timer--critical" : ""}`}
     >
       {animate && <span className="timer-critical-glow" aria-hidden="true" />}
       {animate &&
@@ -80,7 +80,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
             textAnchor="middle"
             dominantBaseline="central"
             fontFamily="var(--font-mono)"
-            fontSize="86"
+            fontSize="70"
             fontWeight="500"
             fill={color}
             style={{ fontVariantNumeric: "tabular-nums" }}
@@ -90,10 +90,10 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
         </g>
         <text
           x="150"
-          y="212"
+          y="205"
           textAnchor="middle"
           fontFamily="var(--font-sans)"
-          fontSize="14"
+          fontSize="13"
           letterSpacing="3"
           fill="var(--muted-foreground)"
         >
