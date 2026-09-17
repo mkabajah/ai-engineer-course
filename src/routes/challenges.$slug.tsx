@@ -751,7 +751,7 @@ function ChallengePage() {
 
           {/* timer */}
           <aside className="challenge-reveal order-1 [animation-delay:80ms] lg:order-2">
-            <div className="lg:sticky lg:top-8">
+            <div className="lg:sticky lg:top-2">
               <ChallengeCountdown remainingMs={live.remaining} totalMs={totalMs} state={state} />
               <p className="mt-4 text-center text-sm text-muted-foreground">
                 {state === "not_started"
