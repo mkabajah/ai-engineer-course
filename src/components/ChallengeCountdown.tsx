@@ -48,7 +48,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
 
   return (
     <div
-      className={`challenge-timer relative mx-auto w-full max-w-[340px]${animate ? " challenge-timer--critical" : ""}`}
+      className={`challenge-timer relative mx-auto w-full max-w-[440px]${animate ? " challenge-timer--critical" : ""}`}
     >
       {animate && <span className="timer-critical-glow" aria-hidden="true" />}
       {animate &&
