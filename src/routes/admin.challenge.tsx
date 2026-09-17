@@ -298,7 +298,7 @@ function AdminChallengePage() {
             </label>
 
             <div>
-              <span className="text-sm text-muted-foreground">Approved repositories</span>
+              <span className="text-sm text-muted-foreground">Suggested repositories</span>
               <div className="mt-2 space-y-2">
                 {repos.map((r, i) => (
                   <div key={i} className="flex flex-col gap-2 sm:flex-row">

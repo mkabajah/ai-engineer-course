@@ -69,6 +69,73 @@ const EVAL_STYLE: Record<string, string> = {
   needs_review: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
+const MOTIVATION_TERMS = [
+  "Use everything you learned",
+  "AI",
+  "MCP",
+  "Hooks",
+  "Agents",
+  "Kiro Specs",
+  "RAG",
+  "Claude Skills",
+  "Test the change",
+  "Keep the scope focused",
+  "Ship something useful",
+];
+
+const PROJECT_GUIDE: Record<string, { bestFor: string; challenge: string; setup: string }> = {
+  Sashiko: {
+    bestFor: "Embedded, Linux & AI agents",
+    challenge: "Review pipeline, provider handling, diagnostics",
+    setup: "Moderate — Rust build",
+  },
+  "MCP Python SDK": {
+    bestFor: "AI & backend engineers",
+    challenge: "MCP tools, transports, error handling",
+    setup: "Good — Python",
+  },
+  Gradio: {
+    bestFor: "AI application engineers",
+    challenge: "Components and MCP-facing UI",
+    setup: "Moderate — Python plus some frontend work",
+  },
+  "PlatformIO Core": {
+    bestFor: "Embedded engineers",
+    challenge: "CLI and project tooling",
+    setup: "Good — Python; select tasks needing no board",
+  },
+  marimo: {
+    bestFor: "AI, data & product engineers",
+    challenge: "Interactive notebook UI and Python components",
+    setup: "Moderate",
+  },
+  "Open Food Facts app": {
+    bestFor: "Product & mobile engineers",
+    challenge: "Small, visible app enhancements",
+    setup: "Heavy — prepare Flutter beforehand",
+  },
+  tldraw: {
+    bestFor: "Frontend & product engineers",
+    challenge: "Canvas UI and shared components",
+    setup: "Moderate — prepare the monorepo",
+  },
+  Grafana: {
+    bestFor: "Software & data engineers",
+    challenge: "Query editor and dashboard behavior",
+    setup: "Heavy — run focused frontend checks",
+  },
+  Penpot: {
+    bestFor: "Product & industrial engineers",
+    challenge: "Design canvas interactions",
+    setup: "Heavy",
+  },
+  PostHog: {
+    bestFor: "Product & full-stack engineers",
+    challenge: "Developer workflow and analytics UI",
+    setup: "Heavy",
+  },
+};
+
 function tokenKey(slug: string) {
   return `challenge-token-${slug}`;
 }
@@ -246,6 +313,17 @@ function ChallengePage() {
         </div>
       </header>
 
+      <div className="motivation-rail border-b border-rule bg-foreground text-background" aria-label="Challenge reminders">
+        <div className="motivation-track py-2.5">
+          {[...MOTIVATION_TERMS, ...MOTIVATION_TERMS].map((term, index) => (
+            <span key={`${term}-${index}`} className="flex shrink-0 items-center gap-3 whitespace-nowrap text-xs font-semibold uppercase tracking-widest">
+              <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+              {term}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
         <div className="challenge-reveal relative">
           <div className="mb-4 flex items-center gap-2 text-sm font-medium text-primary">
@@ -284,19 +362,31 @@ function ChallengePage() {
                 </p>
               ) : (
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {challenge.repos.map((r, index) => (
-                    <li key={r.url} className="challenge-project" style={{ animationDelay: `${160 + index * 45}ms` }}>
+                  {challenge.repos.map((r) => {
+                    const guide = PROJECT_GUIDE[r.name];
+                    return (
+                    <li key={r.url} className="challenge-project">
                       <a
                         href={r.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex min-h-14 items-center justify-between gap-3 rounded-md border border-rule bg-card px-4 py-3 text-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="group flex h-full min-h-36 flex-col items-start justify-between gap-4 rounded-md border border-rule bg-card px-4 py-4 text-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="min-w-0 break-words font-mono text-[13px]">{r.name}</span>
-                        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden="true" />
+                        <span className="flex w-full items-start justify-between gap-3">
+                          <span className="min-w-0 break-words font-mono text-sm font-semibold">{r.name}</span>
+                          <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden="true" />
+                        </span>
+                        {guide && (
+                          <span className="grid w-full gap-2 text-xs leading-relaxed text-muted-foreground">
+                            <span><strong className="font-semibold text-foreground">Best for:</strong> {guide.bestFor}</span>
+                            <span><strong className="font-semibold text-foreground">Try:</strong> {guide.challenge}</span>
+                            <span className="border-t border-rule pt-2"><strong className="font-semibold text-foreground">Setup:</strong> {guide.setup}</span>
+                          </span>
+                        )}
                       </a>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
               )}
               <div className="mt-3 flex gap-3 rounded-md border border-dashed border-primary/40 bg-primary/5 p-4">

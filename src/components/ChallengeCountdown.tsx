@@ -28,7 +28,19 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
   const ss = String(totalSec % 60).padStart(2, "0");
 
   const finalPush = state === "live" && clamped > 0 && clamped <= 5 * 60_000;
-  const color = state === "finished" || clamped === 0 ? "#DE3D4D" : finalPush ? "#DE3D4D" : "#182A47";
+  const urgency =
+    state === "finished" || clamped === 0
+      ? "finished"
+      : state === "paused"
+        ? "paused"
+        : finalPush
+          ? "critical"
+          : pct <= 0.35
+            ? "urgent"
+            : pct <= 0.7
+              ? "focused"
+              : "calm";
+  const color = `var(--timer-${urgency})`;
 
   const R = 132;
   const C = 2 * Math.PI * R;
@@ -36,10 +48,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
   return (
     <div className="relative mx-auto w-full max-w-[340px]">
       {finalPush && !reduced && (
-        <span
-          className="pointer-events-none absolute inset-0 -z-10 animate-ping rounded-full bg-[#DE3D4D]/10"
-          style={{ animationDuration: "1.8s" }}
-        />
+        <span className="challenge-timer-pulse pointer-events-none absolute inset-0 -z-10 rounded-full bg-primary/10" />
       )}
       <svg viewBox="0 0 300 300" className="w-full" role="img" aria-label={`Time remaining ${mm}:${ss}`}>
         <circle cx="150" cy="150" r={R} fill="none" stroke="var(--rule)" strokeWidth="10" />
@@ -67,7 +76,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
           fill={color}
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
-          {state === "not_started" ? `${mm}:${ss}` : `${mm}:${ss}`}
+          {`${mm}:${ss}`}
         </text>
         <text
           x="150"

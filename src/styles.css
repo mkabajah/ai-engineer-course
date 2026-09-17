@@ -69,6 +69,12 @@
   --border: var(--rule);
   --input: var(--rule);
   --ring: var(--primary);
+  --timer-calm: #182A47;
+  --timer-focused: #16796F;
+  --timer-urgent: #C57716;
+  --timer-critical: #DE3D4D;
+  --timer-finished: #DE3D4D;
+  --timer-paused: #C57716;
 
   --sidebar: var(--paper);
   --sidebar-foreground: var(--ink);
@@ -103,6 +109,12 @@
   --border: var(--rule);
   --input: var(--rule);
   --ring: var(--primary);
+  --timer-calm: #F5F7FB;
+  --timer-focused: #42C3B5;
+  --timer-urgent: #F0B45A;
+  --timer-critical: #FF6473;
+  --timer-finished: #FF6473;
+  --timer-paused: #F0B45A;
 }
 
 @layer base {
@@ -144,6 +156,16 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes motivation-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes challenge-timer-pulse {
+  0% { opacity: 0.35; transform: scale(0.94); }
+  70%, 100% { opacity: 0; transform: scale(1.1); }
+}
+
 .challenge-page {
   background-image:
     linear-gradient(to right, color-mix(in oklab, var(--rule) 28%, transparent) 1px, transparent 1px),
@@ -165,9 +187,31 @@
   animation: challenge-project-in 0.45s ease-out both;
 }
 
+.challenge-project:nth-child(2n) { animation-delay: 60ms; }
+.challenge-project:nth-child(3n) { animation-delay: 120ms; }
+
+.motivation-rail {
+  overflow: hidden;
+}
+
+.motivation-track {
+  display: flex;
+  width: max-content;
+  gap: 2.5rem;
+  animation: motivation-scroll 38s linear infinite;
+}
+
+.challenge-timer-pulse {
+  animation: challenge-timer-pulse 1.8s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .challenge-reveal,
   .challenge-project {
+    animation: none;
+  }
+  .motivation-track,
+  .challenge-timer-pulse {
     animation: none;
   }
 }
