@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ArrowUpRight, Check, Github, Lightbulb, Sparkles } from "lucide-react";
 import { ChallengeCountdown } from "@/components/ChallengeCountdown";
 import { getChallenge, getMySubmission, submitEntry, type PublicChallenge } from "@/lib/challenge.functions";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/challenges/$slug")({
@@ -225,10 +227,16 @@ function ChallengePage() {
   const notOpen = state === "not_started";
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="challenge-page min-h-screen overflow-hidden bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
-          <span className="label-eyebrow">AI Engineer Accelerator — Live Challenge</span>
+          <span className="label-eyebrow flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              {state === "live" && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />}
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            AI Engineer Accelerator — Live Challenge
+          </span>
           <span
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${STATE_STYLE[state]}`}
           >
@@ -239,10 +247,16 @@ function ChallengePage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
-        <h1 className="display text-4xl sm:text-6xl">{challenge.title}</h1>
-        {challenge.goal && (
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground sm:text-xl">{challenge.goal}</p>
-        )}
+        <div className="challenge-reveal relative">
+          <div className="mb-4 flex items-center gap-2 text-sm font-medium text-primary">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            Build something useful. Ship it today.
+          </div>
+          <h1 className="display max-w-4xl text-4xl sm:text-6xl lg:text-7xl">{challenge.title}</h1>
+          {challenge.goal && (
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">{challenge.goal}</p>
+          )}
+        </div>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
           {/* left column */}
@@ -256,33 +270,48 @@ function ChallengePage() {
               </section>
             )}
 
-            <section>
-              <h2 className="label-eyebrow">Approved repositories</h2>
+            <section className="challenge-reveal [animation-delay:120ms]">
+              <div className="flex items-center gap-2">
+                <Github className="h-5 w-5 text-primary" aria-hidden="true" />
+                <h2 className="label-eyebrow">Suggested projects</h2>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Pick one of these projects, or bring another public open-source project that interests you.
+              </p>
               {challenge.repos.length === 0 ? (
                 <p className="mt-3 text-sm text-muted-foreground">
-                  No repositories have been published yet — your instructor will add them shortly.
+                  No suggestions have been published yet — you can still choose any public open-source project.
                 </p>
               ) : (
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {challenge.repos.map((r) => (
-                    <li key={r.url}>
+                  {challenge.repos.map((r, index) => (
+                    <li key={r.url} className="challenge-project" style={{ animationDelay: `${160 + index * 45}ms` }}>
                       <a
                         href={r.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between gap-3 rounded-sm border border-rule bg-card px-3 py-2.5 text-sm transition-colors hover:border-[#DE3D4D]/50"
+                        className="group flex min-h-14 items-center justify-between gap-3 rounded-md border border-rule bg-card px-4 py-3 text-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <span className="truncate font-mono text-[13px]">{r.name}</span>
-                        <span className="shrink-0 text-xs text-muted-foreground group-hover:text-[#DE3D4D]">↗</span>
+                        <span className="min-w-0 break-words font-mono text-[13px]">{r.name}</span>
+                        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden="true" />
                       </a>
                     </li>
                   ))}
                 </ul>
               )}
+              <div className="mt-3 flex gap-3 rounded-md border border-dashed border-primary/40 bg-primary/5 p-4">
+                <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold">Something else in mind?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    You are not limited to this list. Choose any public GitHub repository, make a useful change, then submit its pull request or commit link below.
+                  </p>
+                </div>
+              </div>
             </section>
 
             {/* submission form */}
-            <section id="submit">
+            <section id="submit" className="challenge-reveal [animation-delay:220ms]">
               <h2 className="label-eyebrow">{submission ? "Update your submission" : "Submit your work"}</h2>
               <form onSubmit={handleSubmit} className="mt-3 space-y-4 rounded-sm border border-rule bg-card p-5">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -321,10 +350,11 @@ function ChallengePage() {
                     className="mt-1 bg-background font-mono text-[13px]"
                   />
                 </label>
-                <button
+                <Button
                   type="submit"
                   disabled={busy || closed || notOpen}
-                  className="inline-flex w-full items-center justify-center rounded-sm bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity disabled:opacity-40 sm:w-auto"
+                  size="lg"
+                  className="w-full sm:w-auto"
                 >
                   {busy
                     ? "Checking your link…"
@@ -334,8 +364,9 @@ function ChallengePage() {
                         ? "Submissions closed"
                         : submission
                           ? "Update submission"
-                          : "Submit"}
-                </button>
+                           : "Submit"}
+                  {!busy && !closed && !notOpen && <Check className="h-4 w-4" aria-hidden="true" />}
+                </Button>
                 <p className="text-xs text-muted-foreground">
                   You can keep updating your own submission until the timer ends. Each pull request or commit can
                   only be submitted once.
@@ -409,7 +440,7 @@ function ChallengePage() {
           </div>
 
           {/* timer */}
-          <aside className="order-1 lg:order-2">
+          <aside className="challenge-reveal order-1 [animation-delay:80ms] lg:order-2">
             <div className="lg:sticky lg:top-8">
               <ChallengeCountdown remainingMs={live.remaining} totalMs={totalMs} state={state} />
               <p className="mt-4 text-center text-sm text-muted-foreground">
