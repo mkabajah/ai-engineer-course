@@ -80,7 +80,7 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
             textAnchor="middle"
             dominantBaseline="central"
             fontFamily="var(--font-mono)"
-            fontSize="70"
+            fontSize="86"
             fontWeight="500"
             fill={color}
             style={{ fontVariantNumeric: "tabular-nums" }}
@@ -90,10 +90,10 @@ export function ChallengeCountdown({ remainingMs, totalMs, state }: Props) {
         </g>
         <text
           x="150"
-          y="205"
+          y="212"
           textAnchor="middle"
           fontFamily="var(--font-sans)"
-          fontSize="13"
+          fontSize="14"
           letterSpacing="3"
           fill="var(--muted-foreground)"
         >
