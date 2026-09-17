@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { ChallengeCountdown } from "@/components/ChallengeCountdown";
 import {
+  adminClearSubmissions,
   adminControl,
   adminDeleteSubmission,
   adminGetChallengeData,
@@ -127,6 +128,18 @@ function AdminChallengePage() {
       await adminControl({ data: { slug: SLUG, action, minutes } });
       await load(false);
       toast.success(`Challenge ${action}${action.endsWith("e") ? "d" : "ed"}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
+  async function clearAll() {
+    if (!confirm("Delete ALL submissions and reviews for this challenge and reset the timer? This cannot be undone.")) return;
+    if (!confirm("Last check — every participant entry will be permanently removed. Continue?")) return;
+    try {
+      await adminClearSubmissions({ data: { slug: SLUG, resetTimer: true } });
+      await load(false);
+      toast.success("Challenge data cleared — ready to run again");
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -261,7 +274,16 @@ function AdminChallengePage() {
             >
               Reset
             </button>
+            <button
+              onClick={clearAll}
+              className="rounded-sm border border-[#DE3D4D]/40 bg-[#DE3D4D]/5 px-3 py-2 text-[#DE3D4D]"
+            >
+              Clear all submissions
+            </button>
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Clearing removes every submission and review, and resets the timer so you can run the challenge again.
+          </p>
         </div>
 
         {/* settings */}
