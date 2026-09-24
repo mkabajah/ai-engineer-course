@@ -9,3 +9,5 @@
 - [x] Apply a transparent, evidence-based 100-point PR evaluation rubric.
 - [x] Enlarge and raise the participant countdown without changing admin.
 - [x] Add a dedicated animated challenge leaderboard page and entry button.
+
+- [x] Challenge #2: Claude Code Architect exam simulation (75 Qs, 90 min, admin Exam tab)
