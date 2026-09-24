@@ -282,6 +282,71 @@ export type Database = {
         }
         Relationships: []
       }
+      exam_attempts: {
+        Row: {
+          answers: Json
+          challenge_id: string
+          created_at: string
+          domain_scores: Json | null
+          edit_token: string
+          email: string
+          id: string
+          mcq_points: number | null
+          participant_name: string
+          passed: boolean | null
+          status: string
+          submitted_at: string | null
+          task_feedback: Json | null
+          task_points: number | null
+          total_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          challenge_id: string
+          created_at?: string
+          domain_scores?: Json | null
+          edit_token?: string
+          email: string
+          id?: string
+          mcq_points?: number | null
+          participant_name: string
+          passed?: boolean | null
+          status?: string
+          submitted_at?: string | null
+          task_feedback?: Json | null
+          task_points?: number | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          challenge_id?: string
+          created_at?: string
+          domain_scores?: Json | null
+          edit_token?: string
+          email?: string
+          id?: string
+          mcq_points?: number | null
+          participant_name?: string
+          passed?: boolean | null
+          status?: string
+          submitted_at?: string | null
+          task_feedback?: Json | null
+          task_points?: number | null
+          total_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_questions: {
         Row: {
           active: boolean
