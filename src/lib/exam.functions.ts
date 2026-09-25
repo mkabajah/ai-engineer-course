@@ -4,19 +4,22 @@ import { z } from "zod";
 
 export type PublicQuestion = {
   id: string;
-  kind: "single" | "task";
+  kind: "single" | "multi" | "ordering" | "task";
   domain: string;
   domain_label: string;
   prompt: string;
   scenario?: string;
   choices?: string[];
   points: number;
+  presentation?: "terminal" | "architecture" | "code" | "incident" | "workflow";
+  exhibit?: string;
+  starter?: string;
 };
 
 export type ReviewItem = PublicQuestion & {
-  answer?: number;
+  answer?: number | number[];
   explanation: string;
-  your_answer: number | string | null;
+  your_answer: number | number[] | string | null;
   correct: boolean | null;
   earned: number;
   feedback?: string;
@@ -26,7 +29,7 @@ export type AttemptView = {
   id: string;
   participant_name: string;
   status: "in_progress" | "grading" | "graded" | "needs_review";
-  answers: Record<string, number | string>;
+  answers: Record<string, number | number[] | string>;
   submitted_at: string | null;
   total_score: number | null;
   passed: boolean | null;
@@ -34,7 +37,7 @@ export type AttemptView = {
   review: ReviewItem[] | null;
 };
 
-type Answers = Record<string, number | string>;
+type Answers = Record<string, number | number[] | string>;
 
 async function loadChallenge(slug: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -59,8 +62,11 @@ async function publicQuestions(): Promise<PublicQuestion[]> {
     domain_label: DOMAINS[q.domain],
     prompt: q.prompt,
     scenario: q.kind === "task" ? q.scenario : undefined,
-    choices: q.kind === "single" ? q.choices : undefined,
+    choices: q.kind !== "task" ? q.choices : undefined,
     points: q.points,
+    presentation: q.presentation,
+    exhibit: q.kind !== "task" ? q.exhibit : undefined,
+    starter: q.kind === "task" ? q.starter : undefined,
   }));
 }
 
@@ -127,7 +133,15 @@ async function gradeAttempt(attemptId: string) {
   let mcq = 0;
   for (const q of QUESTIONS) {
     domain[q.domain].total += q.points;
-    if (q.kind === "single" && answers[q.id] === q.answer) {
+    const submitted = answers[q.id];
+    const correct = q.kind === "single"
+      ? submitted === q.answer
+      : q.kind === "multi"
+        ? Array.isArray(submitted) && submitted.length === q.answers.length && [...submitted].sort().every((v, i) => v === [...q.answers].sort()[i])
+        : q.kind === "ordering"
+          ? Array.isArray(submitted) && submitted.length === q.answer.length && submitted.every((v, i) => v === q.answer[i])
+          : false;
+    if (q.kind !== "task" && correct) {
       mcq += q.points;
       domain[q.domain].earned += q.points;
     }
@@ -177,11 +191,18 @@ async function buildView(att: any, examFinished: boolean): Promise<AttemptView> 
         id: q.id, kind: q.kind, domain: q.domain, domain_label: DOMAINS[q.domain], prompt: q.prompt,
         points: q.points, explanation: q.explanation, your_answer: answers[q.id] ?? null,
       };
-      if (q.kind === "single") {
-        const ok = answers[q.id] === q.answer;
-        return { ...base, choices: q.choices, answer: q.answer, correct: ok, earned: ok ? q.points : 0 };
+       if (q.kind !== "task") {
+         const submitted = answers[q.id];
+         const answer = q.kind === "multi" ? q.answers : q.answer;
+         const ok = q.kind === "single"
+           ? submitted === answer
+           : Array.isArray(submitted) && Array.isArray(answer) && submitted.length === answer.length &&
+             (q.kind === "ordering"
+               ? submitted.every((v, i) => v === answer[i])
+               : [...submitted].sort().every((v, i) => v === [...answer].sort()[i]));
+         return { ...base, choices: q.choices, answer, correct: ok, earned: ok ? q.points : 0, presentation: q.presentation, exhibit: q.exhibit };
       }
-      return { ...base, scenario: q.scenario, correct: null, earned: fb[q.id]?.score ?? 0, feedback: fb[q.id]?.feedback };
+       return { ...base, scenario: q.scenario, starter: q.starter, presentation: q.presentation, correct: null, earned: fb[q.id]?.score ?? 0, feedback: fb[q.id]?.feedback };
     });
   }
   return {
@@ -252,7 +273,14 @@ export const getMyAttempt = createServerFn({ method: "POST" })
     return buildView(att, state === "finished");
   });
 
-const AnswersSchema = z.record(z.string().max(10), z.union([z.number().int().min(0).max(10), z.string().max(8000)]));
+const AnswersSchema = z.record(
+  z.string().max(10),
+  z.union([
+    z.number().int().min(0).max(20),
+    z.array(z.number().int().min(0).max(20)).max(20),
+    z.string().max(8000),
+  ]),
+);
 
 export const saveAnswers = createServerFn({ method: "POST" })
   .inputValidator((i) =>

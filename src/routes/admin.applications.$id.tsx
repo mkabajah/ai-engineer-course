@@ -5,7 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSignedVideoUrl, rescoreApplication, updateApplicationStage } from "@/lib/applications.functions";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/applications/$id")({ component: Detail });
+export const Route = createFileRoute("/admin/applications/$id")({
+  head: () => ({ meta: [
+    { title: "Candidate Review — Hasoub AI Accelerator Admin" },
+    { name: "description", content: "Review a candidate application and evaluation." },
+    { property: "og:title", content: "Candidate Review — Hasoub AI Accelerator Admin" },
+    { property: "og:description", content: "Review a candidate application and evaluation." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: Detail,
+});
 
 type App = Record<string, unknown> & { id: string; full_name: string };
 type Score = { dimension: string; score: number; rationale: string };

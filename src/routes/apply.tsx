@@ -13,7 +13,17 @@ import { VideoUploader } from "@/components/VideoUploader";
 import hasoubLogoAsset from "@/assets/hasoub-labs.png.asset.json";
 const hasoubLogo = hasoubLogoAsset.url;
 
-export const Route = createFileRoute("/apply")({ component: ApplyPage });
+export const Route = createFileRoute("/apply")({
+  head: () => ({ meta: [
+    { title: "Apply — Hasoub AI Engineer Accelerator" },
+    { name: "description", content: "Apply to join the Hasoub AI Engineer Accelerator." },
+    { property: "og:title", content: "Apply — Hasoub AI Engineer Accelerator" },
+    { property: "og:description", content: "Submit your application for the Hasoub AI Engineer Accelerator." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: ApplyPage,
+});
 
 type FormState = {
   full_name: string;

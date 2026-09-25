@@ -12,5 +12,5 @@
 
 - [x] Challenge #2: Claude Code Architect exam simulation (75 Qs, 90 min, admin Exam tab)
 
-- [ ] Make Challenge #2 a varied interactive exam with visual and hands-on question formats.
-- [ ] Consolidate Challenge #1 and Challenge #2 under one scalable admin Challenges area.
+- [x] Make Challenge #2 a varied interactive exam with visual and hands-on question formats.
+- [x] Consolidate Challenge #1 and Challenge #2 under one scalable admin Challenges area.

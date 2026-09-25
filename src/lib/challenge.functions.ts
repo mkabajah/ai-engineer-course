@@ -522,6 +522,37 @@ ${diff}
 
 /* --------------------------------- admin ---------------------------------- */
 
+export type AdminChallengeSummary = PublicChallenge & {
+  kind: "contribution" | "exam";
+  participant_count: number;
+  public_path: string;
+  manage_path: "/admin/challenge" | "/admin/exam";
+};
+
+export const adminListChallenges = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AdminChallengeSummary[]> => {
+    await requireAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin.from("challenges").select("*").order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return Promise.all(
+      (rows ?? []).map(async (row) => {
+        const isExam = (row as typeof row & { challenge_type?: string }).challenge_type === "exam" || row.slug === "claude-architect";
+        const table = isExam ? "exam_attempts" : "challenge_submissions";
+        const { count } = await supabaseAdmin.from(table).select("id", { count: "exact", head: true }).eq("challenge_id", row.id);
+        const challenge = normalizeChallenge(row, new Date(), count ?? 0);
+        return {
+          ...challenge,
+          kind: isExam ? "exam" : "contribution",
+          participant_count: count ?? 0,
+          public_path: isExam ? `/exams/${row.slug}` : `/challenges/${row.slug}`,
+          manage_path: isExam ? "/admin/exam" : "/admin/challenge",
+        };
+      }),
+    );
+  });
+
 export const adminGetChallengeData = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { slug: string }) => z.object({ slug: z.string().min(1).max(60) }).parse(input))

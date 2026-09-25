@@ -6,7 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/admins")({ component: Admins });
+export const Route = createFileRoute("/admin/admins")({
+  head: () => ({ meta: [
+    { title: "Administrators — Hasoub AI Accelerator" },
+    { name: "description", content: "Manage instructor access for the accelerator." },
+    { property: "og:title", content: "Administrators — Hasoub AI Accelerator" },
+    { property: "og:description", content: "Manage instructor access for the accelerator." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: Admins,
+});
 
 type Admin = { id: string; email: string; created_at: string };
 

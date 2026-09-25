@@ -20,6 +20,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminGroupsRouteImport } from './routes/admin.groups'
 import { Route as AdminExamRouteImport } from './routes/admin.exam'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
@@ -80,6 +81,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminChallengesRoute = AdminChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminChallengeRoute = AdminChallengeRouteImport.update({
   id: '/challenge',
   path: '/challenge',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
+  '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
+    | '/admin/challenges'
     | '/admin/dashboard'
     | '/admin/exam'
     | '/admin/groups'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
+    | '/admin/challenges'
     | '/admin/dashboard'
     | '/admin/exam'
     | '/admin/groups'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
+    | '/admin/challenges'
     | '/admin/dashboard'
     | '/admin/exam'
     | '/admin/groups'
@@ -297,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/challenges': {
+      id: '/admin/challenges'
+      path: '/challenges'
+      fullPath: '/admin/challenges'
+      preLoaderRoute: typeof AdminChallengesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/challenge': {
       id: '/admin/challenge'
       path: '/challenge'
@@ -331,6 +350,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
   AdminChallengeRoute: typeof AdminChallengeRoute
+  AdminChallengesRoute: typeof AdminChallengesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminExamRoute: typeof AdminExamRoute
   AdminGroupsRoute: typeof AdminGroupsRoute
@@ -342,6 +362,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminsRoute: AdminAdminsRoute,
   AdminChallengeRoute: AdminChallengeRoute,
+  AdminChallengesRoute: AdminChallengesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminExamRoute: AdminExamRoute,
   AdminGroupsRoute: AdminGroupsRoute,

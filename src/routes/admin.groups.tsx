@@ -5,7 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/groups")({ component: GroupsPage });
+export const Route = createFileRoute("/admin/groups")({
+  head: () => ({ meta: [
+    { title: "Candidate Groups — Hasoub AI Accelerator Admin" },
+    { name: "description", content: "Create balanced participant groups for the accelerator." },
+    { property: "og:title", content: "Candidate Groups — Hasoub AI Accelerator Admin" },
+    { property: "og:description", content: "Create balanced participant groups for the accelerator." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: GroupsPage,
+});
 
 type Candidate = {
   id: string;

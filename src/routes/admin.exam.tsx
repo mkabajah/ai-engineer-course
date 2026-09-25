@@ -5,7 +5,19 @@ import { Button } from "@/components/ui/button";
 import { adminControl, getChallenge, type PublicChallenge } from "@/lib/challenge.functions";
 import { adminClearExam, adminDeleteAttempt, adminGetExam, adminGradeAllOpen, adminGradeAttempt } from "@/lib/exam.functions";
 
-export const Route = createFileRoute("/admin/exam")({ component: AdminExamPage });
+export const Route = createFileRoute("/admin/exam")({
+  head: () => ({
+    meta: [
+      { title: "Claude Architect Exam — Hasoub Admin" },
+      { name: "description", content: "Manage the Claude Code Architect simulation." },
+      { property: "og:title", content: "Claude Architect Exam — Hasoub Admin" },
+      { property: "og:description", content: "Manage the Claude Code Architect simulation." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: AdminExamPage,
+});
 
 const SLUG = "claude-architect";
 
@@ -91,6 +103,7 @@ function AdminExamPage() {
     <main className="mx-auto max-w-7xl space-y-6 px-6 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
+          <Link to="/admin/challenges" className="mb-3 block text-xs text-muted-foreground underline underline-offset-4">← All challenges</Link>
           <div className="label-eyebrow text-primary">Challenge #2</div>
           <h1 className="serif text-3xl">Claude Code Architect Exam</h1>
           <Link to="/exams/$slug" params={{ slug: SLUG }} target="_blank" className="text-sm text-muted-foreground underline underline-offset-4">

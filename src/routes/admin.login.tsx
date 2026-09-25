@@ -5,7 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/login")({ component: AdminLogin });
+export const Route = createFileRoute("/admin/login")({
+  head: () => ({ meta: [
+    { title: "Admin Sign In — Hasoub AI Accelerator" },
+    { name: "description", content: "Secure instructor access for the Hasoub AI Accelerator." },
+    { property: "og:title", content: "Admin Sign In — Hasoub AI Accelerator" },
+    { property: "og:description", content: "Secure instructor access for the Hasoub AI Accelerator." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: AdminLogin,
+});
 
 function AdminLogin() {
   const navigate = useNavigate();

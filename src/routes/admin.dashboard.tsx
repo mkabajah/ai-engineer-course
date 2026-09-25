@@ -7,7 +7,17 @@ import { exportApplicationsCsv, deleteApplication } from "@/lib/admins.functions
 import { updateApplicationStage } from "@/lib/applications.functions";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/dashboard")({ component: Dashboard });
+export const Route = createFileRoute("/admin/dashboard")({
+  head: () => ({ meta: [
+    { title: "Candidates — Hasoub AI Accelerator Admin" },
+    { name: "description", content: "Review and manage accelerator candidates." },
+    { property: "og:title", content: "Candidates — Hasoub AI Accelerator Admin" },
+    { property: "og:description", content: "Review and manage accelerator candidates." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
+  component: Dashboard,
+});
 
 type Row = {
   id: string;

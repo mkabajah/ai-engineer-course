@@ -15,7 +15,19 @@ import {
   type Repo,
 } from "@/lib/challenge.functions";
 
-export const Route = createFileRoute("/admin/challenge")({ component: AdminChallengePage });
+export const Route = createFileRoute("/admin/challenge")({
+  head: () => ({
+    meta: [
+      { title: "Challenges — Hasoub AI Accelerator Admin" },
+      { name: "description", content: "Browse and manage live training challenges." },
+      { property: "og:title", content: "Challenges — Hasoub AI Accelerator Admin" },
+      { property: "og:description", content: "Browse and manage live training challenges." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: AdminChallengePage,
+});
 
 const SLUG = "1";
 
@@ -225,6 +237,7 @@ function AdminChallengePage() {
     <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
+          <Link to="/admin/challenges" className="mb-3 inline-block text-xs text-muted-foreground underline underline-offset-4">← All challenges</Link>
           <span className="label-eyebrow">Live challenge control</span>
           <h1 className="serif mt-1 text-3xl">{challenge.title}</h1>
         </div>

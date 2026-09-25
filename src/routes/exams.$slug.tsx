@@ -29,7 +29,8 @@ export const Route = createFileRoute("/exams/$slug")({
   component: ExamPage,
 });
 
-type Answers = Record<string, number | string>;
+type AnswerValue = number | number[] | string;
+type Answers = Record<string, AnswerValue>;
 
 const DOMAIN_INFO = [
   ["Agentic architecture & orchestration", "Agent loops, subagents, escalation, error propagation"],
@@ -209,7 +210,7 @@ function ExamPage() {
 
   const answeredCount = questions.filter((q) => {
     const a = answers[q.id];
-    return typeof a === "number" || (typeof a === "string" && a.trim().length > 0);
+    return typeof a === "number" || (Array.isArray(a) && a.length > 0) || (typeof a === "string" && a.trim().length > 0);
   }).length;
 
   const urgency = remaining < 5 * 60_000 ? "critical" : remaining < 15 * 60_000 ? "urgent" : "calm";
@@ -290,7 +291,7 @@ function ExamPage() {
                 <div className="grid grid-cols-10 gap-1 lg:grid-cols-8">
                   {questions.map((q, i) => {
                     const a = answers[q.id];
-                    const done = typeof a === "number" || (typeof a === "string" && a.trim().length > 0);
+                     const done = typeof a === "number" || (Array.isArray(a) && a.length > 0) || (typeof a === "string" && a.trim().length > 0);
                     return (
                       <button
                         key={q.id}
@@ -407,11 +408,11 @@ function QuestionCard(props: {
   q: PublicQuestion;
   index: number;
   total: number;
-  value: number | string | undefined;
+  value: AnswerValue | undefined;
   flagged: boolean;
   disabled: boolean;
   onFlag: () => void;
-  onChange: (v: number | string) => void;
+  onChange: (v: AnswerValue) => void;
   onPrev: () => void;
   onNext: () => void;
 }) {
@@ -424,10 +425,27 @@ function QuestionCard(props: {
         </span>
         <span>{q.kind === "task" ? `Hands-on · ${q.points} pts` : "1 pt"}</span>
       </div>
-      <h2 className="mt-4 text-xl font-semibold leading-snug sm:text-2xl">{q.prompt}</h2>
+      <div className="mt-3 flex items-center gap-2">
+        <span className="rounded-sm border border-rule bg-background px-2 py-1 font-mono text-[10px] uppercase text-muted-foreground">
+          {q.kind === "multi" ? "Select all" : q.kind === "ordering" ? "Sequence builder" : q.presentation ?? (q.kind === "task" ? "Workbench" : "Scenario")}
+        </span>
+      </div>
+      <h2 className="mt-3 text-xl font-semibold leading-snug sm:text-2xl">{q.prompt}</h2>
+      {q.exhibit && <QuestionExhibit type={q.presentation} content={q.exhibit} />}
       {q.kind === "task" ? (
         <>
           <p className="mt-3 whitespace-pre-line rounded-sm bg-muted/60 p-4 text-sm leading-relaxed">{q.scenario}</p>
+          {q.starter && (
+            <div className="mt-4 overflow-hidden rounded-sm border border-rule bg-foreground text-background">
+              <div className="flex items-center gap-1.5 border-b border-background/20 px-3 py-2">
+                <span className="h-2 w-2 rounded-full bg-destructive" />
+                <span className="h-2 w-2 rounded-full bg-[color:var(--timer-urgent)]" />
+                <span className="h-2 w-2 rounded-full bg-[color:var(--timer-focused)]" />
+                <span className="ml-2 font-mono text-[10px] uppercase opacity-70">Starter workspace</span>
+              </div>
+              <pre className="overflow-x-auto whitespace-pre-wrap p-4 font-mono text-xs leading-relaxed">{q.starter}</pre>
+            </div>
+          )}
           <textarea
             value={typeof value === "string" ? value : ""}
             onChange={(e) => props.onChange(e.target.value)}
@@ -439,23 +457,34 @@ function QuestionCard(props: {
           />
           <div className="text-right text-[11px] text-muted-foreground">{typeof value === "string" ? value.length : 0}/8000</div>
         </>
+      ) : q.kind === "ordering" ? (
+        <OrderingAnswer
+          choices={q.choices ?? []}
+          value={Array.isArray(value) ? value : []}
+          disabled={disabled}
+          onChange={props.onChange}
+        />
       ) : (
         <div className="mt-6 space-y-2" role="radiogroup">
           {q.choices?.map((c, i) => {
-            const sel = value === i;
+            const sel = q.kind === "multi" ? Array.isArray(value) && value.includes(i) : value === i;
             return (
               <button
                 key={i}
                 role="radio"
                 aria-checked={sel}
                 disabled={disabled}
-                onClick={() => props.onChange(i)}
+                onClick={() => {
+                  if (q.kind !== "multi") return props.onChange(i);
+                  const current = Array.isArray(value) ? value : [];
+                  props.onChange(current.includes(i) ? current.filter((n) => n !== i) : [...current, i]);
+                }}
                 className={`flex w-full items-start gap-3 rounded-sm border px-4 py-3 text-left text-sm transition-all ${
                   sel ? "border-primary bg-primary/10 shadow-sm" : "border-rule bg-background hover:border-primary/60 hover:bg-accent"
                 }`}
               >
-                <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border font-mono text-xs ${sel ? "border-primary bg-primary text-primary-foreground" : "border-rule text-muted-foreground"}`}>
-                  {String.fromCharCode(65 + i)}
+                <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center border font-mono text-xs ${q.kind === "multi" ? "rounded-sm" : "rounded-full"} ${sel ? "border-primary bg-primary text-primary-foreground" : "border-rule text-muted-foreground"}`}>
+                  {q.kind === "multi" && sel ? "✓" : String.fromCharCode(65 + i)}
                 </span>
                 <span className="leading-relaxed">{c}</span>
               </button>
@@ -475,6 +504,48 @@ function QuestionCard(props: {
         </Button>
       </div>
     </section>
+  );
+}
+
+function QuestionExhibit({ type, content }: { type?: PublicQuestion["presentation"]; content: string }) {
+  if (type === "architecture") {
+    return <pre className="mt-5 overflow-x-auto rounded-sm border border-rule bg-muted/60 p-5 text-center font-mono text-xs leading-loose sm:text-sm">{content}</pre>;
+  }
+  return (
+    <div className={`mt-5 overflow-hidden rounded-sm border border-rule ${type === "incident" ? "bg-destructive/5" : "bg-foreground text-background"}`}>
+      <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${type === "incident" ? "border-destructive/20" : "border-background/20"}`}>
+        <span className="h-2 w-2 rounded-full bg-destructive" />
+        <span className="h-2 w-2 rounded-full bg-[color:var(--timer-urgent)]" />
+        <span className="h-2 w-2 rounded-full bg-[color:var(--timer-focused)]" />
+        <span className="ml-2 font-mono text-[10px] uppercase opacity-70">{type === "incident" ? "Policy signal" : type === "workflow" ? "Workflow" : "Live console"}</span>
+      </div>
+      <pre className="overflow-x-auto whitespace-pre-wrap p-4 font-mono text-xs leading-relaxed">{content}</pre>
+    </div>
+  );
+}
+
+function OrderingAnswer({ choices, value, disabled, onChange }: { choices: string[]; value: number[]; disabled: boolean; onChange: (v: number[]) => void }) {
+  const order = value.length === choices.length ? value : choices.map((_, i) => i);
+  const move = (at: number, direction: -1 | 1) => {
+    const target = at + direction;
+    if (target < 0 || target >= order.length) return;
+    const next = [...order];
+    [next[at], next[target]] = [next[target], next[at]];
+    onChange(next);
+  };
+  return (
+    <div className="mt-6 space-y-2" aria-label="Ordered workflow">
+      {order.map((choiceIndex, position) => (
+        <div key={choiceIndex} className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 rounded-sm border border-rule bg-background p-3">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-mono text-sm text-primary-foreground">{position + 1}</span>
+          <span className="text-sm leading-relaxed">{choices[choiceIndex]}</span>
+          <div className="flex gap-1">
+            <Button type="button" size="icon" variant="ghost" disabled={disabled || position === 0} onClick={() => move(position, -1)} aria-label={`Move step ${position + 1} up`}>↑</Button>
+            <Button type="button" size="icon" variant="ghost" disabled={disabled || position === order.length - 1} onClick={() => move(position, 1)} aria-label={`Move step ${position + 1} down`}>↓</Button>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -533,7 +604,7 @@ function Results({ attempt, submitting, finished }: { attempt: AttemptView; subm
           {attempt.review.map((r, i) => (
             <details key={r.id} className="rounded-md border border-rule bg-card p-4">
               <summary className="flex cursor-pointer items-start gap-3 text-sm">
-                {r.kind === "task" ? (
+                 {r.kind === "task" ? (
                   <span className="shrink-0 font-mono text-xs text-primary">{r.earned}/{r.points}</span>
                 ) : r.correct ? (
                   <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
@@ -543,14 +614,18 @@ function Results({ attempt, submitting, finished }: { attempt: AttemptView; subm
                 <span><span className="text-muted-foreground">{i + 1}.</span> {r.prompt}</span>
               </summary>
               <div className="mt-3 space-y-2 pl-7 text-sm">
-                {r.choices?.map((c, ci) => (
+                 {r.choices?.map((c, ci) => {
+                   const correctAnswers = Array.isArray(r.answer) ? r.answer : [r.answer];
+                   const submittedAnswers = Array.isArray(r.your_answer) ? r.your_answer : [r.your_answer];
+                   return (
                   <div
                     key={ci}
-                    className={`rounded-sm px-3 py-1.5 ${ci === r.answer ? "bg-primary/10 font-medium" : r.your_answer === ci ? "bg-destructive/10 line-through" : "text-muted-foreground"}`}
+                     className={`rounded-sm px-3 py-1.5 ${correctAnswers.includes(ci) ? "bg-primary/10 font-medium" : submittedAnswers.includes(ci) ? "bg-destructive/10 line-through" : "text-muted-foreground"}`}
                   >
-                    {String.fromCharCode(65 + ci)}. {c}
+                     {r.kind === "ordering" ? `${correctAnswers.indexOf(ci) + 1}.` : `${String.fromCharCode(65 + ci)}.`} {c}
                   </div>
-                ))}
+                   );
+                 })}
                 {r.kind === "task" && (
                   <>
                     <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded-sm bg-muted p-3 font-mono text-xs">{String(r.your_answer ?? "(no answer)")}</pre>

@@ -4,7 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import logoAsset from "@/assets/hasoub-labs.png.asset.json";
 
 
-export const Route = createFileRoute("/")({ component: Landing });
+export const Route = createFileRoute("/")({
+  head: () => ({ meta: [
+    { title: "AI Engineer Accelerator — HasoubLabs" },
+    { name: "description", content: "A 17-week program for engineers building production AI systems, agents, RAG, and cloud applications." },
+    { property: "og:title", content: "AI Engineer Accelerator — HasoubLabs" },
+    { property: "og:description", content: "Build production AI systems, agents, RAG, and cloud applications in 17 weeks." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
+  component: Landing,
+});
 
 const STACK = [
   "Generative AI",
