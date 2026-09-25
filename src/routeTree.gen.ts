@@ -60,9 +60,9 @@ const ExamsSlugRoute = ExamsSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CohortCohortIdRoute = CohortCohortIdRouteImport.update({
-  id: '/$cohortId',
-  path: '/$cohortId',
-  getParentRoute: () => CohortRoute,
+  id: '/cohort/$cohortId',
+  path: '/cohort/$cohortId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ChallengesSlugRoute = ChallengesSlugRouteImport.update({
   id: '/challenges/$slug',
@@ -262,6 +262,7 @@ export interface RootRouteChildren {
   ApplyRoute: typeof ApplyRoute
   ThanksRoute: typeof ThanksRoute
   ChallengesSlugRoute: typeof ChallengesSlugRoute
+  CohortCohortIdRoute: typeof CohortCohortIdRoute
   ExamsSlugRoute: typeof ExamsSlugRoute
   CohortIndexRoute: typeof CohortIndexRoute
   ChallengesSlugLeaderboardRoute: typeof ChallengesSlugLeaderboardRoute
@@ -313,10 +314,10 @@ declare module '@tanstack/react-router' {
     }
     '/cohort/$cohortId': {
       id: '/cohort/$cohortId'
-      path: '/$cohortId'
+      path: '/cohort/$cohortId'
       fullPath: '/cohort/$cohortId'
       preLoaderRoute: typeof CohortCohortIdRouteImport
-      parentRoute: typeof CohortRoute
+      parentRoute: typeof rootRouteImport
     }
     '/challenges/$slug': {
       id: '/challenges/$slug'
@@ -439,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApplyRoute: ApplyRoute,
   ThanksRoute: ThanksRoute,
   ChallengesSlugRoute: ChallengesSlugRoute,
+  CohortCohortIdRoute: CohortCohortIdRoute,
   ExamsSlugRoute: ExamsSlugRoute,
   CohortIndexRoute: CohortIndexRoute,
   ChallengesSlugLeaderboardRoute: ChallengesSlugLeaderboardRoute,
