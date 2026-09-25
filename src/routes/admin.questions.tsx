@@ -5,7 +5,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/questions")({ component: Questions });
+export const Route = createFileRoute("/admin/questions")({
+  head: () => ({
+    meta: [
+      { title: "Question Bank — Hasoub AI Accelerator Admin" },
+      { name: "description", content: "Manage application question content." },
+      { property: "og:title", content: "Question Bank — Hasoub AI Accelerator Admin" },
+      { property: "og:description", content: "Manage application question content." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Questions,
+});
 
 type Q = {
   id: string;

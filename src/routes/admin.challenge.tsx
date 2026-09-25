@@ -15,7 +15,19 @@ import {
   type Repo,
 } from "@/lib/challenge.functions";
 
-export const Route = createFileRoute("/admin/challenge")({ component: AdminChallengePage });
+export const Route = createFileRoute("/admin/challenge")({
+  head: () => ({
+    meta: [
+      { title: "Challenges — Hasoub AI Accelerator Admin" },
+      { name: "description", content: "Browse and manage live training challenges." },
+      { property: "og:title", content: "Challenges — Hasoub AI Accelerator Admin" },
+      { property: "og:description", content: "Browse and manage live training challenges." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: AdminChallengePage,
+});
 
 const SLUG = "1";
 

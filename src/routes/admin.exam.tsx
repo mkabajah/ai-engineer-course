@@ -5,7 +5,19 @@ import { Button } from "@/components/ui/button";
 import { adminControl, getChallenge, type PublicChallenge } from "@/lib/challenge.functions";
 import { adminClearExam, adminDeleteAttempt, adminGetExam, adminGradeAllOpen, adminGradeAttempt } from "@/lib/exam.functions";
 
-export const Route = createFileRoute("/admin/exam")({ component: AdminExamPage });
+export const Route = createFileRoute("/admin/exam")({
+  head: () => ({
+    meta: [
+      { title: "Claude Architect Exam — Hasoub Admin" },
+      { name: "description", content: "Manage the Claude Code Architect simulation." },
+      { property: "og:title", content: "Claude Architect Exam — Hasoub Admin" },
+      { property: "og:description", content: "Manage the Claude Code Architect simulation." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: AdminExamPage,
+});
 
 const SLUG = "claude-architect";
 
