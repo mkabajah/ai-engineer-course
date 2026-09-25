@@ -124,6 +124,7 @@ function AdminExamPage() {
         <Button disabled={busy} variant="outline" onClick={() => control("end")}>End now</Button>
         <div className="flex-1" />
         <Button disabled={busy} variant="outline" onClick={() => act(() => adminGradeAllOpen({ data: { slug: SLUG } }), "Graded open attempts")}>Grade unsubmitted</Button>
+        <Button asChild variant="outline"><Link to="/admin/exam/questions">Edit questions</Link></Button>
         <Button variant="outline" onClick={exportCsv} disabled={!rows.length}>Export CSV</Button>
         <Button
           variant="destructive"

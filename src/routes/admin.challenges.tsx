@@ -87,7 +87,7 @@ function ChallengesLibrary() {
 
               <div className="mt-5 flex flex-wrap gap-2 border-t border-rule pt-5">
                 {challenge.kind === "exam" ? (
-                  <Button asChild><Link to="/admin/exam">Manage challenge <ArrowUpRight /></Link></Button>
+                  <><Button asChild><Link to="/admin/exam">Manage challenge <ArrowUpRight /></Link></Button><Button asChild variant="outline"><Link to="/admin/exam/questions">Questions <ArrowUpRight /></Link></Button></>
                 ) : (
                   <Button asChild><Link to="/admin/challenge">Manage challenge <ArrowUpRight /></Link></Button>
                 )}
