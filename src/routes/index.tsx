@@ -99,7 +99,7 @@ function Landing() {
       <footer className="border-t border-rule">
         <div className="mx-auto max-w-6xl px-6 py-8 flex items-center justify-between text-xs text-muted-foreground">
           <span>© HasoubLabs · AI Engineer Career Accelerator</span>
-          <span className="font-mono">Cohort · Aug 14 → Nov 30, 2026</span>
+          <span className="font-mono">Cohort · Aug 14 → Dec 04, 2026</span>
 
         </div>
       </footer>
@@ -129,7 +129,10 @@ function Nav() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Link to="/cohort" className="text-xs uppercase tracking-widest hover:text-primary transition-colors">
+            Cohort
+          </Link>
           <Link to="/apply" className="text-xs uppercase tracking-widest hover:text-primary transition-colors">
             Apply
           </Link>
