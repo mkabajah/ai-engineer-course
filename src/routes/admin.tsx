@@ -41,9 +41,9 @@ function AdminLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-rule">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <Link to="/admin/dashboard" className="serif text-lg">AI Accelerator — Admin</Link>
-          <nav className="flex items-center gap-6 text-xs uppercase tracking-widest text-muted-foreground">
+          <nav className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-widest text-muted-foreground sm:w-auto sm:gap-6 sm:text-xs">
             <Link to="/admin/dashboard" activeProps={{ className: "text-foreground" }}>Candidates</Link>
             <Link to="/admin/groups" activeProps={{ className: "text-foreground" }}>Groups</Link>
             <Link to="/admin/challenges" activeProps={{ className: "text-foreground" }}>Challenges</Link>
