@@ -3,6 +3,14 @@ import { z } from "zod";
 
 export const Route = createFileRoute("/thanks")({
   validateSearch: (s) => z.object({ id: z.string().optional() }).parse(s),
+  head: () => ({ meta: [
+    { title: "Application Received — Hasoub AI Accelerator" },
+    { name: "description", content: "Your AI Engineer Accelerator application has been received." },
+    { property: "og:title", content: "Application Received — Hasoub AI Accelerator" },
+    { property: "og:description", content: "Your AI Engineer Accelerator application has been received." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ThanksPage,
 });
 
