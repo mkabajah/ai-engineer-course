@@ -47,6 +47,25 @@ export type AdminExamQuestion = PublicQuestion & {
   active: boolean;
 };
 
+type LoadedExamQuestion = {
+  id: string;
+  exam_slug: string;
+  kind: PublicQuestion["kind"];
+  domain: keyof typeof import("./exam-bank.server").DOMAINS;
+  prompt: string;
+  choices: string[] | null;
+  correct_answer: number | number[] | null;
+  scenario: string | null;
+  rubric: string | null;
+  explanation: string;
+  points: number;
+  presentation: PublicQuestion["presentation"] | null;
+  exhibit: string | null;
+  starter: string | null;
+  order_index: number;
+  active: boolean;
+};
+
 async function loadExamQuestions(examSlug = "claude-architect", includeInactive = false) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { QUESTIONS } = await import("./exam-bank.server");
@@ -60,7 +79,7 @@ async function loadExamQuestions(examSlug = "claude-architect", includeInactive 
   const overrideMap = new Map((overrides ?? []).map((q) => [q.id, q]));
   const defaults = QUESTIONS.map((q, index) => {
     const saved = overrideMap.get(q.id);
-    if (saved) return saved;
+    if (saved) return saved as LoadedExamQuestion;
     return {
       id: q.id,
       exam_slug: examSlug,
@@ -81,8 +100,9 @@ async function loadExamQuestions(examSlug = "claude-architect", includeInactive 
     };
   });
   const defaultIds = new Set(defaults.map((q) => q.id));
-  const custom = (overrides ?? []).filter((q) => !defaultIds.has(q.id));
-  const merged = [...defaults, ...custom].sort((a, b) => a.order_index - b.order_index);
+  const custom = (overrides ?? []).filter((q) => !defaultIds.has(q.id)) as LoadedExamQuestion[];
+  const merged = [...defaults, ...custom] as LoadedExamQuestion[];
+  merged.sort((a, b) => a.order_index - b.order_index);
   return includeInactive ? merged : merged.filter((q) => q.active);
 }
 
@@ -241,8 +261,8 @@ async function buildView(att: any, examFinished: boolean): Promise<AttemptView> 
     const fb = (att.task_feedback ?? {}) as Record<string, { score: number | null; feedback: string }>;
     review = QUESTIONS.map((q) => {
       const base = {
-        id: q.id, kind: q.kind, domain: q.domain, domain_label: DOMAINS[q.domain], prompt: q.prompt,
-        points: q.points, explanation: q.explanation, your_answer: answers[q.id] ?? null,
+         id: q.id, kind: q.kind, domain: q.domain, domain_label: DOMAINS[q.domain], prompt: q.prompt,
+         points: Number(q.points), explanation: q.explanation, your_answer: answers[q.id] ?? null,
       };
        if (q.kind !== "task") {
          const submitted = answers[q.id];
