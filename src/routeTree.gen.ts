@@ -24,7 +24,7 @@ import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
-import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam.questions'
+import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
 
 const ThanksRoute = ThanksRouteImport.update({
@@ -104,9 +104,9 @@ const ChallengesSlugLeaderboardRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const AdminExamQuestionsRoute = AdminExamQuestionsRouteImport.update({
-  id: '/questions',
-  path: '/questions',
-  getParentRoute: () => AdminExamRoute,
+  id: '/exam_/questions',
+  path: '/exam/questions',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/applications/$id',
@@ -123,7 +123,7 @@ export interface FileRoutesByFullPath {
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/exam': typeof AdminExamRouteWithChildren
+  '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
@@ -142,7 +142,7 @@ export interface FileRoutesByTo {
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/exam': typeof AdminExamRouteWithChildren
+  '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
@@ -162,14 +162,14 @@ export interface FileRoutesById {
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/exam': typeof AdminExamRouteWithChildren
+  '/admin/exam': typeof AdminExamRoute
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
-  '/admin/exam/questions': typeof AdminExamQuestionsRoute
+  '/admin/exam_/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug_/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
 export interface FileRouteTypes {
@@ -228,7 +228,7 @@ export interface FileRouteTypes {
     | '/challenges/$slug'
     | '/exams/$slug'
     | '/admin/applications/$id'
-    | '/admin/exam/questions'
+    | '/admin/exam_/questions'
     | '/challenges/$slug_/leaderboard'
   fileRoutesById: FileRoutesById
 }
@@ -349,12 +349,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChallengesSlugLeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/exam/questions': {
-      id: '/admin/exam/questions'
-      path: '/questions'
+    '/admin/exam_/questions': {
+      id: '/admin/exam_/questions'
+      path: '/exam/questions'
       fullPath: '/admin/exam/questions'
       preLoaderRoute: typeof AdminExamQuestionsRouteImport
-      parentRoute: typeof AdminExamRoute
+      parentRoute: typeof AdminRoute
     }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
@@ -366,28 +366,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminExamRouteChildren {
-  AdminExamQuestionsRoute: typeof AdminExamQuestionsRoute
-}
-
-const AdminExamRouteChildren: AdminExamRouteChildren = {
-  AdminExamQuestionsRoute: AdminExamQuestionsRoute,
-}
-
-const AdminExamRouteWithChildren = AdminExamRoute._addFileChildren(
-  AdminExamRouteChildren,
-)
-
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
   AdminChallengeRoute: typeof AdminChallengeRoute
   AdminChallengesRoute: typeof AdminChallengesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminExamRoute: typeof AdminExamRouteWithChildren
+  AdminExamRoute: typeof AdminExamRoute
   AdminGroupsRoute: typeof AdminGroupsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminQuestionsRoute: typeof AdminQuestionsRoute
   AdminApplicationsIdRoute: typeof AdminApplicationsIdRoute
+  AdminExamQuestionsRoute: typeof AdminExamQuestionsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -395,11 +384,12 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminChallengeRoute: AdminChallengeRoute,
   AdminChallengesRoute: AdminChallengesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
-  AdminExamRoute: AdminExamRouteWithChildren,
+  AdminExamRoute: AdminExamRoute,
   AdminGroupsRoute: AdminGroupsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminQuestionsRoute: AdminQuestionsRoute,
   AdminApplicationsIdRoute: AdminApplicationsIdRoute,
+  AdminExamQuestionsRoute: AdminExamQuestionsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

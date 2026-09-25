@@ -14,7 +14,7 @@ import {
   type AdminExamQuestion,
 } from "@/lib/exam.functions";
 
-export const Route = createFileRoute("/admin/exam/questions")({
+export const Route = createFileRoute("/admin/exam_/questions")({
   head: () => ({ meta: [
     { title: "Exam Questions — Hasoub AI Accelerator Admin" },
     { name: "description", content: "View and edit the Claude Code Architect exam question bank." },
