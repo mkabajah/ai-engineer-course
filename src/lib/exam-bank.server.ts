@@ -20,6 +20,32 @@ export type McqQuestion = {
   answer: number;
   explanation: string;
   points: number;
+  presentation?: "terminal" | "architecture" | "code" | "incident";
+  exhibit?: string;
+};
+export type MultiQuestion = {
+  id: string;
+  kind: "multi";
+  domain: Domain;
+  prompt: string;
+  choices: string[];
+  answers: number[];
+  explanation: string;
+  points: number;
+  presentation?: "terminal" | "architecture" | "code" | "incident";
+  exhibit?: string;
+};
+export type OrderingQuestion = {
+  id: string;
+  kind: "ordering";
+  domain: Domain;
+  prompt: string;
+  choices: string[];
+  answer: number[];
+  explanation: string;
+  points: number;
+  presentation?: "architecture" | "workflow";
+  exhibit?: string;
 };
 export type TaskQuestion = {
   id: string;
@@ -30,8 +56,10 @@ export type TaskQuestion = {
   rubric: string;
   explanation: string;
   points: number;
+  presentation?: "code" | "architecture";
+  starter?: string;
 };
-export type ExamQuestion = McqQuestion | TaskQuestion;
+export type ExamQuestion = McqQuestion | MultiQuestion | OrderingQuestion | TaskQuestion;
 
 // [domain, prompt, correct, [wrong x3], explanation]
 type Raw = [Domain, string, string, [string, string, string], string];
@@ -337,7 +365,7 @@ function seeded(i: number) {
   };
 }
 
-const MCQS: McqQuestion[] = RAW.map(([domain, prompt, correct, wrong, explanation], i) => {
+const BASE_MCQS: McqQuestion[] = RAW.map(([domain, prompt, correct, wrong, explanation], i) => {
   const rnd = seeded(i);
   const pos = Math.floor(rnd() * 4);
   const choices = [...wrong];
@@ -345,9 +373,80 @@ const MCQS: McqQuestion[] = RAW.map(([domain, prompt, correct, wrong, explanatio
   return { id: `q${i + 1}`, kind: "single", domain, prompt, choices, answer: pos, explanation, points: 1 };
 });
 
+// Rich simulations replace selected plain questions without changing IDs or total points,
+// keeping saved attempts compatible with previous exam runs.
+const INTERACTIVE: Record<string, ExamQuestion> = {
+  q6: {
+    id: "q6", kind: "single", domain: "agentic", points: 1, presentation: "architecture",
+    prompt: "Place the reliable safety control in this refund-agent architecture.",
+    exhibit: "Customer → Agent loop → [ ? ] → process_refund\n                         ↘ escalate_to_human",
+    choices: ["A code-level prerequisite gate before process_refund", "A reminder inside the final response", "A weekly audit after refunds", "A confidence score shown to the customer"],
+    answer: 0,
+    explanation: "A deterministic prerequisite gate must verify identity before the refund tool can run; prompt reminders are probabilistic.",
+  },
+  q7: {
+    id: "q7", kind: "multi", domain: "agentic", points: 1, presentation: "incident",
+    prompt: "Select every event that should trigger an immediate human handoff.",
+    exhibit: "POLICY CONSOLE · Refunds over $500 require approval · Explicit human requests are always honored",
+    choices: ["The customer explicitly asks for a person", "A refund request is $740", "Sentiment is mildly negative", "The conversation reaches ten turns"],
+    answers: [0, 1],
+    explanation: "Explicit human requests and hard policy thresholds are deterministic escalation triggers; sentiment and turn count are unreliable proxies.",
+  },
+  q20: {
+    id: "q20", kind: "ordering", domain: "tools_mcp", points: 1, presentation: "workflow",
+    prompt: "Arrange the tool-use loop in the order the application must execute it.",
+    choices: ["Execute the validated tool call", "Send tool_result with the matching tool_use_id", "Read the assistant response and stop_reason", "Call the model again with the updated messages"],
+    answer: [2, 0, 1, 3],
+    explanation: "Inspect the model response, execute validated calls, return matching tool results, then continue the model loop.",
+  },
+  q33: {
+    id: "q33", kind: "single", domain: "claude_code", points: 1, presentation: "terminal",
+    prompt: "The team wants this rule shared with everyone. Which correction is right?",
+    exhibit: "$ cat ~/.claude/CLAUDE.md\nAlways run tests before committing.\n\n# Teammate reports: rule not loaded",
+    choices: ["Move it to the repository's CLAUDE.md and commit it", "Run /compact", "Add it to .gitignore", "Rename it CLAUDE.local.md"],
+    answer: 0,
+    explanation: "The user-level file is local to one machine. Shared standards belong in the repository CLAUDE.md.",
+  },
+  q39: {
+    id: "q39", kind: "multi", domain: "claude_code", points: 1, presentation: "code",
+    prompt: "Select every configuration element needed for this team policy.",
+    exhibit: "Requirements:\n• Never read .env files\n• Format files after Edit or Write\n• Apply test guidance only to **/*.test.ts",
+    choices: ["A shared permissions.deny rule", "A PostToolUse hook matching Edit|Write", "A path-scoped rule with a files glob", "A personal ~/.claude setting only"],
+    answers: [0, 1, 2],
+    explanation: "Enforced deny permissions, a PostToolUse formatter hook, and a path-scoped rule satisfy the three requirements.",
+  },
+  q46: {
+    id: "q46", kind: "single", domain: "prompting", points: 1, presentation: "code",
+    prompt: "Inspect this extraction schema. What is the most important reliability fix?",
+    exhibit: '{ "due_date": { "type": "string" }, "required": ["due_date"] }\n// Many source invoices have no due date',
+    choices: ["Allow null and instruct the model to return null when absent", "Use a larger model", "Default every missing date to today", "Retry until a date appears"],
+    answer: 0,
+    explanation: "A nullable field makes absence valid and avoids pressuring the model to fabricate a date.",
+  },
+  q52: {
+    id: "q52", kind: "ordering", domain: "prompting", points: 1, presentation: "workflow",
+    prompt: "Order the reliable recovery flow after structured output fails validation.",
+    choices: ["Run semantic checks", "Return the exact validation error", "Validate the structured response", "Retry with source, failed output, and error"],
+    answer: [2, 1, 3, 0],
+    explanation: "Validate first, expose the exact failure, retry with full correction context, then run semantic checks on the corrected result.",
+  },
+  q58: {
+    id: "q58", kind: "single", domain: "context", points: 1, presentation: "architecture",
+    prompt: "Which memory layer should preserve the exact order ID and refund amount?",
+    exhibit: "Incoming turn\n   ↓\nPinned facts ── Summarized history ── Recent tool results\n   ↓                  ↓                       ↓\n                 Model context",
+    choices: ["Pinned case facts", "Progressively summarized history only", "Raw tool results kept forever", "The model's hidden memory"],
+    answer: 0,
+    explanation: "Exact identifiers and amounts belong in a persistent facts block, separate from lossy conversation summaries.",
+  },
+};
+
+const MCQS: ExamQuestion[] = BASE_MCQS.map((q) => INTERACTIVE[q.id] ?? q);
+
 const TASKS: TaskQuestion[] = [
   {
     id: "t1", kind: "task", domain: "claude_code", points: 6,
+    presentation: "code",
+    starter: "// .claude/settings.json\n{\n  \"permissions\": {\n    \"allow\": [],\n    \"deny\": []\n  },\n  \"hooks\": {}\n}\n\n// .claude/rules/testing.md\n---\npaths:\n---",
     prompt: "Hands-on: configure Claude Code for a team repository.",
     scenario: "Write the contents of .claude/settings.json (and any other file you need) so that: (1) nobody's Claude session can read .env files; (2) `npm test` runs without a permission prompt; (3) Prettier runs automatically on every file Claude edits; (4) team testing conventions apply only to **/*.test.ts files. Show the file paths and contents.",
     rubric: "1.5 pts: permissions.deny with Read(./.env) or similar in the shared .claude/settings.json. 1.5 pts: permissions.allow for Bash(npm test) or similar. 1.5 pts: hooks.PostToolUse with a matcher covering Edit/Write that runs prettier. 1.5 pts: .claude/rules/<file>.md with paths frontmatter glob **/*.test.ts. Accept reasonable syntax variations.",
@@ -355,6 +454,8 @@ const TASKS: TaskQuestion[] = [
   },
   {
     id: "t2", kind: "task", domain: "agentic", points: 6,
+    presentation: "architecture",
+    starter: "COORDINATOR\n├── Research agent A →\n├── Research agent B →\n└── Research agent C →\n\nFailure contract:\nProvenance contract:",
     prompt: "Hands-on: design a multi-agent research system.",
     scenario: "Design a coordinator + subagent system that writes a sourced report on a broad topic. Explain: how the coordinator decomposes the topic, what exactly goes into each subagent's prompt, how subagents run in parallel, how failures are reported, and how source provenance survives to the final report.",
     rubric: "1.2 each: broad decomposition covering all subtopics (and a coverage check); explicit context passed to subagents because they don't inherit history; parallel Task calls in a single response; structured error propagation with gap annotation; claim-source mappings preserved through synthesis.",
@@ -362,6 +463,8 @@ const TASKS: TaskQuestion[] = [
   },
   {
     id: "t3", kind: "task", domain: "tools_mcp", points: 6,
+    presentation: "code",
+    starter: '{\n  "name": "get_customer",\n  "description": "",\n  "input_schema": {}\n}\n\n{\n  "name": "process_refund",\n  "description": "",\n  "input_schema": {}\n}',
     prompt: "Hands-on: define tools for a support agent.",
     scenario: "Write tool definitions (name, description, input_schema) for get_customer and process_refund. Then describe the error response format your tools return, and how you guarantee a refund is never processed before the customer is verified.",
     rubric: "1.5: descriptions state purpose, inputs, and when to use each (distinct from each other). 1.5: valid input_schema with required fields and types. 1.5: structured error format (is_error, category, retryable, message; business vs transient). 1.5: programmatic prerequisite gate or hook, not just a prompt instruction.",
@@ -369,6 +472,8 @@ const TASKS: TaskQuestion[] = [
   },
   {
     id: "t4", kind: "task", domain: "prompting", points: 6,
+    presentation: "code",
+    starter: '{\n  "type": "object",\n  "properties": {\n    "vendor": {},\n    "due_date": {},\n    "line_items": [],\n    "total": {}\n  }\n}',
     prompt: "Hands-on: reliable invoice extraction.",
     scenario: "Design a JSON schema (as a tool input_schema) for extracting invoices: vendor, invoice number, due date, currency, line items, total, and category. Explain how you prevent fabricated values, handle unexpected categories, and what your retry strategy is when validation fails.",
     rubric: "1.5: valid schema used through tool use/forced tool choice. 1.5: nullable fields for data that may be missing, with an instruction to return null. 1.5: enum with other + detail field. 1.5: validation-retry that sends back the specific error, plus semantic checks (line items sum to total) and no retry when the data is absent.",
@@ -376,6 +481,8 @@ const TASKS: TaskQuestion[] = [
   },
   {
     id: "t5", kind: "task", domain: "context", points: 6,
+    presentation: "architecture",
+    starter: "PINNED CASE FACTS\nCustomer ID:\nOrder ID:\nAmount:\n\nHANDOFF\nIssue:\nFindings:\nActions taken:\nRecommended next step:",
     prompt: "Hands-on: context strategy for long support sessions.",
     scenario: "A support agent handles 40+ turn conversations with many tool calls. Customers mention order IDs and amounts early; sometimes they ask for a human. Describe your context management strategy and write an example escalation handoff summary.",
     rubric: "1.5: persistent case-facts block kept outside summarized history. 1.5: trimming verbose tool outputs to relevant fields. 1.5: correct escalation triggers (explicit request honored immediately; not sentiment or self-confidence). 1.5: structured handoff example with customer ID, issue, actions taken, and next step.",
