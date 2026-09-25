@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThanksRouteImport } from './routes/thanks'
+import { Route as CohortRouteImport } from './routes/cohort'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applicat
 const ThanksRoute = ThanksRouteImport.update({
   id: '/thanks',
   path: '/thanks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CohortRoute = CohortRouteImport.update({
+  id: '/cohort',
+  path: '/cohort',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApplyRoute = ApplyRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/cohort': typeof CohortRoute
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/cohort': typeof CohortRoute
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/cohort': typeof CohortRoute
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/cohort'
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/cohort'
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/cohort'
     | '/thanks'
     | '/admin/admins'
     | '/admin/challenge'
@@ -236,6 +248,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
+  CohortRoute: typeof CohortRoute
   ThanksRoute: typeof ThanksRoute
   ChallengesSlugRoute: typeof ChallengesSlugRoute
   ExamsSlugRoute: typeof ExamsSlugRoute
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/thanks'
       fullPath: '/thanks'
       preLoaderRoute: typeof ThanksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cohort': {
+      id: '/cohort'
+      path: '/cohort'
+      fullPath: '/cohort'
+      preLoaderRoute: typeof CohortRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply': {
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
+  CohortRoute: CohortRoute,
   ThanksRoute: ThanksRoute,
   ChallengesSlugRoute: ChallengesSlugRoute,
   ExamsSlugRoute: ExamsSlugRoute,
