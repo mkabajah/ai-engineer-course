@@ -16,3 +16,5 @@
 - [x] Consolidate Challenge #1 and Challenge #2 under one scalable admin Challenges area.
 - [ ] Let admins view, add, edit, reorder, and remove Challenge #2 exam questions.
 - [ ] Keep correct answers and grading rubrics private while preserving existing attempts.
+- [x] Add a public Cohort 01 journey page with session progress and confirmed outcomes.
+- [x] Add the Cohort page to the public navigation and align the final-session date.

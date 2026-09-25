@@ -207,6 +207,24 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes cohort-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 35%, transparent); }
+  50% { box-shadow: 0 0 0 10px color-mix(in oklab, var(--primary) 0%, transparent); }
+}
+
+.cohort-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--rule) 38%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--rule) 38%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+  opacity: 0.7;
+}
+
+.cohort-live-dot {
+  animation: cohort-live-pulse 2.2s ease-in-out infinite;
+}
+
 .challenge-page {
   background-image:
     linear-gradient(to right, color-mix(in oklab, var(--rule) 28%, transparent) 1px, transparent 1px),
@@ -360,6 +378,7 @@
     animation: none;
   }
   .leaderboard-podium-card { animation: none; }
+  .cohort-live-dot { animation: none; }
   .challenge-timer--critical { transform: none; }
   .ai-review-step { transition: none; }
   .ai-review-step.is-active { transform: none; }
