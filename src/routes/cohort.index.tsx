@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { ArrowLeft, ArrowUpRight, Bot, CalendarDays, GitPullRequest, Sparkles, Users } from "lucide-react";
 import logoAsset from "@/assets/hasoub-labs.png.asset.json";
 
-export const Route = createFileRoute("/cohort")({
+export const Route = createFileRoute("/cohort/")({
   head: () => ({
     meta: [
       { title: "Cohorts — HasoubLabs AI Engineer Accelerator" },
