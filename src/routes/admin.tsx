@@ -46,8 +46,7 @@ function AdminLayout() {
           <nav className="flex items-center gap-6 text-xs uppercase tracking-widest text-muted-foreground">
             <Link to="/admin/dashboard" activeProps={{ className: "text-foreground" }}>Candidates</Link>
             <Link to="/admin/groups" activeProps={{ className: "text-foreground" }}>Groups</Link>
-            <Link to="/admin/challenge" activeProps={{ className: "text-foreground" }}>Challenge</Link>
-            <Link to="/admin/exam" activeProps={{ className: "text-foreground" }}>Exam</Link>
+            <Link to="/admin/challenges" activeProps={{ className: "text-foreground" }}>Challenges</Link>
             <Link to="/admin/questions" activeProps={{ className: "text-foreground" }}>Questions</Link>
             <Link to="/admin/admins" activeProps={{ className: "text-foreground" }}>Admins</Link>
             <button

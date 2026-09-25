@@ -538,7 +538,7 @@ export const adminListChallenges = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return Promise.all(
       (rows ?? []).map(async (row) => {
-        const isExam = row.slug === "claude-architect";
+        const isExam = (row as typeof row & { challenge_type?: string }).challenge_type === "exam" || row.slug === "claude-architect";
         const table = isExam ? "exam_attempts" : "challenge_submissions";
         const { count } = await supabaseAdmin.from(table).select("id", { count: "exact", head: true }).eq("challenge_id", row.id);
         const challenge = normalizeChallenge(row, new Date(), count ?? 0);
