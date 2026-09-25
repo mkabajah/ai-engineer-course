@@ -103,6 +103,7 @@ function AdminExamPage() {
     <main className="mx-auto max-w-7xl space-y-6 px-6 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
+          <Link to="/admin/challenges" className="mb-3 block text-xs text-muted-foreground underline underline-offset-4">← All challenges</Link>
           <div className="label-eyebrow text-primary">Challenge #2</div>
           <h1 className="serif text-3xl">Claude Code Architect Exam</h1>
           <Link to="/exams/$slug" params={{ slug: SLUG }} target="_blank" className="text-sm text-muted-foreground underline underline-offset-4">
