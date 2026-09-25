@@ -15,6 +15,7 @@ import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExamsSlugRouteImport } from './routes/exams.$slug'
+import { Route as CohortCohortIdRouteImport } from './routes/cohort.$cohortId'
 import { Route as ChallengesSlugRouteImport } from './routes/challenges.$slug'
 import { Route as AdminQuestionsRouteImport } from './routes/admin.questions'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -57,6 +58,11 @@ const ExamsSlugRoute = ExamsSlugRouteImport.update({
   id: '/exams/$slug',
   path: '/exams/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CohortCohortIdRoute = CohortCohortIdRouteImport.update({
+  id: '/$cohortId',
+  path: '/$cohortId',
+  getParentRoute: () => CohortRoute,
 } as any)
 const ChallengesSlugRoute = ChallengesSlugRouteImport.update({
   id: '/challenges/$slug',
@@ -124,7 +130,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
-  '/cohort': typeof CohortRoute
+  '/cohort': typeof CohortRouteWithChildren
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
+  '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
@@ -144,7 +151,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
-  '/cohort': typeof CohortRoute
+  '/cohort': typeof CohortRouteWithChildren
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
+  '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
@@ -165,7 +173,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
-  '/cohort': typeof CohortRoute
+  '/cohort': typeof CohortRouteWithChildren
   '/thanks': typeof ThanksRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
+  '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam_/questions': typeof AdminExamQuestionsRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/questions'
     | '/challenges/$slug'
+    | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/questions'
     | '/challenges/$slug'
+    | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/questions'
     | '/challenges/$slug'
+    | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/admin/applications/$id'
     | '/admin/exam_/questions'
@@ -248,7 +260,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
-  CohortRoute: typeof CohortRoute
+  CohortRoute: typeof CohortRouteWithChildren
   ThanksRoute: typeof ThanksRoute
   ChallengesSlugRoute: typeof ChallengesSlugRoute
   ExamsSlugRoute: typeof ExamsSlugRoute
@@ -298,6 +310,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/exams/$slug'
       preLoaderRoute: typeof ExamsSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/cohort/$cohortId': {
+      id: '/cohort/$cohortId'
+      path: '/$cohortId'
+      fullPath: '/cohort/$cohortId'
+      preLoaderRoute: typeof CohortCohortIdRouteImport
+      parentRoute: typeof CohortRoute
     }
     '/challenges/$slug': {
       id: '/challenges/$slug'
@@ -414,11 +433,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface CohortRouteChildren {
+  CohortCohortIdRoute: typeof CohortCohortIdRoute
+}
+
+const CohortRouteChildren: CohortRouteChildren = {
+  CohortCohortIdRoute: CohortCohortIdRoute,
+}
+
+const CohortRouteWithChildren =
+  CohortRoute._addFileChildren(CohortRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
-  CohortRoute: CohortRoute,
+  CohortRoute: CohortRouteWithChildren,
   ThanksRoute: ThanksRoute,
   ChallengesSlugRoute: ChallengesSlugRoute,
   ExamsSlugRoute: ExamsSlugRoute,
