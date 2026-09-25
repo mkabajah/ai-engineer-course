@@ -39,6 +39,53 @@ export type AttemptView = {
 
 type Answers = Record<string, number | number[] | string>;
 
+export type AdminExamQuestion = PublicQuestion & {
+  correct_answer: number | number[] | null;
+  explanation: string;
+  rubric?: string;
+  order_index: number;
+  active: boolean;
+};
+
+async function loadExamQuestions(examSlug = "claude-architect", includeInactive = false) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { QUESTIONS } = await import("./exam-bank.server");
+  const { data: overrides, error } = await supabaseAdmin
+    .from("exam_questions")
+    .select("*")
+    .eq("exam_slug", examSlug)
+    .order("order_index");
+  if (error) throw new Error("Could not load the exam question bank");
+
+  const overrideMap = new Map((overrides ?? []).map((q) => [q.id, q]));
+  const defaults = QUESTIONS.map((q, index) => {
+    const saved = overrideMap.get(q.id);
+    if (saved) return saved;
+    return {
+      id: q.id,
+      exam_slug: examSlug,
+      kind: q.kind,
+      domain: q.domain,
+      prompt: q.prompt,
+      choices: q.kind === "task" ? null : q.choices,
+      correct_answer: q.kind === "task" ? null : q.kind === "multi" ? q.answers : q.answer,
+      scenario: q.kind === "task" ? q.scenario : null,
+      rubric: q.kind === "task" ? q.rubric : null,
+      explanation: q.explanation,
+      points: q.points,
+      presentation: q.presentation ?? null,
+      exhibit: q.kind === "task" ? null : q.exhibit ?? null,
+      starter: q.kind === "task" ? q.starter ?? null : null,
+      order_index: index + 1,
+      active: true,
+    };
+  });
+  const defaultIds = new Set(defaults.map((q) => q.id));
+  const custom = (overrides ?? []).filter((q) => !defaultIds.has(q.id));
+  const merged = [...defaults, ...custom].sort((a, b) => a.order_index - b.order_index);
+  return includeInactive ? merged : merged.filter((q) => q.active);
+}
+
 async function loadChallenge(slug: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin.from("challenges").select("*").eq("slug", slug).maybeSingle();
@@ -53,20 +100,21 @@ async function requireAdmin(context: { supabase: any; userId: string }) {
   if (!data) throw new Error("Forbidden");
 }
 
-async function publicQuestions(): Promise<PublicQuestion[]> {
-  const { QUESTIONS, DOMAINS } = await import("./exam-bank.server");
-  return QUESTIONS.map((q) => ({
+async function publicQuestions(examSlug: string): Promise<PublicQuestion[]> {
+  const { DOMAINS } = await import("./exam-bank.server");
+  const questions = await loadExamQuestions(examSlug);
+  return questions.map((q) => ({
     id: q.id,
     kind: q.kind,
     domain: q.domain,
-    domain_label: DOMAINS[q.domain],
+    domain_label: DOMAINS[q.domain as keyof typeof DOMAINS],
     prompt: q.prompt,
-    scenario: q.kind === "task" ? q.scenario : undefined,
-    choices: q.kind !== "task" ? q.choices : undefined,
-    points: q.points,
-    presentation: q.presentation,
-    exhibit: q.kind !== "task" ? q.exhibit : undefined,
-    starter: q.kind === "task" ? q.starter : undefined,
+    scenario: q.kind === "task" ? q.scenario ?? undefined : undefined,
+    choices: q.kind !== "task" ? (q.choices as string[]) : undefined,
+    points: Number(q.points),
+    presentation: q.presentation as PublicQuestion["presentation"],
+    exhibit: q.kind !== "task" ? q.exhibit ?? undefined : undefined,
+    starter: q.kind === "task" ? q.starter ?? undefined : undefined,
   }));
 }
 
@@ -118,9 +166,11 @@ async function gradeTask(q: { prompt: string; scenario: string; rubric: string; 
 
 async function gradeAttempt(attemptId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { QUESTIONS, DOMAINS, PASS_SCORE } = await import("./exam-bank.server");
-  const { data: att } = await supabaseAdmin.from("exam_attempts").select("*").eq("id", attemptId).maybeSingle();
+  const { DOMAINS, PASS_SCORE } = await import("./exam-bank.server");
+  const { data: att } = await supabaseAdmin.from("exam_attempts").select("*, challenges(slug)").eq("id", attemptId).maybeSingle();
   if (!att) return;
+  const challenge = att.challenges as { slug?: string } | null;
+  const QUESTIONS = await loadExamQuestions(challenge?.slug ?? "claude-architect");
   await supabaseAdmin
     .from("exam_attempts")
     .update({ status: "grading", submitted_at: att.submitted_at ?? new Date().toISOString() })
@@ -134,12 +184,13 @@ async function gradeAttempt(attemptId: string) {
   for (const q of QUESTIONS) {
     domain[q.domain].total += q.points;
     const submitted = answers[q.id];
+    const expected = q.correct_answer as number | number[] | null;
     const correct = q.kind === "single"
-      ? submitted === q.answer
+      ? submitted === expected
       : q.kind === "multi"
-        ? Array.isArray(submitted) && submitted.length === q.answers.length && [...submitted].sort().every((v, i) => v === [...q.answers].sort()[i])
+        ? Array.isArray(submitted) && Array.isArray(expected) && submitted.length === expected.length && [...submitted].sort().every((v, i) => v === [...expected].sort()[i])
         : q.kind === "ordering"
-          ? Array.isArray(submitted) && submitted.length === q.answer.length && submitted.every((v, i) => v === q.answer[i])
+          ? Array.isArray(submitted) && Array.isArray(expected) && submitted.length === expected.length && submitted.every((v, i) => v === expected[i])
           : false;
     if (q.kind !== "task" && correct) {
       mcq += q.points;
@@ -153,7 +204,7 @@ async function gradeAttempt(attemptId: string) {
     QUESTIONS.filter((q) => q.kind === "task").map(async (q) => {
       if (q.kind !== "task") return;
       try {
-        const r = await gradeTask(q, String(answers[q.id] ?? ""));
+        const r = await gradeTask({ prompt: q.prompt, scenario: q.scenario ?? "", rubric: q.rubric ?? "", points: Number(q.points) }, String(answers[q.id] ?? ""));
         feedback[q.id] = r;
         domain[q.domain].earned += r.score;
       } catch (e) {
@@ -183,7 +234,9 @@ async function buildView(att: any, examFinished: boolean): Promise<AttemptView> 
   const graded = att.status === "graded" || att.status === "needs_review";
   let review: ReviewItem[] | null = null;
   if (graded && examFinished) {
-    const { QUESTIONS, DOMAINS } = await import("./exam-bank.server");
+    const { DOMAINS } = await import("./exam-bank.server");
+    const challenge = att.challenges as { slug?: string } | null;
+    const QUESTIONS = await loadExamQuestions(challenge?.slug ?? "claude-architect");
     const answers = (att.answers ?? {}) as Answers;
     const fb = (att.task_feedback ?? {}) as Record<string, { score: number | null; feedback: string }>;
     review = QUESTIONS.map((q) => {
@@ -193,16 +246,16 @@ async function buildView(att: any, examFinished: boolean): Promise<AttemptView> 
       };
        if (q.kind !== "task") {
          const submitted = answers[q.id];
-         const answer = q.kind === "multi" ? q.answers : q.answer;
+         const answer = q.correct_answer as number | number[];
          const ok = q.kind === "single"
            ? submitted === answer
            : Array.isArray(submitted) && Array.isArray(answer) && submitted.length === answer.length &&
              (q.kind === "ordering"
                ? submitted.every((v, i) => v === answer[i])
                : [...submitted].sort().every((v, i) => v === [...answer].sort()[i]));
-         return { ...base, choices: q.choices, answer, correct: ok, earned: ok ? q.points : 0, presentation: q.presentation, exhibit: q.exhibit };
+         return { ...base, choices: q.choices as string[], answer, correct: ok, earned: ok ? Number(q.points) : 0, presentation: q.presentation as PublicQuestion["presentation"], exhibit: q.exhibit ?? undefined };
       }
-       return { ...base, scenario: q.scenario, starter: q.starter, presentation: q.presentation, correct: null, earned: fb[q.id]?.score ?? 0, feedback: fb[q.id]?.feedback };
+       return { ...base, scenario: q.scenario ?? undefined, starter: q.starter ?? undefined, presentation: q.presentation as PublicQuestion["presentation"], correct: null, earned: fb[q.id]?.score ?? 0, feedback: fb[q.id]?.feedback };
     });
   }
   return {
@@ -254,7 +307,7 @@ export const getExamQuestions = createServerFn({ method: "POST" })
     const { data: att } = await supabaseAdmin
       .from("exam_attempts").select("id").eq("edit_token", data.token).eq("challenge_id", row.id).maybeSingle();
     if (!att) throw new Error("Attempt not found");
-    return publicQuestions();
+    return publicQuestions(data.slug);
   });
 
 export const getMyAttempt = createServerFn({ method: "POST" })
@@ -329,7 +382,7 @@ export const adminGetExam = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context as any);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { QUESTIONS } = await import("./exam-bank.server");
+    const QUESTIONS = await loadExamQuestions(data.slug);
     const { row } = await loadChallenge(data.slug);
     const { data: rows } = await supabaseAdmin
       .from("exam_attempts")
@@ -342,6 +395,85 @@ export const adminGetExam = createServerFn({ method: "POST" })
       total_questions: QUESTIONS.length,
       answers: undefined,
     }));
+  });
+
+const ExamQuestionSchema = z.object({
+  id: z.string().trim().min(1).max(80).regex(/^[a-zA-Z0-9_-]+$/),
+  exam_slug: z.string().trim().min(1).max(60),
+  kind: z.enum(["single", "multi", "ordering", "task"]),
+  domain: z.enum(["agentic", "tools_mcp", "claude_code", "prompting", "context"]),
+  prompt: z.string().trim().min(5).max(5000),
+  choices: z.array(z.string().trim().min(1).max(1000)).min(2).max(10).nullable(),
+  correct_answer: z.union([z.number().int().min(0).max(20), z.array(z.number().int().min(0).max(20)).max(20)]).nullable(),
+  scenario: z.string().max(8000).nullable(),
+  rubric: z.string().max(8000).nullable(),
+  explanation: z.string().trim().min(2).max(5000),
+  points: z.number().positive().max(100),
+  presentation: z.enum(["terminal", "architecture", "code", "incident", "workflow"]).nullable(),
+  exhibit: z.string().max(8000).nullable(),
+  starter: z.string().max(8000).nullable(),
+  order_index: z.number().int().min(0).max(10000),
+  active: z.boolean(),
+}).superRefine((q, ctx) => {
+  if (q.kind === "task") {
+    if (!q.scenario?.trim()) ctx.addIssue({ code: "custom", path: ["scenario"], message: "Scenario is required" });
+    if (!q.rubric?.trim()) ctx.addIssue({ code: "custom", path: ["rubric"], message: "Rubric is required" });
+  } else {
+    if (!q.choices) ctx.addIssue({ code: "custom", path: ["choices"], message: "Choices are required" });
+    if (q.correct_answer === null) ctx.addIssue({ code: "custom", path: ["correct_answer"], message: "Correct answer is required" });
+  }
+});
+
+export const adminGetExamQuestions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => z.object({ slug: z.string().min(1).max(60) }).parse(i))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as any);
+    const { DOMAINS } = await import("./exam-bank.server");
+    const rows = await loadExamQuestions(data.slug, true);
+    return rows.map((q) => ({
+      id: q.id, kind: q.kind, domain: q.domain, domain_label: DOMAINS[q.domain as keyof typeof DOMAINS],
+      prompt: q.prompt, scenario: q.scenario ?? undefined, choices: q.choices as string[] | undefined,
+      points: Number(q.points), presentation: q.presentation as PublicQuestion["presentation"], exhibit: q.exhibit ?? undefined,
+      starter: q.starter ?? undefined, correct_answer: q.correct_answer as number | number[] | null,
+      explanation: q.explanation, rubric: q.rubric ?? undefined, order_index: q.order_index, active: q.active,
+    })) satisfies AdminExamQuestion[];
+  });
+
+export const adminSaveExamQuestion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => ExamQuestionSchema.parse(i))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const payload = {
+      id: data.id, exam_slug: data.exam_slug, kind: data.kind, domain: data.domain, prompt: data.prompt,
+      choices: data.kind === "task" ? null : data.choices,
+      correct_answer: data.kind === "task" ? null : data.correct_answer,
+      scenario: data.kind === "task" ? data.scenario : null,
+      rubric: data.kind === "task" ? data.rubric : null,
+      explanation: data.explanation, points: data.points, presentation: data.presentation,
+      exhibit: data.kind === "task" ? null : data.exhibit,
+      starter: data.kind === "task" ? data.starter : null,
+      order_index: data.order_index, active: data.active,
+    };
+    const { error } = await supabaseAdmin.from("exam_questions").upsert(payload);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteExamQuestion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => z.object({ slug: z.string().min(1).max(60), id: z.string().min(1).max(80) }).parse(i))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as any);
+    const rows = await loadExamQuestions(data.slug, true);
+    const q = rows.find((item) => item.id === data.id);
+    if (!q) throw new Error("Question not found");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("exam_questions").upsert({ ...q, active: false });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const adminGradeAttempt = createServerFn({ method: "POST" })
