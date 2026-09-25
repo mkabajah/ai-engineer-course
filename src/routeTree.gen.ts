@@ -24,6 +24,7 @@ import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
+import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
 
 const ThanksRoute = ThanksRouteImport.update({
@@ -102,6 +103,11 @@ const ChallengesSlugLeaderboardRoute =
     path: '/challenges/$slug/leaderboard',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminExamQuestionsRoute = AdminExamQuestionsRouteImport.update({
+  id: '/exam_/questions',
+  path: '/exam/questions',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   id: '/applications/$id',
   path: '/applications/$id',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/exam/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
 export interface FileRoutesByTo {
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/exam/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
 export interface FileRoutesById {
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
+  '/admin/exam_/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug_/leaderboard': typeof ChallengesSlugLeaderboardRoute
 }
 export interface FileRouteTypes {
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/challenges/$slug'
     | '/exams/$slug'
     | '/admin/applications/$id'
+    | '/admin/exam/questions'
     | '/challenges/$slug/leaderboard'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/challenges/$slug'
     | '/exams/$slug'
     | '/admin/applications/$id'
+    | '/admin/exam/questions'
     | '/challenges/$slug/leaderboard'
   id:
     | '__root__'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/challenges/$slug'
     | '/exams/$slug'
     | '/admin/applications/$id'
+    | '/admin/exam_/questions'
     | '/challenges/$slug_/leaderboard'
   fileRoutesById: FileRoutesById
 }
@@ -337,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChallengesSlugLeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/exam_/questions': {
+      id: '/admin/exam_/questions'
+      path: '/exam/questions'
+      fullPath: '/admin/exam/questions'
+      preLoaderRoute: typeof AdminExamQuestionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/applications/$id': {
       id: '/admin/applications/$id'
       path: '/applications/$id'
@@ -357,6 +376,7 @@ interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminQuestionsRoute: typeof AdminQuestionsRoute
   AdminApplicationsIdRoute: typeof AdminApplicationsIdRoute
+  AdminExamQuestionsRoute: typeof AdminExamQuestionsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -369,6 +389,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminQuestionsRoute: AdminQuestionsRoute,
   AdminApplicationsIdRoute: AdminApplicationsIdRoute,
+  AdminExamQuestionsRoute: AdminExamQuestionsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

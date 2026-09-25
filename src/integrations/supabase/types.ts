@@ -350,6 +350,77 @@ export type Database = {
           },
         ]
       }
+      exam_questions: {
+        Row: {
+          active: boolean
+          choices: Json | null
+          correct_answer: Json | null
+          created_at: string
+          domain: string
+          exam_slug: string
+          exhibit: string | null
+          explanation: string
+          id: string
+          kind: string
+          order_index: number
+          points: number
+          presentation: string | null
+          prompt: string
+          rubric: string | null
+          scenario: string | null
+          starter: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          choices?: Json | null
+          correct_answer?: Json | null
+          created_at?: string
+          domain: string
+          exam_slug: string
+          exhibit?: string | null
+          explanation?: string
+          id: string
+          kind: string
+          order_index?: number
+          points?: number
+          presentation?: string | null
+          prompt: string
+          rubric?: string | null
+          scenario?: string | null
+          starter?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          choices?: Json | null
+          correct_answer?: Json | null
+          created_at?: string
+          domain?: string
+          exam_slug?: string
+          exhibit?: string | null
+          explanation?: string
+          id?: string
+          kind?: string
+          order_index?: number
+          points?: number
+          presentation?: string | null
+          prompt?: string
+          rubric?: string | null
+          scenario?: string | null
+          starter?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_questions_exam_slug_fkey"
+            columns: ["exam_slug"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       quiz_questions: {
         Row: {
           active: boolean
