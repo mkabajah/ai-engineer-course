@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import {
   ArrowLeft,
@@ -22,9 +22,6 @@ const TOTAL_SESSIONS = 33;
 const PROGRESS = Math.round((CURRENT_SESSION / TOTAL_SESSIONS) * 100);
 
 export const Route = createFileRoute("/cohort/$cohortId")({
-  beforeLoad: ({ params }) => {
-    if (params.cohortId !== "1") throw notFound();
-  },
   head: () => ({
     meta: [
       { title: "Cohort 01 Impact — HasoubLabs AI Engineer Accelerator" },
@@ -35,7 +32,6 @@ export const Route = createFileRoute("/cohort/$cohortId")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  notFoundComponent: CohortNotFound,
   component: CohortImpact,
 });
 
@@ -155,8 +151,4 @@ function CohortImpact() {
 
 function CohortHeader({ label }: { label: string }) {
   return <header className="relative z-20 border-b border-rule bg-background/90 backdrop-blur-md"><div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-6"><Link to="/" className="flex min-w-0 items-center gap-3"><img src={logoAsset.url} alt="HasoubLabs" className="h-8 w-auto shrink-0" /><span className="hidden border-l border-rule pl-3 text-xs uppercase tracking-[0.18em] text-muted-foreground sm:block">{label}</span></Link><Link to="/cohort" className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest transition-colors hover:text-primary"><ArrowLeft className="h-3.5 w-3.5" />All cohorts</Link></div></header>;
-}
-
-function CohortNotFound() {
-  return <main className="flex min-h-screen items-center justify-center bg-background px-5 text-center"><div><div className="label-eyebrow text-primary">Cohort not found</div><h1 className="serif mt-4 text-5xl">This journey is not available.</h1><Link to="/cohort" className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">View all cohorts <ArrowUpRight className="h-4 w-4" /></Link></div></main>;
 }
