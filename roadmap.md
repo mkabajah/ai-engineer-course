@@ -14,3 +14,5 @@
 
 - [x] Make Challenge #2 a varied interactive exam with visual and hands-on question formats.
 - [x] Consolidate Challenge #1 and Challenge #2 under one scalable admin Challenges area.
+- [ ] Let admins view, add, edit, reorder, and remove Challenge #2 exam questions.
+- [ ] Keep correct answers and grading rubrics private while preserving existing attempts.
