@@ -18,3 +18,5 @@
 - [ ] Keep correct answers and grading rubrics private while preserving existing attempts.
 - [x] Add a public Cohort 01 journey page with session progress and confirmed outcomes.
 - [x] Add the Cohort page to the public navigation and align the final-session date.
+- [x] Turn Cohort into a directory with one live cohort and scalable future entries.
+- [x] Expand Cohort 01 into a richer NGO-facing impact story using verified and clearly derived metrics.
