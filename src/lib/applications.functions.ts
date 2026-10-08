@@ -27,7 +27,7 @@ const ApplicationInput = z.object({
   employment_role: z.string().max(160).optional().nullable(),
   english_level: z.number().int().min(1).max(5).optional().nullable(),
   english_sample: z.string().trim().min(30).max(1500).optional().nullable(),
-  time_commitment_ok: z.literal(true, { errorMap: () => ({ message: "Time commitment must be confirmed" }) }),
+  time_commitment_ok: z.literal(true, { message: "Time commitment must be confirmed" }),
   time_commitment_note: z.string().trim().max(600).optional().nullable(),
   financial_ack: z.boolean(),
   github_url: optionalUrl,
