@@ -101,7 +101,7 @@ export type Leaderboard = {
   exam: ExamBoardRow[];
   server_now: string;
 };
-export type TestRow = { id: string; result: "PASS" | "FAIL" | "ERROR"; earned: number };
+export type TestRow = { id: string; result: "PASS" | "FAIL" | "ERROR" | "LOCKED"; earned: number };
 export type MySubmission = {
   id: string;
   challenge_id: string;
