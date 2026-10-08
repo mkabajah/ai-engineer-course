@@ -29,3 +29,6 @@ export const BUCKET_SUBMISSIONS = "obp-submissions";
 export const BUCKET_SNAPSHOTS = "obp-snapshots";
 export const BUCKET_DOWNLOADS = "obp-downloads";
 export const PACK_PATH = "mission-pack/orbit-shop-mission-pack.zip";
+/** Private organizer files (the kit with answers + the runbook). Admin-only signed links. */
+export const BUCKET_ORGANIZER = "obp-organizer";
+export const ORGANIZER_FILES = ["operation-broken-prod.zip", "ORGANIZER_RUNBOOK.md"] as const;

@@ -1232,6 +1232,34 @@ export const obpAdminPackUploadUrl = createServerFn({ method: "POST" })
     };
   });
 
+/** Organizer kit + runbook: short-lived signed download links (admins only). */
+export const obpAdminOrganizerKit = createServerFn({ method: "GET" })
+  .middleware([requireObpAdmin])
+  .handler(async () => {
+    const { db, BUCKET_ORGANIZER, ORGANIZER_FILES } = await server();
+    const c = await db();
+    const { data: list } = await c.storage.from(BUCKET_ORGANIZER).list("kit");
+    const files = [];
+    for (const name of ORGANIZER_FILES) {
+      const meta = (list ?? []).find((f) => f.name === name);
+      if (!meta) continue;
+      const { data } = await c.storage
+        .from(BUCKET_ORGANIZER)
+        .createSignedUrl(
+          `kit/${name}`,
+          600,
+          name.endsWith(".zip") ? { download: name } : undefined,
+        );
+      files.push({
+        name,
+        url: data?.signedUrl ?? null,
+        size: (meta.metadata as { size?: number } | null)?.size ?? null,
+        updated_at: meta.updated_at ?? null,
+      });
+    }
+    return { files };
+  });
+
 const S_ResetEvent = z.object({ confirm: z.literal("RESET") });
 export const obpAdminResetEvent = createServerFn({ method: "POST" })
   .middleware([requireObpAdmin])
