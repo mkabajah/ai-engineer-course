@@ -208,10 +208,18 @@ export function parseVerdict(text: string, max: number): Verdict | null {
     const v = JSON.parse(text.slice(start, end + 1));
     if (typeof v.score !== "number") return null;
     const injection = Boolean(v.injection_attempt);
+    const breakdown = Array.isArray(v.breakdown) ? v.breakdown.slice(0, 12) : [];
+    // Models sometimes report a total that doesn't match their own breakdown: the breakdown wins.
+    const parts = breakdown.map((b: { points?: unknown }) => Number(b?.points));
+    const sum =
+      parts.length && parts.every((n: number) => Number.isFinite(n))
+        ? parts.reduce((a: number, b: number) => a + b, 0)
+        : null;
+    const raw = sum !== null ? sum : v.score;
     return {
-      score: injection ? 0 : Math.max(0, Math.min(max, Math.round(v.score))),
+      score: injection ? 0 : Math.max(0, Math.min(max, Math.round(raw))),
       max,
-      breakdown: Array.isArray(v.breakdown) ? v.breakdown.slice(0, 12) : [],
+      breakdown,
       feedback: String(v.feedback ?? "").slice(0, 400),
       injection_attempt: injection,
     };

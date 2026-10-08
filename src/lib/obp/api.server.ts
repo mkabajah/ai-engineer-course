@@ -32,7 +32,7 @@ export type Deps = {
   updateSettings?: (
     patch: Record<string, unknown>,
   ) => Promise<{ error: { message: string } | null }>;
-  ai?: (system: string, prompt: string, maxTokens: number) => Promise<string>;
+  ai?: (system: string, prompt: string, maxTokens: number, model?: string) => Promise<string>;
   organizerSecret?: string;
   siteUrl?: string;
   now?: () => Date;
@@ -223,7 +223,14 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
     if (!prompt) return json({ error: "prompt required" }, 400);
     try {
       return json({
-        text: await deps.ai(system, prompt, Math.min(4000, intOrNull(body!.max_tokens) ?? 1500)),
+        text: await deps.ai(
+          system,
+          prompt,
+          Math.min(4000, intOrNull(body!.max_tokens) ?? 1500),
+          typeof body!.model === "string" && /^[\w./-]{3,60}$/.test(body!.model)
+            ? body!.model
+            : undefined,
+        ),
       });
     } catch (e) {
       return json({ error: (e as Error).message }, 502);
@@ -437,9 +444,15 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         code: t.join_code,
       }));
     },
-    ai: async (system, prompt, maxTokens) => {
-      const { callModel } = await import("./judge.server");
-      return callModel({ system, content: [{ type: "text", text: prompt }], maxTokens });
+    ai: async (system, prompt, maxTokens, model) => {
+      const { callModel, modelEnv } = await import("./judge.server");
+      const env = modelEnv();
+      return callModel({
+        system,
+        content: [{ type: "text", text: prompt }],
+        maxTokens,
+        env: model ? { ...env, model } : env,
+      });
     },
     organizerSecret: process.env.ORBIT_ORGANIZER_SECRET,
     siteUrl: process.env.ORBIT_SITE_URL || (origin ? `${origin}/broken-prod` : undefined),
