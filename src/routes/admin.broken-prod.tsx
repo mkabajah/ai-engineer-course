@@ -995,7 +995,7 @@ function SetupTab({ data, act }: { data: AdminOverview; act: Act }) {
         });
       if (error) throw new Error(error.message);
       await obpAdminUpdateSettings({
-        data: { download_url: `${signed.public_url}?v=${Date.now()}` },
+        data: { download_url: `${window.location.origin}/api/orbit/download?v=${Date.now()}` },
       });
       toast.success("Mission pack uploaded: the Download button is live");
     } catch (e) {

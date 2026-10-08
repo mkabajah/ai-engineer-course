@@ -19,6 +19,7 @@ export type RpcResult = { data: unknown; error: { message: string } | null };
 export type Deps = {
   rpc: (fn: string, args: Record<string, unknown>) => Promise<RpcResult>;
   upload: (path: string, bytes: Uint8Array) => Promise<{ error: { message: string } | null }>;
+  signedPack?: () => Promise<string | null>;
   signedDownload: (
     path: string,
   ) => Promise<{ url: string | null; error: { message: string } | null }>;
@@ -201,6 +202,17 @@ export async function handle(req: Request, subpath: string, deps: Deps): Promise
     if (route.startsWith("organizer/"))
       return await organizer(req, route.slice("organizer/".length), deps);
 
+    // Mission pack download: the bucket is private, so hand out a short-lived signed link
+    if (req.method === "GET" && route === "download") {
+      const url = deps.signedPack ? await deps.signedPack() : null;
+      if (!url)
+        return json({ error: "The mission pack isn't uploaded yet — ask the organizer" }, 404);
+      return new Response(null, {
+        status: 302,
+        headers: { ...cors, location: url, "cache-control": "no-store" },
+      });
+    }
+
     if (req.method === "GET" && route === "") {
       const i = await deps.info();
       return json({
@@ -336,6 +348,13 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         .from(BUCKET_SNAPSHOTS)
         .upload(path, bytes, { contentType: "application/gzip", upsert: false });
       return { error: error ? { message: error.message } : null };
+    },
+    signedPack: async () => {
+      const { BUCKET_DOWNLOADS, PACK_PATH } = await import("./db.server");
+      const { data } = await client.storage
+        .from(BUCKET_DOWNLOADS)
+        .createSignedUrl(PACK_PATH, 600, { download: "orbit-shop-mission-pack.zip" });
+      return data?.signedUrl ?? null;
     },
     signedDownload: async (path) => {
       const { data, error } = await client.storage
