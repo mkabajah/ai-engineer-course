@@ -436,6 +436,10 @@ function Cockpit({
         <HiddenTests tests={tests} stageId={testStage} now={now} />
       )}
 
+      {state.current_stage === 1 && state.tickets.length > 0 && (
+        <SupportInbox tickets={state.tickets} now={now} />
+      )}
+
       {state.current_stage === 4 && (
         <Link
           to="/broken-prod/exam"
@@ -596,6 +600,62 @@ function HiddenTests({
           : "API contract + plot-twist acceptance tests."}{" "}
         🩸 First to pass a nasty test draws First Blood.
       </p>
+    </section>
+  );
+}
+
+function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: number }) {
+  const [open, setOpen] = useState<string | null>(null);
+  const fresh = (t: PublicState["tickets"][number]) =>
+    now - new Date(t.released_at).getTime() < 5 * 60_000;
+  return (
+    <section className="rounded-md border border-rule bg-card p-5">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <div className="label-eyebrow">📮 Support inbox</div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            New tickets arrive during the stage. Not every ticket is accurate, and not every bug has
+            a ticket. Your agent can't see this page: you decide what to give it.
+          </p>
+        </div>
+        <span className="font-mono text-xs text-muted-foreground">{tickets.length} tickets</span>
+      </div>
+      <ul className="mt-4 divide-y divide-rule rounded-sm border border-rule">
+        {tickets.map((t) => {
+          const isOpen = open === t.id || fresh(t);
+          return (
+            <li key={t.id} className={fresh(t) ? "bg-primary/[0.04]" : ""}>
+              <button
+                onClick={() => setOpen(open === t.id ? null : t.id)}
+                className="flex w-full items-baseline gap-3 px-3 py-2.5 text-left text-sm"
+              >
+                <span className="w-12 shrink-0 font-mono text-xs text-muted-foreground">
+                  #{t.id}
+                </span>
+                <span className="flex-1 font-medium">
+                  {fresh(t) && (
+                    <span className="mr-2 rounded-sm bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                      NEW
+                    </span>
+                  )}
+                  {t.title}
+                </span>
+                <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
+                  {t.from}
+                </span>
+                <span className="w-16 shrink-0 text-right text-[11px] text-muted-foreground">
+                  {timeAgo(t.released_at, now)}
+                </span>
+              </button>
+              {isOpen && (
+                <div className="px-3 pb-3 pl-[4.75rem] text-sm text-muted-foreground">
+                  <Markdown text={t.body_md} />
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
