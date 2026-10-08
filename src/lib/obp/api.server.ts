@@ -219,8 +219,20 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
   }
   if (req.method === "POST" && route === "kit-upload") {
     const name = String(body!.name ?? "");
-    if (!["operation-broken-prod.zip", "ORGANIZER_RUNBOOK.md"].includes(name))
-      return json({ error: "name must be operation-broken-prod.zip or ORGANIZER_RUNBOOK.md" }, 400);
+    if (
+      ![
+        "operation-broken-prod.zip",
+        "ORGANIZER_RUNBOOK.md",
+        "orbit-shop-mission-pack.zip",
+      ].includes(name)
+    )
+      return json(
+        {
+          error:
+            "name must be operation-broken-prod.zip, ORGANIZER_RUNBOOK.md or orbit-shop-mission-pack.zip",
+        },
+        400,
+      );
     if (!deps.kitUploadUrl) return json({ error: "not available" }, 503);
     const r = await deps.kitUploadUrl(name);
     if (!r.url) return json({ error: r.error ?? "upload not available" }, 400);
@@ -442,10 +454,15 @@ export async function defaultDeps(req: Request): Promise<Deps> {
       return data?.signedUrl ?? null;
     },
     kitUploadUrl: async (name) => {
-      const { BUCKET_ORGANIZER } = await import("./db.server");
+      const { BUCKET_ORGANIZER, BUCKET_DOWNLOADS, PACK_PATH } = await import("./db.server");
+      // the participants' mission pack goes where Admin → Setup → "Upload mission pack" puts it
+      const [bucket, path] =
+        name === "orbit-shop-mission-pack.zip"
+          ? [BUCKET_DOWNLOADS, PACK_PATH]
+          : [BUCKET_ORGANIZER, `kit/${name}`];
       const { data, error } = await client.storage
-        .from(BUCKET_ORGANIZER)
-        .createSignedUploadUrl(`kit/${name}`, { upsert: true });
+        .from(bucket)
+        .createSignedUploadUrl(path, { upsert: true });
       return { url: data?.signedUrl ?? null, error: error?.message ?? null };
     },
     signedDownload: async (path) => {
