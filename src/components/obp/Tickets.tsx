@@ -38,29 +38,52 @@ export function SeverityChip({ s, dark = false }: { s: Severity; dark?: boolean 
   );
 }
 
+/** A ticket that arrived after the stage started (the first batch at the start is not "new"). */
+export function isLateTicket(t: Ticket, stageStartedAt: string | null | undefined) {
+  if (!stageStartedAt) return true;
+  return new Date(t.released_at).getTime() - new Date(stageStartedAt).getTime() > 30_000;
+}
+
+/** Released less than `ms` ago AND after the stage's first batch. */
+export function isFreshTicket(
+  t: Ticket,
+  now: number,
+  stageStartedAt: string | null | undefined,
+  ms = 90_000,
+) {
+  return isLateTicket(t, stageStartedAt) && now - new Date(t.released_at).getTime() < ms;
+}
+
 /**
- * Detects tickets that arrive while the page is open (not the ones already there on load).
- * Returns the ticket to alert about and until when.
+ * Detects tickets that arrive while the page is open (not the first batch at the stage start,
+ * not the ones already there on load). Returns the ticket to alert about and until when.
  */
-export function useNewTicketAlert(tickets: Ticket[] | undefined, now: number, holdMs = 12_000) {
+export function useNewTicketAlert(
+  tickets: Ticket[] | undefined,
+  now: number,
+  stageStartedAt: string | null | undefined,
+  holdMs = 12_000,
+) {
   const seen = useRef<Set<string> | null>(null);
   const [alert, setAlert] = useState<{ ticket: Ticket; until: number } | null>(null);
   useEffect(() => {
     if (!tickets) return;
     if (seen.current === null) {
-      // first load: anything released in the last 20 s still deserves the siren
+      // first load: a late ticket released in the last 20 s still deserves the siren
       seen.current = new Set(
-        tickets.filter((t) => now - new Date(t.released_at).getTime() > 20_000).map((t) => t.id),
+        tickets.filter((t) => !isFreshTicket(t, now, stageStartedAt, 20_000)).map((t) => t.id),
       );
     }
-    const fresh = tickets.filter((t) => !seen.current!.has(t.id));
+    const fresh = tickets.filter(
+      (t) => !seen.current!.has(t.id) && isLateTicket(t, stageStartedAt),
+    );
+    tickets.forEach((t) => seen.current!.add(t.id));
     if (fresh.length) {
-      fresh.forEach((t) => seen.current!.add(t.id));
       // the most severe of the new ones wins
       const pick = [...fresh].sort((a, b) => a.severity.localeCompare(b.severity))[0];
       setAlert({ ticket: pick, until: Date.now() + holdMs });
     }
-  }, [tickets, now, holdMs]);
+  }, [tickets, now, stageStartedAt, holdMs]);
   useEffect(() => {
     if (!alert) return;
     const t = setTimeout(() => setAlert(null), Math.max(0, alert.until - Date.now()));
@@ -119,6 +142,7 @@ export function EmergencyStyles() {
     <style>{`
       @keyframes obp-beacon-spin { to { transform: rotate(360deg); } }
       @keyframes obp-flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+      @keyframes obp-glow { 0%, 100% { background-color: rgba(229,72,77,0.35); } 50% { background-color: rgba(229,72,77,0.08); } }
       @keyframes obp-frame {
         0%, 100% { box-shadow: inset 0 0 0 6px rgba(229,72,77,0.95), inset 0 0 120px rgba(229,72,77,0.55); }
         50% { box-shadow: inset 0 0 0 6px rgba(229,72,77,0.15), inset 0 0 40px rgba(229,72,77,0.1); }
@@ -132,6 +156,7 @@ export function EmergencyStyles() {
         filter: blur(18px);
       }
       .obp-flash { animation: obp-flash 0.9s ease-in-out infinite; }
+      .obp-glow { animation: obp-glow 0.9s ease-in-out infinite; }
       .obp-frame { animation: obp-frame 0.9s ease-in-out infinite; }
       .obp-pop { animation: obp-pop 0.35s ease-out both; }
       .obp-sweep::after {
@@ -140,7 +165,7 @@ export function EmergencyStyles() {
         animation: obp-sweep 1.6s linear infinite;
       }
       @media (prefers-reduced-motion: reduce) {
-        .obp-beacon, .obp-flash, .obp-frame, .obp-sweep::after { animation: none; }
+        .obp-beacon, .obp-flash, .obp-glow, .obp-frame, .obp-sweep::after { animation: none; }
       }
     `}</style>
   );

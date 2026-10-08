@@ -25,7 +25,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { Markdown } from "@/components/obp/Markdown";
-import { Beacon, EmergencyStyles, SeverityChip, useNewTicketAlert } from "@/components/obp/Tickets";
+import {
+  Beacon,
+  EmergencyStyles,
+  SeverityChip,
+  isFreshTicket,
+  useNewTicketAlert,
+} from "@/components/obp/Tickets";
 import {
   Announcements,
   ObpNav,
@@ -438,7 +444,11 @@ function Cockpit({
       )}
 
       {state.current_stage === 1 && state.tickets.length > 0 && (
-        <SupportInbox tickets={state.tickets} now={now} />
+        <SupportInbox
+          tickets={state.tickets}
+          now={now}
+          stageStartedAt={state.stages.find((x) => x.id === 1)?.started_at ?? null}
+        />
       )}
 
       {state.current_stage === 4 && (
@@ -605,11 +615,19 @@ function HiddenTests({
   );
 }
 
-function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: number }) {
+function SupportInbox({
+  tickets,
+  now,
+  stageStartedAt,
+}: {
+  tickets: PublicState["tickets"];
+  now: number;
+  stageStartedAt: string | null;
+}) {
   const [open, setOpen] = useState<string | null>(null);
-  const alert = useNewTicketAlert(tickets, now, 20_000);
+  const alert = useNewTicketAlert(tickets, now, stageStartedAt, 20_000);
   const fresh = (t: PublicState["tickets"][number]) =>
-    now - new Date(t.released_at).getTime() < 5 * 60_000;
+    isFreshTicket(t, now, stageStartedAt, 5 * 60_000);
   return (
     <section
       className={`relative overflow-hidden rounded-md border bg-card p-5 ${alert ? "obp-frame border-primary" : "border-rule"}`}
@@ -641,7 +659,7 @@ function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: 
       <ul className="mt-4 divide-y divide-rule rounded-sm border border-rule">
         {tickets.map((t) => {
           // a late ticket opens itself; the first batch at the stage start stays collapsed
-          const isOpen = open === t.id || (fresh(t) && tickets.filter(fresh).length <= 3);
+          const isOpen = open === t.id || fresh(t);
           return (
             <li key={t.id} className={fresh(t) ? "bg-primary/[0.04]" : ""}>
               <button
