@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   Bot,
   Check,
+  CheckCircle2,
   ClipboardCopy,
   Eye,
   FileUp,
@@ -58,6 +59,7 @@ import {
   obpAdminScreenshotUrls,
   obpAdminUpdateSettings,
   type AdminExamDetail,
+  type Announcement,
   type AdminOverview,
   type AdminQuestionStat,
 } from "@/lib/obp/obp.functions";
@@ -321,28 +323,14 @@ function RunTab({ data, now, act }: { data: AdminOverview; now: number; act: Act
           ))}
         </div>
         {(data.settings.announcement_templates ?? []).length > 0 && (
-          <div className="mt-3">
-            <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
-              Quick templates
-            </div>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {(data.settings.announcement_templates ?? []).map((t) => (
-                <button
-                  key={t.label}
-                  onClick={() => {
-                    setKind(t.kind);
-                    setMsg(t.message_md);
-                  }}
-                  className={`rounded-full border px-2.5 py-1 text-xs hover:border-foreground/40 ${
-                    t.kind === "twist" ? "border-primary/40 text-primary" : "border-rule"
-                  }`}
-                  title="Fills the message. Edit <name> placeholders, then Post."
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <TemplateTimeline
+            templates={data.settings.announcement_templates ?? []}
+            posted={data.announcements}
+            onPick={(t) => {
+              setKind(t.kind);
+              setMsg(t.message_md);
+            }}
+          />
         )}
         <Textarea
           className="mt-3"
@@ -1346,5 +1334,85 @@ function FilePick({
         />
       </span>
     </label>
+  );
+}
+
+type Template = NonNullable<AdminOverview["settings"]["announcement_templates"]>[number];
+
+/** Announcement templates in run-of-show order: time, stage, sent ✓, and the next one to post. */
+function TemplateTimeline({
+  templates,
+  posted,
+  onPick,
+}: {
+  templates: Template[];
+  posted: Announcement[];
+  onPick: (t: Template) => void;
+}) {
+  const mins = (at?: string) => {
+    const m = /^(\d+):(\d{2})$/.exec(at ?? "");
+    return m ? Number(m[1]) * 60 + Number(m[2]) : Infinity;
+  };
+  // a template counts as sent when a posted announcement starts with its text (up to any <placeholder>)
+  const sent = (t: Template) => {
+    const key = t.message_md.split("<")[0].slice(0, 60).trim();
+    return key.length > 0 && posted.some((a) => a.message_md.trim().startsWith(key));
+  };
+  const timed = templates.filter((t) => t.at).sort((a, b) => mins(a.at) - mins(b.at));
+  const anytime = templates.filter((t) => !t.at);
+  const next = timed.find((t) => !sent(t));
+  const row = (t: Template) => {
+    const done = sent(t);
+    const isNext = t === next;
+    return (
+      <li key={t.label}>
+        <button
+          onClick={() => onPick(t)}
+          title={t.note ?? "Fills the message. Edit <name> placeholders, then Post."}
+          className={`flex w-full items-center gap-2 rounded-sm border px-2 py-1 text-left text-xs hover:border-foreground/40 ${
+            isNext
+              ? "border-primary bg-primary/5"
+              : t.kind === "twist"
+                ? "border-primary/40"
+                : "border-rule"
+          } ${done ? "opacity-50" : ""}`}
+        >
+          <span className="w-9 shrink-0 font-mono tabular-nums text-muted-foreground">
+            {t.at || "any"}
+          </span>
+          <span className={`flex-1 ${t.kind === "twist" ? "font-medium text-primary" : ""}`}>
+            {t.label}
+          </span>
+          {t.stage && (
+            <span className="hidden shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground sm:inline">
+              {t.stage}
+            </span>
+          )}
+          {done ? (
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+          ) : isNext ? (
+            <span className="shrink-0 rounded-sm bg-primary px-1.5 text-[10px] font-medium text-primary-foreground">
+              NEXT
+            </span>
+          ) : null}
+        </button>
+      </li>
+    );
+  };
+  return (
+    <div className="mt-3">
+      <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
+        Run of show · time from kickoff
+      </div>
+      <ol className="mt-1.5 max-h-80 space-y-1 overflow-y-auto pr-1">{timed.map(row)}</ol>
+      {anytime.length > 0 && (
+        <>
+          <div className="mt-3 text-[11px] uppercase tracking-widest text-muted-foreground">
+            Anytime
+          </div>
+          <ul className="mt-1.5 space-y-1">{anytime.map(row)}</ul>
+        </>
+      )}
+    </div>
   );
 }

@@ -648,7 +648,16 @@ export type AdminOverview = {
     event_title: string;
     frozen_at: string | null;
     announcement_templates:
-      { label: string; kind: Announcement["kind"]; message_md: string }[] | null;
+      | {
+          label: string;
+          kind: Announcement["kind"];
+          message_md: string;
+          /** clock time from kickoff, e.g. "2:27"; empty = anytime */
+          at?: string;
+          stage?: string;
+          note?: string;
+        }[]
+      | null;
   };
   stages: Stage[];
   participants: {
