@@ -14,6 +14,9 @@
 //   POST /api/orbit/organizer/judged    { code, challenge, points, note }
 //   GET  /api/orbit/organizer/roster                → [{ name, code }]
 //   POST /api/orbit/organizer/ai        { system, prompt, max_tokens? } → { text }   (uses the site's AI provider)
+//   POST /api/orbit/organizer/import    { pack }    → load obp-content-pack.json (same as Admin → Setup)
+//   POST /api/orbit/organizer/stage     { stage }   → open a stage (0 lobby · 1 · 4 · 2 · 3 · 99 finish)
+//   POST /api/orbit/organizer/settings  { event_code?, registration_open?, exam_open?, exam_review_open?, exam_minutes?, frozen? }
 
 export type RpcResult = { data: unknown; error: { message: string } | null };
 export type Deps = {
@@ -26,6 +29,9 @@ export type Deps = {
   info: () => Promise<{ stage: number; registration_open: boolean }>;
   stages: () => Promise<unknown[]>;
   roster: () => Promise<{ name: string; code: string }[]>;
+  updateSettings?: (
+    patch: Record<string, unknown>,
+  ) => Promise<{ error: { message: string } | null }>;
   ai?: (system: string, prompt: string, maxTokens: number) => Promise<string>;
   organizerSecret?: string;
   siteUrl?: string;
@@ -176,6 +182,39 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
     });
     if (error) return json({ error: friendly(error) }, 400);
     return json({ ok: true, result: data });
+  }
+  // Host controls from the organizer laptop (same as the buttons in Admin → Broken Prod)
+  if (req.method === "POST" && route === "import") {
+    const pack = body!.pack as Record<string, unknown> | undefined;
+    if (!pack || pack.format !== "obp-content-pack")
+      return json({ error: "Send { pack: <obp-content-pack.json> }" }, 400);
+    const { data, error } = await deps.rpc("obp_import_content", { p: pack });
+    if (error) return json({ error: friendly(error) }, 400);
+    return json({ ok: true, imported: data });
+  }
+  if (req.method === "POST" && route === "stage") {
+    const { error } = await deps.rpc("obp_open_stage", { p_stage: intOrNull(body!.stage) ?? 0 });
+    if (error) return json({ error: friendly(error) }, 400);
+    return json({ ok: true });
+  }
+  if (req.method === "POST" && route === "settings") {
+    if (!deps.updateSettings) return json({ error: "not available" }, 503);
+    const patch: Record<string, unknown> = {};
+    if (typeof body!.event_code === "string" && body!.event_code.trim().length >= 3)
+      patch.event_code = body!.event_code.trim().slice(0, 40);
+    for (const k of ["registration_open", "exam_open", "exam_review_open", "leaderboard_frozen"])
+      if (typeof body![k] === "boolean" && k !== "leaderboard_frozen") patch[k] = body![k];
+    if (typeof body!.exam_minutes === "number")
+      patch.exam_minutes = Math.max(1, Math.min(180, Math.trunc(body!.exam_minutes)));
+    if (typeof body!.frozen === "boolean") {
+      const { error } = await deps.rpc("obp_set_frozen", { p_frozen: body!.frozen });
+      if (error) return json({ error: friendly(error) }, 400);
+    }
+    if (Object.keys(patch).length) {
+      const { error } = await deps.updateSettings(patch);
+      if (error) return json({ error: friendly(error) }, 400);
+    }
+    return json({ ok: true, updated: Object.keys(patch) });
   }
   if (req.method === "POST" && route === "ai") {
     if (!deps.ai) return json({ error: "No AI provider configured on the site" }, 503);
@@ -379,6 +418,13 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         .select("id, title, status, started_at, ends_at, position")
         .order("position");
       return data ?? [];
+    },
+    updateSettings: async (patch) => {
+      const { error } = await client
+        .from("obp_settings")
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq("id", 1);
+      return { error: error ? { message: error.message } : null };
     },
     roster: async () => {
       const { data } = await client
