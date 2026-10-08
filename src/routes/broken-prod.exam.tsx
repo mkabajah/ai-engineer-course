@@ -49,9 +49,21 @@ export const Route = createFileRoute("/broken-prod/exam")({
 const WORDS = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE"];
 
 function ExamPage() {
-  const [code] = useState<string | null>(() => (typeof window === "undefined" ? null : readCode()));
-  const [exam, setExam] = useState<ExamState | null>(null);
+  // Read the code after mount (not during render) so server and client HTML match
+  const [code, setCode] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setCode(readCode());
+    setMounted(true);
+  }, []);
+  const [exam, setExamRaw] = useState<ExamState | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Never move backwards (a slow "ready" poll must not replace a running exam and reset it to question 1)
+  const setExam = useCallback((next: ExamState) => {
+    const rank = (e: ExamState) =>
+      e.status === "submitted" ? 2 : e.status === "in_progress" ? 1 : 0;
+    setExamRaw((prev) => (!prev || rank(next) >= rank(prev) ? next : prev));
+  }, []);
 
   const load = useCallback(async () => {
     if (!code) return;
@@ -61,7 +73,7 @@ function ExamPage() {
     } catch (e) {
       setError(errMsg(e));
     }
-  }, [code]);
+  }, [code, setExam]);
 
   // Poll only while waiting for the host to open the exam (or for the review to open)
   const waiting =
@@ -74,6 +86,12 @@ function ExamPage() {
     [waiting, load],
   );
 
+  if (!mounted)
+    return (
+      <Shell>
+        <div className="h-64 animate-pulse rounded-md bg-muted" />
+      </Shell>
+    );
   if (!code) {
     return (
       <Shell>
@@ -102,7 +120,8 @@ function ExamPage() {
         <div className="h-64 animate-pulse rounded-md bg-muted" />
       </Shell>
     );
-  if (exam.status === "in_progress") return <ExamRunner code={code} exam={exam} onDone={setExam} />;
+  if (exam.status === "in_progress")
+    return <ExamRunner key={exam.started_at} code={code} exam={exam} onDone={setExam} />;
   if (exam.status === "submitted")
     return (
       <Shell>
