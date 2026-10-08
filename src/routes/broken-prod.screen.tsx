@@ -1,8 +1,16 @@
 // Projector view: open on the big screen for the whole event (dark, large type, no interaction needed).
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Board } from "@/components/obp/Board";
 import { Markdown } from "@/components/obp/Markdown";
+import {
+  Beacon,
+  EmergencyStyles,
+  SEVERITY,
+  SeverityChip,
+  useNewTicketAlert,
+  useSiren,
+} from "@/components/obp/Tickets";
 import {
   STAGE_META,
   currentStage,
@@ -32,6 +40,13 @@ function ScreenPage() {
     setState(s);
     setBoard(b);
   }, 4000);
+  const alert = useNewTicketAlert(state?.current_stage === 1 ? state.tickets : undefined, now);
+  const siren = useSiren();
+  const alertId = alert?.ticket.id;
+  useEffect(() => {
+    if (alertId) siren.play();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alertId]);
 
   if (!state || !board) return <div className="min-h-screen bg-[#0B1020]" />;
   const stage = currentStage(state.stages, state.current_stage);
@@ -45,15 +60,20 @@ function ScreenPage() {
   );
   const siteUrl = typeof window === "undefined" ? "" : `${window.location.host}/broken-prod`;
   const examMode = state.current_stage === 4;
-  const newTicket = (state.tickets ?? []).find(
-    (t) => now - new Date(t.released_at).getTime() < 90_000,
-  );
+  const tickets = state.current_stage === 1 ? (state.tickets ?? []) : [];
+  const newTicket = tickets.find((t) => now - new Date(t.released_at).getTime() < 90_000);
+  const counts = (["P1", "P2", "P3"] as const).map((sv) => ({
+    sv,
+    n: tickets.filter((t) => t.severity === sv).length,
+  }));
 
   return (
     <div
       className="relative min-h-screen overflow-hidden bg-[#0B1020] text-[#EEF0F7]"
       style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
+      <EmergencyStyles />
+      {newTicket && <div className="obp-frame pointer-events-none absolute inset-0 z-40" />}
       <div className="grid min-h-screen grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-10 p-12">
         <section className="flex flex-col">
           <div className="flex items-center gap-3 font-mono text-sm uppercase tracking-[0.3em] text-[#FF7A45]">
@@ -105,9 +125,51 @@ function ScreenPage() {
               )}
               {left !== null && (
                 <div
-                  className={`mt-10 font-mono text-[9rem] font-bold leading-none tabular-nums ${left < 5 * 60_000 ? "text-[#FF7A45]" : ""}`}
+                  className={`font-mono font-bold leading-none tabular-nums ${tickets.length ? "mt-6 text-[6.5rem]" : "mt-10 text-[9rem]"} ${left < 5 * 60_000 ? "text-[#FF7A45]" : ""}`}
                 >
                   {fmtClock(left)}
+                </div>
+              )}
+              {tickets.length > 0 && (
+                <div className="mt-8">
+                  <div className="flex items-center gap-4 font-mono text-sm uppercase tracking-[0.25em] text-white/50">
+                    <span>📮 Open tickets · {tickets.length}</span>
+                    {counts.map(({ sv, n }) => (
+                      <span
+                        key={sv}
+                        className="flex items-center gap-1.5 normal-case tracking-normal"
+                      >
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-full"
+                          style={{ background: SEVERITY[sv].dot }}
+                        />
+                        {sv} {n}
+                      </span>
+                    ))}
+                  </div>
+                  <ul className="mt-3 space-y-1.5">
+                    {tickets.slice(0, 6).map((t) => {
+                      const isNew = now - new Date(t.released_at).getTime() < 90_000;
+                      return (
+                        <li
+                          key={t.id}
+                          className={`flex items-center gap-3 rounded-md px-3 py-2 text-xl ${isNew ? "obp-flash bg-[#3A0D12]" : "bg-white/[0.04]"}`}
+                        >
+                          <SeverityChip s={t.severity} dark />
+                          <span className="font-mono text-base text-white/50">#{t.id}</span>
+                          <span className="flex-1 truncate">{t.title}</span>
+                          {isNew && (
+                            <span className="font-mono text-sm font-bold text-[#FF8A8E]">NEW</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {!siren.enabled && (
+                    <div className="mt-3 text-xs text-white/30">
+                      🔈 Click once to enable the siren
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -174,15 +236,23 @@ function ScreenPage() {
               ))}
             </div>
           )}
-          {newTicket && (
-            <div className="mt-4 animate-pulse rounded-md border border-[#FFC2A8]/60 bg-[#7A1426] px-5 py-4 text-2xl">
-              <span className="font-mono text-base uppercase tracking-[0.25em] text-[#FFC2A8]">
-                📮 New support ticket
-              </span>
-              <div className="mt-1 font-semibold">
-                #{newTicket.id} · {newTicket.title}
+          {newTicket && !alert && (
+            <div className="relative mt-4 flex items-center gap-5 overflow-hidden rounded-md border border-[#E5484D] bg-[#3A0D12] px-5 py-4 obp-sweep">
+              <Beacon size={44} />
+              <div className="min-w-0 flex-1">
+                <div className="obp-flash font-mono text-base font-bold uppercase tracking-[0.25em] text-[#FF8A8E]">
+                  🚨 New ticket arrived
+                </div>
+                <div className="mt-1 flex items-center gap-3 text-2xl font-semibold">
+                  <SeverityChip s={newTicket.severity} dark />
+                  <span className="truncate">
+                    #{newTicket.id} · {newTicket.title}
+                  </span>
+                </div>
+                <div className="text-base text-white/60">
+                  {newTicket.from} · check your 📮 inbox
+                </div>
               </div>
-              <div className="text-base text-white/60">{newTicket.from} · check your inbox</div>
             </div>
           )}
           {latest && (
@@ -192,6 +262,33 @@ function ScreenPage() {
           )}
         </section>
       </div>
+
+      {alert && !twist && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#12060A]/95 text-center">
+          <div className="obp-beacon absolute -top-40 left-1/2 h-[46rem] w-[46rem] -translate-x-1/2 rounded-full opacity-80" />
+          <div className="obp-frame pointer-events-none absolute inset-0" />
+          <div className="obp-pop relative flex flex-col items-center px-16">
+            <Beacon size={120} />
+            <div className="obp-flash mt-8 font-mono text-3xl font-bold uppercase tracking-[0.4em] text-[#FF8A8E]">
+              🚨 New ticket arrived
+            </div>
+            <div className="mt-6 flex items-center gap-5">
+              <span
+                className={`rounded-md px-4 py-1.5 font-mono text-4xl font-bold ${SEVERITY[alert.ticket.severity].dark}`}
+              >
+                {SEVERITY[alert.ticket.severity].label}
+              </span>
+              <span className="font-mono text-4xl text-white/50">#{alert.ticket.id}</span>
+            </div>
+            <div className="mt-6 max-w-6xl font-serif text-8xl leading-[1.02]">
+              {alert.ticket.title}
+            </div>
+            <div className="mt-6 text-3xl text-white/60">
+              from {alert.ticket.from} · open your 📮 Support inbox
+            </div>
+          </div>
+        </div>
+      )}
 
       {twist && (
         <div className="absolute inset-0 z-50 flex flex-col justify-center bg-[#7A1426] p-20 text-[#FFF4F0]">

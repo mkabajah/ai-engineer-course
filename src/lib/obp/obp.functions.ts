@@ -44,11 +44,14 @@ export type Announcement = {
   message_md: string;
   created_at: string;
 };
+export type Severity = "P1" | "P2" | "P3";
 export type Ticket = {
   id: string;
   from: string;
   title: string;
   body_md: string;
+  /** as reported by the sender, not the real impact */
+  severity: Severity;
   released_at: string;
 };
 export type AdminTicket = {
@@ -57,6 +60,7 @@ export type AdminTicket = {
   release_min: number;
   from: string;
   title: string;
+  severity: Severity;
   manual_release: string | null;
   scheduled_at: string | null;
 };
@@ -291,11 +295,12 @@ export const obpPublicState = createServerFn({ method: "GET" }).handler(
       exam_open: Boolean(s.exam_open),
       exam_minutes: s.exam_minutes ?? 40,
       tickets: ((tickets.data ?? []) as Ticket[]).map(
-        ({ id, from, title, body_md, released_at }) => ({
+        ({ id, from, title, body_md, severity, released_at }) => ({
           id,
           from,
           title,
           body_md,
+          severity,
           released_at,
         }),
       ),

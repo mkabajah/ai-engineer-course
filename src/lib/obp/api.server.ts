@@ -35,7 +35,14 @@ export type Deps = {
     exam_open: boolean;
     frozen: boolean;
     announcements: { kind: string; message_md: string; created_at: string }[];
-    tickets: { id: string; from: string; title: string; body_md: string; released_at: string }[];
+    tickets: {
+      id: string;
+      from: string;
+      title: string;
+      body_md: string;
+      severity: string;
+      released_at: string;
+    }[];
   }>;
   roster: () => Promise<{ name: string; code: string }[]>;
   updateSettings?: (
@@ -474,13 +481,15 @@ export async function defaultDeps(req: Request): Promise<Deps> {
             from: string;
             title: string;
             body_md: string;
+            severity: string;
             released_at: string;
           }[]
-        ).map(({ id, from, title, body_md, released_at }) => ({
+        ).map(({ id, from, title, body_md, severity, released_at }) => ({
           id,
           from,
           title,
           body_md,
+          severity,
           released_at,
         })),
       };

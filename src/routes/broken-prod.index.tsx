@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { Markdown } from "@/components/obp/Markdown";
+import { Beacon, EmergencyStyles, SeverityChip, useNewTicketAlert } from "@/components/obp/Tickets";
 import {
   Announcements,
   ObpNav,
@@ -606,16 +607,33 @@ function HiddenTests({
 
 function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: number }) {
   const [open, setOpen] = useState<string | null>(null);
+  const alert = useNewTicketAlert(tickets, now, 20_000);
   const fresh = (t: PublicState["tickets"][number]) =>
     now - new Date(t.released_at).getTime() < 5 * 60_000;
   return (
-    <section className="rounded-md border border-rule bg-card p-5">
+    <section
+      className={`relative overflow-hidden rounded-md border bg-card p-5 ${alert ? "obp-frame border-primary" : "border-rule"}`}
+    >
+      <EmergencyStyles />
+      {alert && (
+        <div className="obp-sweep relative -mx-5 -mt-5 mb-4 flex items-center gap-3 overflow-hidden bg-[#3A0D12] px-5 py-3 text-[#FFE4E5]">
+          <Beacon size={30} />
+          <span className="obp-flash font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#FF8A8E]">
+            🚨 New ticket arrived
+          </span>
+          <SeverityChip s={alert.ticket.severity} dark />
+          <span className="truncate text-sm font-semibold">
+            #{alert.ticket.id} · {alert.ticket.title}
+          </span>
+        </div>
+      )}
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <div className="label-eyebrow">📮 Support inbox</div>
           <p className="mt-1 text-xs text-muted-foreground">
-            New tickets arrive during the stage. Not every ticket is accurate, and not every bug has
-            a ticket. Your agent can't see this page: you decide what to give it.
+            New tickets arrive during the stage. Severity is what the sender claims, not the real
+            impact. Not every ticket is accurate, and not every bug has a ticket. Your agent can't
+            see this page: you decide what to give it.
           </p>
         </div>
         <span className="font-mono text-xs text-muted-foreground">{tickets.length} tickets</span>
@@ -630,6 +648,7 @@ function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: 
                 onClick={() => setOpen(open === t.id ? null : t.id)}
                 className="flex w-full items-baseline gap-3 px-3 py-2.5 text-left text-sm"
               >
+                <SeverityChip s={t.severity} />
                 <span className="w-12 shrink-0 font-mono text-xs text-muted-foreground">
                   #{t.id}
                 </span>
@@ -649,7 +668,7 @@ function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: 
                 </span>
               </button>
               {isOpen && (
-                <div className="px-3 pb-3 pl-[4.75rem] text-sm text-muted-foreground">
+                <div className="px-3 pb-3 pl-[6.75rem] text-sm text-muted-foreground">
                   <Markdown text={t.body_md} />
                 </div>
               )}
