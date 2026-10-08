@@ -65,6 +65,7 @@ import {
   type AdminQuestionStat,
 } from "@/lib/obp/obp.functions";
 import { QuestionView } from "@/components/obp/QuestionView";
+import { SeverityChip } from "@/components/obp/Tickets";
 
 export const Route = createFileRoute("/admin/broken-prod")({
   head: () => ({
@@ -1449,6 +1450,7 @@ function TicketsPanel({ data, now, act }: { data: AdminOverview; now: number; ac
               <span className="w-10 shrink-0 font-mono tabular-nums text-muted-foreground">
                 +{t.release_min}m
               </span>
+              <SeverityChip s={t.severity} />
               <span className="flex-1 truncate">
                 #{t.id} {t.title}
               </span>
