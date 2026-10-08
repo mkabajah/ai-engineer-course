@@ -881,7 +881,13 @@ const S_UpdateSettings = z.object({
   exam_open: z.boolean().optional(),
   exam_minutes: z.number().int().min(1).max(180).optional(),
   exam_review_open: z.boolean().optional(),
-  download_url: z.string().trim().url().max(500).nullable().optional(),
+  download_url: z
+    .string()
+    .trim()
+    .max(500)
+    .refine((v) => v.startsWith("/") || /^https:\/\//.test(v), "Use a site path or an https URL")
+    .nullable()
+    .optional(),
   event_title: z.string().trim().min(3).max(80).optional(),
 });
 export const obpAdminUpdateSettings = createServerFn({ method: "POST" })
