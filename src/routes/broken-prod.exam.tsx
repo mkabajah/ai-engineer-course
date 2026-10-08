@@ -36,10 +36,10 @@ export const Route = createFileRoute("/broken-prod/exam")({
       {
         name: "description",
         content:
-          "40 questions, 35 minutes, certification style: Claude Code, Kiro, agents and GenAI fundamentals.",
+          "54 questions, 40 minutes, certification style: Claude Code, Kiro, agents and GenAI fundamentals.",
       },
       { property: "og:title", content: "Broken Prod Certification Exam" },
-      { property: "og:description", content: "40 questions, 35 minutes. Pass at 720/1000." },
+      { property: "og:description", content: "54 questions, 40 minutes. Pass at 720/1000." },
       { property: "og:type", content: "website" },
     ],
   }),
