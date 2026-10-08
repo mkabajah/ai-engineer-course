@@ -351,7 +351,10 @@ function Cockpit({
     return m;
   }, [dash.submissions]);
   const stageStatus = new Map(state.stages.map((s) => [s.id, s.status]));
-  const openChallenges = state.challenges.filter((c) => stageStatus.get(c.stage_id) === "open");
+  const openAll = state.challenges.filter((c) => stageStatus.get(c.stage_id) === "open");
+  // 0-point cards are briefs ("must read"), shown compact above everything else
+  const briefs = openAll.filter((c) => c.points_max === 0);
+  const openChallenges = openAll.filter((c) => c.points_max > 0);
   const pastChallenges = state.challenges.filter(
     (c) => stageStatus.get(c.stage_id) === "closed" && subsByChallenge.has(c.id),
   );
@@ -438,6 +441,10 @@ function Cockpit({
           {stage.subtitle && <p className="mt-1 text-sm text-muted-foreground">{stage.subtitle}</p>}
         </section>
       )}
+
+      {briefs.map((b) => (
+        <MustRead key={b.id} brief={b} />
+      ))}
 
       {(testStage === 1 || testStage === 3) && stage?.status === "open" && (
         <HiddenTests tests={tests} stageId={testStage} now={now} />
@@ -611,6 +618,68 @@ function HiddenTests({
           : "API contract + plot-twist acceptance tests."}{" "}
         🩸 First to pass a nasty test draws First Blood.
       </p>
+    </section>
+  );
+}
+
+/** A 0-point "brief" card (e.g. Business rules v3): compact, expandable, copy + download. */
+function MustRead({ brief }: { brief: Challenge }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const title = brief.title.replace(/^\S+\s+/, "");
+  const md = `# ${title}\n\n${brief.description_md}\n`;
+  const lead = brief.description_md.split("\n")[0].replace(/\*\*/g, "");
+  const ruleCount = (brief.description_md.match(/^\d+\. /gm) ?? []).length;
+  const download = () => {
+    const url = URL.createObjectURL(new Blob([md], { type: "text/markdown" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${brief.id.toLowerCase()}-${title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/-+$/, "")}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(md);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Copy failed: use Download instead");
+    }
+  };
+  return (
+    <section className="rounded-md border-2 border-primary/60 bg-primary/[0.04]">
+      <div className="flex flex-wrap items-center gap-3 p-4">
+        <span className="rounded-sm bg-primary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
+          📌 Must read
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold leading-snug">{brief.title}</div>
+          <div className="truncate text-xs text-muted-foreground">
+            {ruleCount > 0 && `${ruleCount} rules · `}
+            {lead}
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Button size="sm" variant="outline" onClick={copy}>
+            {copied ? "Copied ✓" : "Copy for my agent"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={download}>
+            <Download /> .md
+          </Button>
+          <Button size="sm" onClick={() => setOpen(!open)}>
+            {open ? "Hide" : "Read the rules"}
+          </Button>
+        </div>
+      </div>
+      {open && (
+        <div className="border-t border-primary/20 px-5 pb-5 pt-3">
+          <Markdown text={brief.description_md} className="text-sm" />
+        </div>
+      )}
     </section>
   );
 }
