@@ -9,42 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as ApplyRouteImport } from './routes/apply'
-import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ThanksRouteImport } from './routes/thanks'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
-import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
-import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
-import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
-import { Route as AdminExamRouteImport } from './routes/admin.exam'
-import { Route as AdminGroupsRouteImport } from './routes/admin.groups'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminQuestionsRouteImport } from './routes/admin.questions'
-import { Route as ChallengesSlugRouteImport } from './routes/challenges.$slug'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as CohortIndexRouteImport } from './routes/cohort.index'
-import { Route as CohortCohortIdRouteImport } from './routes/cohort.$cohortId'
 import { Route as ExamsSlugRouteImport } from './routes/exams.$slug'
-import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
-import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
+import { Route as CohortCohortIdRouteImport } from './routes/cohort.$cohortId'
+import { Route as ChallengesSlugRouteImport } from './routes/challenges.$slug'
+import { Route as AdminQuestionsRouteImport } from './routes/admin.questions'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminGroupsRouteImport } from './routes/admin.groups'
+import { Route as AdminExamRouteImport } from './routes/admin.exam'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
+import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
+import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
+import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
+import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApplyRoute = ApplyRouteImport.update({
-  id: '/apply',
-  path: '/apply',
+const ThanksRoute = ThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -52,60 +42,19 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ThanksRoute = ThanksRouteImport.update({
-  id: '/thanks',
-  path: '/thanks',
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminAdminsRoute = AdminAdminsRouteImport.update({
-  id: '/admins',
-  path: '/admins',
-  getParentRoute: () => AdminRoute,
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminChallengeRoute = AdminChallengeRouteImport.update({
-  id: '/challenge',
-  path: '/challenge',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminChallengesRoute = AdminChallengesRouteImport.update({
-  id: '/challenges',
-  path: '/challenges',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminExamRoute = AdminExamRouteImport.update({
-  id: '/exam',
-  path: '/exam',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminGroupsRoute = AdminGroupsRouteImport.update({
-  id: '/groups',
-  path: '/groups',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminQuestionsRoute = AdminQuestionsRouteImport.update({
-  id: '/questions',
-  path: '/questions',
-  getParentRoute: () => AdminRoute,
-} as any)
-const ChallengesSlugRoute = ChallengesSlugRouteImport.update({
-  id: '/challenges/$slug',
-  path: '/challenges/$slug',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CohortIndexRoute = CohortIndexRouteImport.update({
@@ -113,37 +62,88 @@ const CohortIndexRoute = CohortIndexRouteImport.update({
   path: '/cohort/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CohortCohortIdRoute = CohortCohortIdRouteImport.update({
-  id: '/cohort/$cohortId',
-  path: '/cohort/$cohortId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ExamsSlugRoute = ExamsSlugRouteImport.update({
   id: '/exams/$slug',
   path: '/exams/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const CohortCohortIdRoute = CohortCohortIdRouteImport.update({
+  id: '/cohort/$cohortId',
+  path: '/cohort/$cohortId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
-  id: '/applications/$id',
-  path: '/applications/$id',
+const ChallengesSlugRoute = ChallengesSlugRouteImport.update({
+  id: '/challenges/$slug',
+  path: '/challenges/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminQuestionsRoute = AdminQuestionsRouteImport.update({
+  id: '/questions',
+  path: '/questions',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminExamQuestionsRoute = AdminExamQuestionsRouteImport.update({
-  id: '/exam_/questions',
-  path: '/exam/questions',
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGroupsRoute = AdminGroupsRouteImport.update({
+  id: '/groups',
+  path: '/groups',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminExamRoute = AdminExamRouteImport.update({
+  id: '/exam',
+  path: '/exam',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChallengesRoute = AdminChallengesRouteImport.update({
+  id: '/challenges',
+  path: '/challenges',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChallengeRoute = AdminChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ChallengesSlugLeaderboardRoute =
   ChallengesSlugLeaderboardRouteImport.update({
     id: '/challenges/$slug_/leaderboard',
     path: '/challenges/$slug/leaderboard',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminExamQuestionsRoute = AdminExamQuestionsRouteImport.update({
+  id: '/exam_/questions',
+  path: '/exam/questions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
+  id: '/applications/$id',
+  path: '/applications/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -310,25 +310,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/apply': {
-      id: '/apply'
-      path: '/apply'
-      fullPath: '/apply'
-      preLoaderRoute: typeof ApplyRouteImport
+    '/thanks': {
+      id: '/thanks'
+      path: '/thanks'
+      fullPath: '/thanks'
+      preLoaderRoute: typeof ThanksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -338,81 +324,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/thanks': {
-      id: '/thanks'
-      path: '/thanks'
-      fullPath: '/thanks'
-      preLoaderRoute: typeof ThanksRouteImport
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/admins': {
-      id: '/admin/admins'
-      path: '/admins'
-      fullPath: '/admin/admins'
-      preLoaderRoute: typeof AdminAdminsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/challenge': {
-      id: '/admin/challenge'
-      path: '/challenge'
-      fullPath: '/admin/challenge'
-      preLoaderRoute: typeof AdminChallengeRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/challenges': {
-      id: '/admin/challenges'
-      path: '/challenges'
-      fullPath: '/admin/challenges'
-      preLoaderRoute: typeof AdminChallengesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
-      path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/exam': {
-      id: '/admin/exam'
-      path: '/exam'
-      fullPath: '/admin/exam'
-      preLoaderRoute: typeof AdminExamRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/groups': {
-      id: '/admin/groups'
-      path: '/groups'
-      fullPath: '/admin/groups'
-      preLoaderRoute: typeof AdminGroupsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/questions': {
-      id: '/admin/questions'
-      path: '/questions'
-      fullPath: '/admin/questions'
-      preLoaderRoute: typeof AdminQuestionsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/challenges/$slug': {
-      id: '/challenges/$slug'
-      path: '/challenges/$slug'
-      fullPath: '/challenges/$slug'
-      preLoaderRoute: typeof ChallengesSlugRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cohort/': {
@@ -422,13 +352,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CohortIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cohort/$cohortId': {
-      id: '/cohort/$cohortId'
-      path: '/cohort/$cohortId'
-      fullPath: '/cohort/$cohortId'
-      preLoaderRoute: typeof CohortCohortIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/exams/$slug': {
       id: '/exams/$slug'
       path: '/exams/$slug'
@@ -436,19 +359,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/cohort/$cohortId': {
+      id: '/cohort/$cohortId'
+      path: '/cohort/$cohortId'
+      fullPath: '/cohort/$cohortId'
+      preLoaderRoute: typeof CohortCohortIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/applications/$id': {
-      id: '/admin/applications/$id'
-      path: '/applications/$id'
-      fullPath: '/admin/applications/$id'
-      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+    '/challenges/$slug': {
+      id: '/challenges/$slug'
+      path: '/challenges/$slug'
+      fullPath: '/challenges/$slug'
+      preLoaderRoute: typeof ChallengesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/questions': {
+      id: '/admin/questions'
+      path: '/questions'
+      fullPath: '/admin/questions'
+      preLoaderRoute: typeof AdminQuestionsRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/groups': {
+      id: '/admin/groups'
+      path: '/groups'
+      fullPath: '/admin/groups'
+      preLoaderRoute: typeof AdminGroupsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/exam': {
+      id: '/admin/exam'
+      path: '/exam'
+      fullPath: '/admin/exam'
+      preLoaderRoute: typeof AdminExamRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/challenges': {
+      id: '/admin/challenges'
+      path: '/challenges'
+      fullPath: '/admin/challenges'
+      preLoaderRoute: typeof AdminChallengesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/challenge': {
+      id: '/admin/challenge'
+      path: '/challenge'
+      fullPath: '/admin/challenge'
+      preLoaderRoute: typeof AdminChallengeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/challenges/$slug_/leaderboard': {
+      id: '/challenges/$slug_/leaderboard'
+      path: '/challenges/$slug/leaderboard'
+      fullPath: '/challenges/$slug/leaderboard'
+      preLoaderRoute: typeof ChallengesSlugLeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/exam_/questions': {
       id: '/admin/exam_/questions'
@@ -457,11 +450,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExamQuestionsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/challenges/$slug_/leaderboard': {
-      id: '/challenges/$slug_/leaderboard'
-      path: '/challenges/$slug/leaderboard'
-      fullPath: '/challenges/$slug/leaderboard'
-      preLoaderRoute: typeof ChallengesSlugLeaderboardRouteImport
+    '/admin/applications/$id': {
+      id: '/admin/applications/$id'
+      path: '/applications/$id'
+      fullPath: '/admin/applications/$id'
+      preLoaderRoute: typeof AdminApplicationsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
