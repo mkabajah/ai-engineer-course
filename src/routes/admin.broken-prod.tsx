@@ -41,6 +41,7 @@ import {
   obpAdminAnnounce,
   obpAdminAwardBadge,
   obpAdminDeleteAnnouncement,
+  obpAdminExamDetail,
   obpAdminExamExtend,
   obpAdminExamFinalize,
   obpAdminExtendStage,
@@ -49,14 +50,18 @@ import {
   obpAdminOpenStage,
   obpAdminOverview,
   obpAdminPackUploadUrl,
+  obpAdminQuestionStats,
   obpAdminRegrade,
   obpAdminRemoveParticipant,
   obpAdminResetEvent,
   obpAdminReviewSubmission,
   obpAdminScreenshotUrls,
   obpAdminUpdateSettings,
+  type AdminExamDetail,
   type AdminOverview,
+  type AdminQuestionStat,
 } from "@/lib/obp/obp.functions";
+import { QuestionView } from "@/components/obp/QuestionView";
 
 export const Route = createFileRoute("/admin/broken-prod")({
   head: () => ({
@@ -315,6 +320,30 @@ function RunTab({ data, now, act }: { data: AdminOverview; now: number; act: Act
             </Button>
           ))}
         </div>
+        {(data.settings.announcement_templates ?? []).length > 0 && (
+          <div className="mt-3">
+            <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
+              Quick templates
+            </div>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {(data.settings.announcement_templates ?? []).map((t) => (
+                <button
+                  key={t.label}
+                  onClick={() => {
+                    setKind(t.kind);
+                    setMsg(t.message_md);
+                  }}
+                  className={`rounded-full border px-2.5 py-1 text-xs hover:border-foreground/40 ${
+                    t.kind === "twist" ? "border-primary/40 text-primary" : "border-rule"
+                  }`}
+                  title="Fills the message. Edit <name> placeholders, then Post."
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <Textarea
           className="mt-3"
           rows={kind === "twist" ? 8 : 3}
@@ -322,7 +351,7 @@ function RunTab({ data, now, act }: { data: AdminOverview; now: number; act: Act
           onChange={(e) => setMsg(e.target.value)}
           placeholder={
             kind === "twist"
-              ? "Paste the text from organizer/PLOT_TWIST.md at 2:27. It takes over the projector for 3 minutes."
+              ? "Pick a twist template above (or paste organizer/PLOT_TWIST.md). A twist takes over the projector for 3 minutes."
               : "Markdown supported"
           }
         />
@@ -803,6 +832,7 @@ function SubmissionRow({ s, act }: { s: AdminOverview["submissions"][number]; ac
 function ExamTab({ data, now, act }: { data: AdminOverview; now: number; act: Act }) {
   const s = data.settings;
   const [minutes, setMinutes] = useState(String(s.exam_minutes));
+  const [viewing, setViewing] = useState<{ id: string; name: string } | null>(null);
   const started = data.exam_progress.filter((p) => p.started_at);
   const done = started.filter((p) => p.submitted_at);
   return (
@@ -930,7 +960,16 @@ function ExamTab({ data, now, act }: { data: AdminOverview; now: number; act: Ac
                   <td className="text-right font-mono">
                     {p.scaled ?? ""} {p.passed ? "🎓" : ""}
                   </td>
-                  <td className="text-right">
+                  <td className="whitespace-nowrap text-right">
+                    {p.started_at && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setViewing({ id: p.team_id, name: `${p.emoji} ${p.name}` })}
+                      >
+                        <Eye /> Answers
+                      </Button>
+                    )}
                     {p.started_at && !p.submitted_at && (
                       <Button
                         size="sm"
@@ -951,7 +990,183 @@ function ExamTab({ data, now, act }: { data: AdminOverview; now: number; act: Ac
           </tbody>
         </table>
       </Panel>
+      {viewing && <CandidateAnswers team={viewing} onClose={() => setViewing(null)} />}
+      <QuestionBank />
     </div>
+  );
+}
+
+function CandidateAnswers({
+  team,
+  onClose,
+}: {
+  team: { id: string; name: string };
+  onClose: () => void;
+}) {
+  const [data, setData] = useState<AdminExamDetail | null>(null);
+  const [filter, setFilter] = useState<"all" | "wrong" | "unanswered" | "flagged">("all");
+  usePoll(async () => setData(await obpAdminExamDetail({ data: { team: team.id } })), 10000, [
+    team.id,
+  ]);
+  const qs = (data?.questions ?? []).filter((q) =>
+    filter === "all"
+      ? true
+      : filter === "flagged"
+        ? q.flagged
+        : filter === "unanswered"
+          ? q.my_choice.length === 0
+          : q.my_choice.length > 0 && !q.is_correct,
+  );
+  const right = (data?.questions ?? []).filter((q) => q.is_correct).length;
+  const answered = (data?.questions ?? []).filter((q) => q.my_choice.length > 0).length;
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-foreground/30" onClick={onClose}>
+      <aside
+        className="h-full w-full max-w-3xl overflow-y-auto bg-background p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="label-eyebrow">Exam answers</div>
+            <h2 className="serif mt-1 text-3xl">{team.name}</h2>
+            {data?.attempt && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                {data.attempt.submitted_at
+                  ? `Submitted · scaled ${data.attempt.scaled}${data.attempt.passed ? " 🎓" : ""}`
+                  : new Date(data.attempt.ends_at).getTime() < Date.now()
+                    ? "Time up (grades when you press Grade expired)"
+                    : "In progress"}{" "}
+                · {right}/{data.questions.length} correct so far · {answered} answered ·{" "}
+                {data.attempt.tab_switches} tab switches
+              </p>
+            )}
+          </div>
+          <Button variant="outline" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(["all", "wrong", "unanswered", "flagged"] as const).map((f) => (
+            <Button
+              key={f}
+              size="sm"
+              variant={filter === f ? "default" : "outline"}
+              onClick={() => setFilter(f)}
+            >
+              {f}
+            </Button>
+          ))}
+        </div>
+        <div className="mt-4 space-y-3">
+          {!data && <div className="h-40 animate-pulse rounded-md bg-muted" />}
+          {qs.map((q) => (
+            <QuestionView
+              key={q.id}
+              q={q}
+              heading={`Q${q.number} · ${q.domain_title}`}
+              mine={q.my_choice}
+              isCorrect={q.is_correct}
+              flagged={q.flagged}
+            />
+          ))}
+          {data && qs.length === 0 && (
+            <p className="text-sm text-muted-foreground">Nothing here.</p>
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function QuestionBank() {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState<AdminQuestionStat[] | null>(null);
+  const [scope, setScope] = useState<"active" | "all">("active");
+  const [domain, setDomain] = useState("");
+  const [q, setQ] = useState("");
+  usePoll(
+    async () => {
+      if (open) setItems(await obpAdminQuestionStats());
+    },
+    15000,
+    [open],
+  );
+  const domains = useMemo(
+    () => Array.from(new Set((items ?? []).map((x) => x.domain_title))),
+    [items],
+  );
+  const list = (items ?? []).filter(
+    (x) =>
+      (scope === "all" || x.active) &&
+      (!domain || x.domain_title === domain) &&
+      (!q || `${x.id} ${x.prompt_md}`.toLowerCase().includes(q.toLowerCase())),
+  );
+  return (
+    <Panel title="Question bank" icon={GraduationCap}>
+      {!open ? (
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          <Eye /> Browse questions, answers and stats
+        </Button>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center gap-2">
+            {(["active", "all"] as const).map((x) => (
+              <Button
+                key={x}
+                size="sm"
+                variant={scope === x ? "default" : "outline"}
+                onClick={() => setScope(x)}
+              >
+                {x === "active"
+                  ? `In the exam (${(items ?? []).filter((i) => i.active).length})`
+                  : `All (${(items ?? []).length})`}
+              </Button>
+            ))}
+            <select
+              className="h-8 rounded-sm border border-rule bg-background px-2 text-xs"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+            >
+              <option value="">all domains</option>
+              {domains.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <Input
+              className="h-8 max-w-60"
+              placeholder="Search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Read-only. To change questions, edit organizer/arena/questions.json and re-import the
+            content pack.
+          </p>
+          <div className="mt-4 space-y-3">
+            {!items && <div className="h-40 animate-pulse rounded-md bg-muted" />}
+            {list.map((x) => (
+              <QuestionView
+                key={x.id}
+                q={x}
+                heading={`${x.id} · ${x.domain_title}${x.active ? "" : " · not in the exam"}`}
+                picks={x.picks}
+                footer={
+                  x.seen > 0 ? (
+                    <div className="mt-2 text-xs">
+                      <b>{Math.round((100 * x.right) / x.seen)}%</b> correct · {x.right}/{x.seen}{" "}
+                      participants · {x.answered} answered
+                    </div>
+                  ) : null
+                }
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </Panel>
   );
 }
 
