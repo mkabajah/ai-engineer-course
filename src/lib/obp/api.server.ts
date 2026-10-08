@@ -226,7 +226,7 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
         text: await deps.ai(
           system,
           prompt,
-          Math.min(4000, intOrNull(body!.max_tokens) ?? 1500),
+          Math.min(16000, intOrNull(body!.max_tokens) ?? 1500),
           typeof body!.model === "string" && /^[\w./-]{3,60}$/.test(body!.model)
             ? body!.model
             : undefined,
