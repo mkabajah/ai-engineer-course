@@ -622,7 +622,8 @@ function SupportInbox({ tickets, now }: { tickets: PublicState["tickets"]; now: 
       </div>
       <ul className="mt-4 divide-y divide-rule rounded-sm border border-rule">
         {tickets.map((t) => {
-          const isOpen = open === t.id || fresh(t);
+          // a late ticket opens itself; the first batch at the stage start stays collapsed
+          const isOpen = open === t.id || (fresh(t) && tickets.filter(fresh).length <= 3);
           return (
             <li key={t.id} className={fresh(t) ? "bg-primary/[0.04]" : ""}>
               <button
