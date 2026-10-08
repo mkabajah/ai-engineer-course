@@ -843,7 +843,10 @@ function HintShop({
 }) {
   const [busy, setBusy] = useState<string | null>(null);
   const status = new Map(state.stages.map((s) => [s.id, s.status]));
-  const hints = dash.hints.filter((h) => status.get(h.stage_id) !== "locked");
+  // only hints for the stage being played (Bug Bounty hints stay during the Arena: stage 1 still scores)
+  const hints = dash.hints.filter(
+    (h) => status.get(h.stage_id) === "open" || (h.stage_id === 1 && state.current_stage === 4),
+  );
   const buy = async (id: string, cost: number) => {
     if (!window.confirm(`Buy this hint for ${cost} points? It can't be undone.`)) return;
     setBusy(id);
