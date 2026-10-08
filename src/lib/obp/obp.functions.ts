@@ -153,10 +153,12 @@ export type ExamQuestion = {
   number: number;
   id: string;
   domain_title: string;
-  kind: "single" | "multi";
+  kind: "single" | "multi" | "order" | "match";
   select_count: number;
   prompt_md: string;
   code: string | null;
+  image: string | null;
+  items: { id: string; text: string }[] | null;
   options: { id: string; text: string }[];
   choice: string[];
   flagged: boolean;
@@ -200,6 +202,8 @@ export type ExamReviewItem = {
   kind: string;
   prompt_md: string;
   code: string | null;
+  image: string | null;
+  items: { id: string; text: string }[] | null;
   options: { id: string; text: string }[];
   correct: string[];
   explanation_md: string;
@@ -593,7 +597,7 @@ export const obpExamSave = createServerFn({ method: "POST" })
       .object({
         code: Code,
         question: z.string().min(1).max(20),
-        choice: z.array(z.string().max(4)).max(6),
+        choice: z.array(z.string().max(8)).max(10),
         flagged: z.boolean(),
       })
       .parse(input),

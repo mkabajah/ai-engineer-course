@@ -36,10 +36,10 @@ export const Route = createFileRoute("/broken-prod/exam")({
       {
         name: "description",
         content:
-          "35 questions, 30 minutes, certification style: Claude Code, Kiro, agents and GenAI fundamentals.",
+          "40 questions, 35 minutes, certification style: Claude Code, Kiro, agents and GenAI fundamentals.",
       },
       { property: "og:title", content: "Broken Prod Certification Exam" },
-      { property: "og:description", content: "35 questions, 30 minutes. Pass at 720/1000." },
+      { property: "og:description", content: "40 questions, 35 minutes. Pass at 720/1000." },
       { property: "og:type", content: "website" },
     ],
   }),
@@ -196,8 +196,9 @@ function Intro({
         </h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>
-            • Multiple choice (one answer) and multiple response ("Choose TWO"). All-or-nothing, no
-            penalty for guessing.
+            • Multiple choice, multiple response ("Choose TWO"), arrange-in-order and matching
+            questions, some with diagrams or config to read. All-or-nothing, no penalty for
+            guessing.
           </li>
           <li>• Your questions and options are in a random order. Answers save as you click.</li>
           <li>
@@ -298,6 +299,14 @@ function ExamRunner({
   const choose = (optId: string) => {
     if (!q) return;
     if (q.kind === "single") update({ choice: [optId] });
+    else if (q.kind === "order") {
+      // click the steps in order; clicking a placed step takes it out again
+      update({
+        choice: q.choice.includes(optId)
+          ? q.choice.filter((c) => c !== optId)
+          : [...q.choice, optId],
+      });
+    } else if (q.kind === "match") return;
     else {
       const has = q.choice.includes(optId);
       if (!has && q.choice.length >= q.select_count) {
@@ -306,6 +315,12 @@ function ExamRunner({
       }
       update({ choice: has ? q.choice.filter((c) => c !== optId) : [...q.choice, optId] });
     }
+  };
+
+  const matchPick = (itemId: string, optId: string) => {
+    if (!q) return;
+    const rest = q.choice.filter((c) => !c.startsWith(`${itemId}:`));
+    update({ choice: optId ? [...rest, `${itemId}:${optId}`] : rest });
   };
 
   const submit = useCallback(async () => {
@@ -432,12 +447,71 @@ function ExamRunner({
                 <code>{q.code}</code>
               </pre>
             )}
+            {q.image && (
+              <img
+                src={q.image}
+                alt="Exhibit for this question"
+                className="mt-4 w-full max-w-3xl rounded-md border border-rule bg-white"
+              />
+            )}
             {q.kind === "multi" && (
               <div className="mt-4 inline-block rounded-sm bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
                 Choose {WORDS[q.select_count] ?? q.select_count}
               </div>
             )}
-            <div className="mt-4 space-y-2" role={q.kind === "single" ? "radiogroup" : "group"}>
+            {q.kind === "order" && (
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <span className="inline-block rounded-sm bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                  Arrange in order
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Click the steps from first to last ({q.choice.length}/{q.options.length} placed).
+                </span>
+                {q.choice.length > 0 && (
+                  <button
+                    className="text-xs underline underline-offset-2"
+                    onClick={() => update({ choice: [] })}
+                  >
+                    Start over
+                  </button>
+                )}
+              </div>
+            )}
+            {q.kind === "match" && (
+              <div className="mt-4 space-y-2">
+                <span className="inline-block rounded-sm bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                  Match each item
+                </span>
+                {(q.items ?? []).map((it) => {
+                  const cur = q.choice.find((c) => c.startsWith(`${it.id}:`))?.split(":")[1] ?? "";
+                  return (
+                    <div
+                      key={it.id}
+                      className="grid grid-cols-1 items-center gap-2 rounded-md border border-rule bg-card p-3 text-sm sm:grid-cols-[1fr_1.2fr]"
+                    >
+                      <Markdown text={it.text} className="font-medium" />
+                      <select
+                        aria-label={`Match for ${it.text}`}
+                        value={cur}
+                        onChange={(e) => matchPick(it.id, e.target.value)}
+                        className={`h-10 w-full rounded-sm border bg-background px-2 text-sm ${cur ? "border-primary" : "border-rule"}`}
+                      >
+                        <option value="">Choose…</option>
+                        {q.options.map((o, i) => (
+                          <option key={o.id} value={o.id}>
+                            {"ABCDE"[i]}. {o.text.replace(/[`*]/g, "")}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div
+              className={`mt-4 space-y-2 ${q.kind === "match" ? "hidden" : ""}`}
+              role={q.kind === "single" ? "radiogroup" : "group"}
+            >
               {q.options.map((o, i) => {
                 const on = q.choice.includes(o.id);
                 return (
@@ -458,7 +532,7 @@ function ExamRunner({
                         q.kind === "single" ? "rounded-full" : "rounded-sm"
                       } ${on ? "border-primary bg-primary text-primary-foreground" : "border-rule text-muted-foreground"}`}
                     >
-                      {"ABCDE"[i]}
+                      {q.kind === "order" && on ? q.choice.indexOf(o.id) + 1 : "ABCDE"[i]}
                     </span>
                     <span className="flex-1">
                       <Markdown text={o.text} />
@@ -729,7 +803,65 @@ function ScoreReport({
                     <code>{it.code}</code>
                   </pre>
                 )}
-                <ul className="mt-3 space-y-1.5 text-sm">
+                {it.image && (
+                  <img
+                    src={it.image}
+                    alt=""
+                    className="mt-3 w-full max-w-2xl rounded-md border border-rule bg-white"
+                  />
+                )}
+                {it.kind === "order" && (
+                  <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+                    {[
+                      ["Correct order", it.correct],
+                      ["Your order", it.my_choice],
+                    ].map(([label, ids]) => (
+                      <div key={label as string}>
+                        <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                          {label as string}
+                        </div>
+                        <ol className="mt-1 list-decimal space-y-1 pl-5">
+                          {(ids as string[]).map((id) => (
+                            <li key={id}>{it.options.find((o) => o.id === id)?.text}</li>
+                          ))}
+                          {(ids as string[]).length === 0 && (
+                            <li className="list-none text-muted-foreground">—</li>
+                          )}
+                        </ol>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {it.kind === "match" && (
+                  <ul className="mt-3 space-y-1.5 text-sm">
+                    {(it.items ?? []).map((item) => {
+                      const right = it.correct
+                        .find((c) => c.startsWith(`${item.id}:`))
+                        ?.split(":")[1];
+                      const mine = it.my_choice
+                        .find((c) => c.startsWith(`${item.id}:`))
+                        ?.split(":")[1];
+                      const text = (id?: string) =>
+                        it.options.find((o) => o.id === id)?.text ?? "—";
+                      return (
+                        <li
+                          key={item.id}
+                          className={`rounded-sm border px-3 py-2 ${right === mine ? "border-emerald-300 bg-emerald-50" : "border-primary/40 bg-primary/5"}`}
+                        >
+                          <b className="font-medium">{item.text}</b> → {text(right)}
+                          {right !== mine && (
+                            <span className="ml-2 text-[11px] text-muted-foreground">
+                              (you: {text(mine)})
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                <ul
+                  className={`mt-3 space-y-1.5 text-sm ${it.kind === "order" || it.kind === "match" ? "hidden" : ""}`}
+                >
                   {it.options.map((o) => {
                     const correct = it.correct.includes(o.id);
                     const mine = it.my_choice.includes(o.id);
