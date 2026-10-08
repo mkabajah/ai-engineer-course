@@ -671,7 +671,7 @@ function MustRead({ brief }: { brief: Challenge }) {
             <Download /> .md
           </Button>
           <Button size="sm" onClick={() => setOpen(!open)}>
-            {open ? "Hide" : "Read the rules"}
+            {open ? "Hide" : /rules/i.test(brief.title) ? "Read the rules" : "Read the brief"}
           </Button>
         </div>
       </div>
