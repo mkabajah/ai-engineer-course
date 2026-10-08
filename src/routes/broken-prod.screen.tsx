@@ -8,6 +8,7 @@ import {
   EmergencyStyles,
   SEVERITY,
   SeverityChip,
+  isFreshTicket,
   useNewTicketAlert,
   useSiren,
 } from "@/components/obp/Tickets";
@@ -40,7 +41,12 @@ function ScreenPage() {
     setState(s);
     setBoard(b);
   }, 4000);
-  const alert = useNewTicketAlert(state?.current_stage === 1 ? state.tickets : undefined, now);
+  const stage1Start = state?.stages.find((x) => x.id === 1)?.started_at ?? null;
+  const alert = useNewTicketAlert(
+    state?.current_stage === 1 ? state.tickets : undefined,
+    now,
+    stage1Start,
+  );
   const siren = useSiren();
   const alertId = alert?.ticket.id;
   useEffect(() => {
@@ -61,7 +67,7 @@ function ScreenPage() {
   const siteUrl = typeof window === "undefined" ? "" : `${window.location.host}/broken-prod`;
   const examMode = state.current_stage === 4;
   const tickets = state.current_stage === 1 ? (state.tickets ?? []) : [];
-  const newTicket = tickets.find((t) => now - new Date(t.released_at).getTime() < 90_000);
+  const newTicket = tickets.find((t) => isFreshTicket(t, now, stage1Start));
   const counts = (["P1", "P2", "P3"] as const).map((sv) => ({
     sv,
     n: tickets.filter((t) => t.severity === sv).length,
@@ -149,11 +155,11 @@ function ScreenPage() {
                   </div>
                   <ul className="mt-3 space-y-1.5">
                     {tickets.slice(0, 6).map((t) => {
-                      const isNew = now - new Date(t.released_at).getTime() < 90_000;
+                      const isNew = isFreshTicket(t, now, stage1Start);
                       return (
                         <li
                           key={t.id}
-                          className={`flex items-center gap-3 rounded-md px-3 py-2 text-xl ${isNew ? "obp-flash bg-[#3A0D12]" : "bg-white/[0.04]"}`}
+                          className={`flex items-center gap-3 rounded-md px-3 py-2 text-xl ${isNew ? "obp-glow" : "bg-white/[0.04]"}`}
                         >
                           <SeverityChip s={t.severity} dark />
                           <span className="font-mono text-base text-white/50">#{t.id}</span>
