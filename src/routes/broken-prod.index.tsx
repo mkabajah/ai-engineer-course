@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowUpRight,
@@ -75,9 +75,13 @@ export const Route = createFileRoute("/broken-prod/")({
 
 function BrokenProdPage() {
   const [state, setState] = useState<PublicState | null>(null);
-  const [code, setCode] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : readCode(),
-  );
+  // Read the code after mount (not during render) so server and client HTML match
+  const [code, setCode] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setCode(readCode());
+    setMounted(true);
+  }, []);
   const [dash, setDash] = useState<Dashboard | null>(null);
   const now = useServerNow(state?.server_now);
 
@@ -109,7 +113,7 @@ function BrokenProdPage() {
     <div className="min-h-screen bg-background text-foreground">
       <ObpNav active="mission" />
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6">
-        {!state ? (
+        {!state || !mounted || (code && !dash) ? (
           <div className="h-64 animate-pulse rounded-md bg-muted" />
         ) : dash && code ? (
           <Cockpit
