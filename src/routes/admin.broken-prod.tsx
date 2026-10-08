@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -7,6 +7,7 @@ import {
   Bot,
   Check,
   CheckCircle2,
+  Download,
   ClipboardCopy,
   Eye,
   FileUp,
@@ -49,6 +50,7 @@ import {
   obpAdminFreeze,
   obpAdminImportContent,
   obpAdminOpenStage,
+  obpAdminOrganizerKit,
   obpAdminOverview,
   obpAdminReleaseTicket,
   obpAdminPackUploadUrl,
@@ -1218,6 +1220,7 @@ function SetupTab({ data, act }: { data: AdminOverview; act: Act }) {
 
   return (
     <div className="grid grid-cols-1 [&>*]:min-w-0 gap-5 lg:grid-cols-2">
+      <OrganizerKitPanel />
       <Panel title="1 · Content pack (exam, rubrics, hints)" icon={FileUp}>
         <p className="text-sm text-muted-foreground">
           On your laptop:{" "}
@@ -1477,6 +1480,71 @@ function TicketsPanel({ data, now, act }: { data: AdminOverview; now: number; ac
           );
         })}
       </ul>
+    </Panel>
+  );
+}
+
+/** Private organizer kit (answers, hidden tests, scripts) + the runbook, with short-lived signed links. */
+function OrganizerKitPanel() {
+  const [kit, setKit] = useState<Awaited<ReturnType<typeof obpAdminOrganizerKit>> | null>(null);
+  const [runbook, setRunbook] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const load = useCallback(async () => {
+    try {
+      const k = await obpAdminOrganizerKit();
+      setKit(k);
+      const md = k.files.find((f) => f.name.endsWith(".md"));
+      if (md?.url) setRunbook(await (await fetch(md.url)).text());
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    }
+  }, []);
+  useEffect(() => {
+    void load();
+  }, [load]);
+  const zip = kit?.files.find((f) => f.name.endsWith(".zip"));
+  const md = kit?.files.find((f) => f.name.endsWith(".md"));
+  return (
+    <Panel title="Organizer kit & runbook (private)" icon={KeyRound}>
+      <p className="text-sm text-muted-foreground">
+        Everything you run on your laptop on the day: the scripts, hidden tests, answer key and the
+        step-by-step runbook. Never share the kit with participants.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {zip?.url ? (
+          <Button asChild size="sm">
+            <a href={zip.url}>
+              <Download /> Organizer kit (.zip
+              {zip.size ? `, ${Math.round(zip.size / 1024)} KB` : ""})
+            </a>
+          </Button>
+        ) : (
+          <span className="text-xs text-muted-foreground">Kit not uploaded yet.</span>
+        )}
+        {md?.url && (
+          <Button asChild size="sm" variant="outline">
+            <a href={md.url} download="ORGANIZER_RUNBOOK.md">
+              <Download /> Runbook (.md)
+            </a>
+          </Button>
+        )}
+        {runbook && (
+          <Button size="sm" variant="outline" onClick={() => setOpen(!open)}>
+            {open ? "Hide runbook" : "Show runbook"}
+          </Button>
+        )}
+        <Button size="sm" variant="ghost" onClick={() => void load()}>
+          <RefreshCw /> Refresh links
+        </Button>
+      </div>
+      {zip?.updated_at && (
+        <div className="mt-2 text-[11px] text-muted-foreground">
+          Kit updated {new Date(zip.updated_at).toLocaleString()} · links expire after 10 minutes
+        </div>
+      )}
+      {open && runbook && (
+        <Markdown text={runbook} className="mt-4 border-t border-rule pt-4 text-sm" />
+      )}
     </Panel>
   );
 }

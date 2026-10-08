@@ -17,6 +17,7 @@
 //   POST /api/orbit/organizer/ai        { system, prompt, max_tokens? } → { text }   (uses the site's AI provider)
 //   POST /api/orbit/organizer/import    { pack }    → load obp-content-pack.json (same as Admin → Setup)
 //   POST /api/orbit/organizer/stage     { stage }   → open a stage (0 lobby · 1 · 4 · 2 · 3 · 99 finish)
+//   POST /api/orbit/organizer/kit-upload { name } → { url }   (signed upload into the private organizer bucket)
 //   POST /api/orbit/organizer/settings  { event_code?, registration_open?, exam_open?, exam_review_open?, exam_minutes?, frozen? }
 
 export type RpcResult = { data: unknown; error: { message: string } | null };
@@ -24,6 +25,8 @@ export type Deps = {
   rpc: (fn: string, args: Record<string, unknown>) => Promise<RpcResult>;
   upload: (path: string, bytes: Uint8Array) => Promise<{ error: { message: string } | null }>;
   signedPack?: () => Promise<string | null>;
+  /** organizer kit upload: signed upload URL into the private organizer bucket */
+  kitUploadUrl?: (name: string) => Promise<{ url: string | null; error: string | null }>;
   signedDownload: (
     path: string,
   ) => Promise<{ url: string | null; error: { message: string } | null }>;
@@ -213,6 +216,15 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
       imported.tickets = t.data;
     }
     return json({ ok: true, imported });
+  }
+  if (req.method === "POST" && route === "kit-upload") {
+    const name = String(body!.name ?? "");
+    if (!["operation-broken-prod.zip", "ORGANIZER_RUNBOOK.md"].includes(name))
+      return json({ error: "name must be operation-broken-prod.zip or ORGANIZER_RUNBOOK.md" }, 400);
+    if (!deps.kitUploadUrl) return json({ error: "not available" }, 503);
+    const r = await deps.kitUploadUrl(name);
+    if (!r.url) return json({ error: r.error ?? "upload not available" }, 400);
+    return json({ url: r.url });
   }
   if (req.method === "POST" && route === "stage") {
     const { error } = await deps.rpc("obp_open_stage", { p_stage: intOrNull(body!.stage) ?? 0 });
@@ -428,6 +440,13 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         .from(BUCKET_DOWNLOADS)
         .createSignedUrl(PACK_PATH, 600, { download: "orbit-shop-mission-pack.zip" });
       return data?.signedUrl ?? null;
+    },
+    kitUploadUrl: async (name) => {
+      const { BUCKET_ORGANIZER } = await import("./db.server");
+      const { data, error } = await client.storage
+        .from(BUCKET_ORGANIZER)
+        .createSignedUploadUrl(`kit/${name}`, { upsert: true });
+      return { url: data?.signedUrl ?? null, error: error?.message ?? null };
     },
     signedDownload: async (path) => {
       const { data, error } = await client.storage
