@@ -6,9 +6,9 @@ import { Markdown } from "./Markdown";
 
 export const STAGE_META: Record<number, { icon: LucideIcon; short: string; tag: string }> = {
   1: { icon: Bug, short: "Bug Bounty", tag: "Stage 1" },
-  4: { icon: GraduationCap, short: "The Arena", tag: "Stage 2" },
-  2: { icon: Hammer, short: "The Forge", tag: "Stage 3" },
-  3: { icon: Rocket, short: "Ship It", tag: "Stage 4" },
+  4: { icon: GraduationCap, short: "The Arena", tag: "Exam" },
+  2: { icon: Hammer, short: "The Forge", tag: "Stage 2" },
+  3: { icon: Rocket, short: "Ship It", tag: "Stage 3" },
 };
 
 export const CODE_KEY = "obp-personal-code";
