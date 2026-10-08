@@ -270,7 +270,7 @@ export const obpPublicState = createServerFn({ method: "GET" }).handler(
       event_code_now: (s.current_stage ?? 0) === 0 ? (s.event_code ?? null) : null,
       frozen: Boolean(s.leaderboard_frozen),
       exam_open: Boolean(s.exam_open),
-      exam_minutes: s.exam_minutes ?? 30,
+      exam_minutes: s.exam_minutes ?? 40,
       server_now: new Date().toISOString(),
     };
   },

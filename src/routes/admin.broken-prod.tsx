@@ -209,10 +209,10 @@ function Panel({
 const SCHEDULE_HINT: Record<number, string> = {
   0: "Kickoff: projector shows the event code",
   1: "0:10 · 45 min",
-  4: "0:55 · 40 min (exam 30 + sprint 10)",
-  2: "1:35 · 30 min",
-  3: "2:10 · 42 min (twist 2:27, freeze 2:40)",
-  99: "2:57 · awards",
+  4: "0:55 · 50 min (exam 40 + sprint 10)",
+  2: "1:45 · 30 min",
+  3: "2:20 · 42 min (twist 2:37, freeze 2:50, code freeze 3:02)",
+  99: "3:07 · awards",
 };
 
 function RunTab({ data, now, act }: { data: AdminOverview; now: number; act: Act }) {
@@ -850,7 +850,7 @@ function ExamTab({ data, now, act }: { data: AdminOverview; now: number; act: Ac
               variant="outline"
               onClick={() =>
                 act("Saved", () =>
-                  obpAdminUpdateSettings({ data: { exam_minutes: Number(minutes) || 30 } }),
+                  obpAdminUpdateSettings({ data: { exam_minutes: Number(minutes) || 40 } }),
                 )
               }
             >
