@@ -647,6 +647,8 @@ export type AdminOverview = {
     download_url: string | null;
     event_title: string;
     frozen_at: string | null;
+    announcement_templates:
+      { label: string; kind: Announcement["kind"]; message_md: string }[] | null;
   };
   stages: Stage[];
   participants: {
@@ -966,6 +968,61 @@ export const obpAdminExamExtend = createServerFn({ method: "POST" })
     const { rpc } = await server();
     await rpc("obp_exam_extend", { p_team: team, p_minutes: minutes });
     return { ok: true };
+  });
+
+export type AdminQuestion = {
+  id: string;
+  domain_title: string;
+  kind: "single" | "multi" | "order" | "match";
+  prompt_md: string;
+  code: string | null;
+  image: string | null;
+  items: { id: string; text: string }[] | null;
+  options: { id: string; text: string }[];
+  correct: string[];
+  explanation_md: string;
+};
+export type AdminExamDetail = {
+  attempt: {
+    started_at: string;
+    ends_at: string;
+    submitted_at: string | null;
+    tab_switches: number;
+    correct: number | null;
+    total: number | null;
+    scaled: number | null;
+    passed: boolean | null;
+  } | null;
+  questions: (AdminQuestion & {
+    number: number;
+    my_choice: string[];
+    flagged: boolean;
+    answered_at: string | null;
+    is_correct: boolean;
+  })[];
+};
+export type AdminQuestionStat = AdminQuestion & {
+  active: boolean;
+  seen: number;
+  answered: number;
+  right: number;
+  picks: Record<string, number>;
+};
+
+const S_ExamDetail = z.object({ team: z.string().uuid() });
+export const obpAdminExamDetail = createServerFn({ method: "POST" })
+  .middleware([requireObpAdmin])
+  .inputValidator((input: z.input<typeof S_ExamDetail>) => S_ExamDetail.parse(input))
+  .handler(async ({ data: { team } }): Promise<AdminExamDetail> => {
+    const { rpc } = await server();
+    return rpc<AdminExamDetail>("obp_admin_exam_detail", { p_team: team });
+  });
+
+export const obpAdminQuestionStats = createServerFn({ method: "GET" })
+  .middleware([requireObpAdmin])
+  .handler(async (): Promise<AdminQuestionStat[]> => {
+    const { rpc } = await server();
+    return rpc<AdminQuestionStat[]>("obp_admin_question_stats", {});
   });
 
 const S_ReviewSubmission = z.object({
