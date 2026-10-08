@@ -45,6 +45,9 @@ function ScreenPage() {
   );
   const siteUrl = typeof window === "undefined" ? "" : `${window.location.host}/broken-prod`;
   const examMode = state.current_stage === 4;
+  const newTicket = (state.tickets ?? []).find(
+    (t) => now - new Date(t.released_at).getTime() < 90_000,
+  );
 
   return (
     <div
@@ -169,6 +172,17 @@ function ScreenPage() {
                   🩸 {f.emoji} {f.name} · {f.test_id}
                 </span>
               ))}
+            </div>
+          )}
+          {newTicket && (
+            <div className="mt-4 animate-pulse rounded-md border border-[#FFC2A8]/60 bg-[#7A1426] px-5 py-4 text-2xl">
+              <span className="font-mono text-base uppercase tracking-[0.25em] text-[#FFC2A8]">
+                📮 New support ticket
+              </span>
+              <div className="mt-1 font-semibold">
+                #{newTicket.id} · {newTicket.title}
+              </div>
+              <div className="text-base text-white/60">{newTicket.from} · check your inbox</div>
             </div>
           )}
           {latest && (

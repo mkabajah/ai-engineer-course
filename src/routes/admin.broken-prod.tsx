@@ -50,6 +50,7 @@ import {
   obpAdminImportContent,
   obpAdminOpenStage,
   obpAdminOverview,
+  obpAdminReleaseTicket,
   obpAdminPackUploadUrl,
   obpAdminQuestionStats,
   obpAdminRegrade,
@@ -308,6 +309,8 @@ function RunTab({ data, now, act }: { data: AdminOverview; now: number; act: Act
           </>
         )}
       </Panel>
+
+      {data.tickets.length > 0 && <TicketsPanel data={data} now={now} act={act} />}
 
       <Panel title="Announcements" icon={Megaphone}>
         <div className="flex gap-2">
@@ -1414,5 +1417,64 @@ function TemplateTimeline({
         </>
       )}
     </div>
+  );
+}
+
+/** Support inbox: when each ticket appears for participants, and a button to release one early. */
+function TicketsPanel({ data, now, act }: { data: AdminOverview; now: number; act: Act }) {
+  const fmt = (ms: number) => {
+    const m = Math.round(ms / 60_000);
+    return m <= 0 ? "now" : `in ${m} min`;
+  };
+  return (
+    <Panel title="Support inbox" icon={Megaphone}>
+      <p className="text-xs text-muted-foreground">
+        Tickets appear on the challenge page at their minute after the stage opens. Release one
+        early if the room is fast.
+      </p>
+      <ul className="mt-3 max-h-80 space-y-1 overflow-y-auto pr-1">
+        {data.tickets.map((t) => {
+          const at = [t.manual_release, t.scheduled_at]
+            .filter(Boolean)
+            .map((x) => new Date(x as string).getTime());
+          const releasedAt = at.length ? Math.min(...at) : null;
+          const live = releasedAt !== null && releasedAt <= now;
+          return (
+            <li
+              key={t.id}
+              className={`flex items-center gap-2 rounded-sm border px-2 py-1 text-xs ${
+                live ? "border-rule opacity-60" : "border-rule"
+              }`}
+            >
+              <span className="w-10 shrink-0 font-mono tabular-nums text-muted-foreground">
+                +{t.release_min}m
+              </span>
+              <span className="flex-1 truncate">
+                #{t.id} {t.title}
+              </span>
+              {live ? (
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+              ) : (
+                <>
+                  {releasedAt !== null && (
+                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                      {fmt(releasedAt - now)}
+                    </span>
+                  )}
+                  <button
+                    className="shrink-0 rounded-sm border border-rule px-1.5 py-0.5 text-[10px] hover:border-foreground/40"
+                    onClick={() =>
+                      act(`Released #${t.id}`, () => obpAdminReleaseTicket({ data: { id: t.id } }))
+                    }
+                  >
+                    Release now
+                  </button>
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </Panel>
   );
 }

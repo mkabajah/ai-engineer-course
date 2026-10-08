@@ -5,7 +5,7 @@
 //   POST /api/orbit/register       { name, email, eventCode }                          → { code, token, name, existing, site }
 //   POST /api/orbit/report         header x-orbit-token; { kind, note?, local?, snapshot? } → { ok, id, message }
 //   GET  /api/orbit/status         header x-orbit-token                                → status JSON
-//   GET  /api/orbit/now                                                                 → { stage, exam_open, frozen, announcements }
+//   GET  /api/orbit/now                                                                 → { stage, exam_open, frozen, announcements, tickets }
 //
 // Organizer laptop (verify-snapshots.mjs, ai-review-repos.mjs, judge-f3.mjs) — header x-orbit-organizer: <ORBIT_ORGANIZER_SECRET>
 //   GET  /api/orbit/organizer/state                 → { current_stage, stages }
@@ -35,6 +35,7 @@ export type Deps = {
     exam_open: boolean;
     frozen: boolean;
     announcements: { kind: string; message_md: string; created_at: string }[];
+    tickets: { id: string; from: string; title: string; body_md: string; released_at: string }[];
   }>;
   roster: () => Promise<{ name: string; code: string }[]>;
   updateSettings?: (
@@ -198,7 +199,13 @@ async function organizer(req: Request, route: string, deps: Deps): Promise<Respo
       return json({ error: "Send { pack: <obp-content-pack.json> }" }, 400);
     const { data, error } = await deps.rpc("obp_import_content", { p: pack });
     if (error) return json({ error: friendly(error) }, 400);
-    return json({ ok: true, imported: data });
+    const imported = { ...(data as Record<string, unknown>) };
+    if (Array.isArray(pack.tickets)) {
+      const t = await deps.rpc("obp_import_tickets", { p: pack.tickets });
+      if (t.error) return json({ error: friendly(t.error) }, 400);
+      imported.tickets = t.data;
+    }
+    return json({ ok: true, imported });
   }
   if (req.method === "POST" && route === "stage") {
     const { error } = await deps.rpc("obp_open_stage", { p_stage: intOrNull(body!.stage) ?? 0 });
@@ -440,7 +447,7 @@ export async function defaultDeps(req: Request): Promise<Deps> {
       return data ?? [];
     },
     live: async () => {
-      const [settings, stages, ann] = await Promise.all([
+      const [settings, stages, ann, tickets] = await Promise.all([
         client
           .from("obp_settings")
           .select("current_stage, exam_open, leaderboard_frozen")
@@ -452,6 +459,7 @@ export async function defaultDeps(req: Request): Promise<Deps> {
           .select("kind, message_md, created_at")
           .order("created_at", { ascending: false })
           .limit(5),
+        client.rpc("obp_released_tickets"),
       ]);
       const cur = settings.data?.current_stage ?? 0;
       const stage = (stages.data ?? []).find((x: { id: number }) => x.id === cur) ?? null;
@@ -460,6 +468,21 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         exam_open: Boolean(settings.data?.exam_open),
         frozen: Boolean(settings.data?.leaderboard_frozen),
         announcements: ann.data ?? [],
+        tickets: (
+          (tickets.data ?? []) as {
+            id: string;
+            from: string;
+            title: string;
+            body_md: string;
+            released_at: string;
+          }[]
+        ).map(({ id, from, title, body_md, released_at }) => ({
+          id,
+          from,
+          title,
+          body_md,
+          released_at,
+        })),
       };
     },
     updateSettings: async (patch) => {

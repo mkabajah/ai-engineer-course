@@ -44,6 +44,22 @@ export type Announcement = {
   message_md: string;
   created_at: string;
 };
+export type Ticket = {
+  id: string;
+  from: string;
+  title: string;
+  body_md: string;
+  released_at: string;
+};
+export type AdminTicket = {
+  id: string;
+  stage_id: number;
+  release_min: number;
+  from: string;
+  title: string;
+  manual_release: string | null;
+  scheduled_at: string | null;
+};
 export type PublicState = {
   title: string;
   current_stage: number;
@@ -57,6 +73,8 @@ export type PublicState = {
   frozen: boolean;
   exam_open: boolean;
   exam_minutes: number;
+  /** Support inbox: released tickets, newest first */
+  tickets: Ticket[];
   server_now: string;
 };
 export type BoardRow = {
@@ -234,7 +252,7 @@ export const obpPublicState = createServerFn({ method: "GET" }).handler(
   async (): Promise<PublicState> => {
     const { db } = await server();
     const c = await db();
-    const [settings, stages, challenges, rubrics, ann, count] = await Promise.all([
+    const [settings, stages, challenges, rubrics, ann, tickets, count] = await Promise.all([
       c.from("obp_settings").select("*").eq("id", 1).maybeSingle(),
       c.from("obp_stages").select("*").order("position"),
       c
@@ -246,6 +264,7 @@ export const obpPublicState = createServerFn({ method: "GET" }).handler(
         .order("sort_order"),
       c.from("obp_challenge_rubrics").select("challenge_id"),
       c.from("obp_announcements").select("*").order("created_at", { ascending: false }).limit(8),
+      c.rpc("obp_released_tickets"),
       c
         .from("obp_teams")
         .select("id", { count: "exact", head: true })
@@ -271,6 +290,15 @@ export const obpPublicState = createServerFn({ method: "GET" }).handler(
       frozen: Boolean(s.leaderboard_frozen),
       exam_open: Boolean(s.exam_open),
       exam_minutes: s.exam_minutes ?? 40,
+      tickets: ((tickets.data ?? []) as Ticket[]).map(
+        ({ id, from, title, body_md, released_at }) => ({
+          id,
+          from,
+          title,
+          body_md,
+          released_at,
+        }),
+      ),
       server_now: new Date().toISOString(),
     };
   },
@@ -714,6 +742,7 @@ export type AdminOverview = {
     passed: boolean | null;
   }[];
   announcements: Announcement[];
+  tickets: AdminTicket[];
   badges: { id: string; emoji: string; title: string }[];
   content: {
     challenges: number;
@@ -754,6 +783,7 @@ export const obpAdminOverview = createServerFn({ method: "GET" })
       qa,
       hints,
       pending,
+      tix,
     ] = await Promise.all([
       c.from("obp_settings").select("*").eq("id", 1).maybeSingle(),
       c.from("obp_stages").select("*").order("position"),
@@ -781,6 +811,7 @@ export const obpAdminOverview = createServerFn({ method: "GET" })
         .in("status", ["pending", "verifying"])
         .order("created_at")
         .limit(500),
+      c.rpc("obp_admin_tickets"),
     ]);
     const scores = new Map(
       ((board.data ?? []) as { team_id: string; score: number }[]).map((r) => [
@@ -842,6 +873,7 @@ export const obpAdminOverview = createServerFn({ method: "GET" })
       }),
       exam_progress: (exam.data ?? []) as AdminOverview["exam_progress"],
       announcements: (ann.data ?? []) as Announcement[],
+      tickets: (tix.data ?? []) as AdminTicket[],
       badges: (badges.data ?? []) as AdminOverview["badges"],
       content: {
         challenges: ch.count ?? 0,
@@ -954,6 +986,16 @@ export const obpAdminDeleteAnnouncement = createServerFn({ method: "POST" })
     const { db } = await server();
     const c = await db();
     await c.from("obp_announcements").delete().eq("id", id);
+    return { ok: true };
+  });
+
+const S_ReleaseTicket = z.object({ id: z.string().min(1).max(40) });
+export const obpAdminReleaseTicket = createServerFn({ method: "POST" })
+  .middleware([requireObpAdmin])
+  .inputValidator((input: z.input<typeof S_ReleaseTicket>) => S_ReleaseTicket.parse(input))
+  .handler(async ({ data: { id } }) => {
+    const { rpc } = await server();
+    await rpc("obp_release_ticket", { p_id: id });
     return { ok: true };
   });
 
@@ -1153,7 +1195,10 @@ export const obpAdminImportContent = createServerFn({ method: "POST" })
         "Not an obp-content-pack.json file (make it with organizer/scripts/make-content-pack.mjs)",
       );
     const { rpc } = await server();
-    return rpc<Record<string, number>>("obp_import_content", { p: parsed });
+    const imported = await rpc<Record<string, number>>("obp_import_content", { p: parsed });
+    if (Array.isArray(parsed.tickets))
+      imported.tickets = await rpc<number>("obp_import_tickets", { p: parsed.tickets });
+    return imported;
   });
 
 const S_PackUploadUrl = z.object({
