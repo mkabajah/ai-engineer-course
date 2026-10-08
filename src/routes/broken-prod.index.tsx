@@ -447,7 +447,8 @@ function Cockpit({
                 Certification exam: {state.exam_open ? "open now" : "opens soon"}
               </div>
               <div className="text-sm text-muted-foreground">
-                35 questions · {state.exam_minutes} minutes · pass at 720/1000 · no AI tools
+                {state.exam_minutes} minutes · single, multiple, order and match questions · pass at
+                720/1000 · no AI tools
               </div>
             </div>
           </div>
