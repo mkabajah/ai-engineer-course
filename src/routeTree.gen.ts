@@ -16,6 +16,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ThanksRouteImport } from './routes/thanks'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
+import { Route as AdminBrokenProdRouteImport } from './routes/admin.broken-prod'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
@@ -23,6 +24,10 @@ import { Route as AdminExamRouteImport } from './routes/admin.exam'
 import { Route as AdminGroupsRouteImport } from './routes/admin.groups'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminQuestionsRouteImport } from './routes/admin.questions'
+import { Route as BrokenProdIndexRouteImport } from './routes/broken-prod.index'
+import { Route as BrokenProdExamRouteImport } from './routes/broken-prod.exam'
+import { Route as BrokenProdLeaderboardRouteImport } from './routes/broken-prod.leaderboard'
+import { Route as BrokenProdScreenRouteImport } from './routes/broken-prod.screen'
 import { Route as ChallengesSlugRouteImport } from './routes/challenges.$slug'
 import { Route as CohortIndexRouteImport } from './routes/cohort.index'
 import { Route as CohortCohortIdRouteImport } from './routes/cohort.$cohortId'
@@ -30,6 +35,8 @@ import { Route as ExamsSlugRouteImport } from './routes/exams.$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
 import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
+import { Route as ApiOrbitIndexRouteImport } from './routes/api.orbit.index'
+import { Route as ApiOrbitSplatRouteImport } from './routes/api.orbit.$'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
 
 const IndexRoute = IndexRouteImport.update({
@@ -68,6 +75,11 @@ const AdminAdminsRoute = AdminAdminsRouteImport.update({
   path: '/admins',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBrokenProdRoute = AdminBrokenProdRouteImport.update({
+  id: '/broken-prod',
+  path: '/broken-prod',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminChallengeRoute = AdminChallengeRouteImport.update({
   id: '/challenge',
   path: '/challenge',
@@ -102,6 +114,26 @@ const AdminQuestionsRoute = AdminQuestionsRouteImport.update({
   id: '/questions',
   path: '/questions',
   getParentRoute: () => AdminRoute,
+} as any)
+const BrokenProdIndexRoute = BrokenProdIndexRouteImport.update({
+  id: '/broken-prod/',
+  path: '/broken-prod/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrokenProdExamRoute = BrokenProdExamRouteImport.update({
+  id: '/broken-prod/exam',
+  path: '/broken-prod/exam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrokenProdLeaderboardRoute = BrokenProdLeaderboardRouteImport.update({
+  id: '/broken-prod/leaderboard',
+  path: '/broken-prod/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrokenProdScreenRoute = BrokenProdScreenRouteImport.update({
+  id: '/broken-prod/screen',
+  path: '/broken-prod/screen',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ChallengesSlugRoute = ChallengesSlugRouteImport.update({
   id: '/challenges/$slug',
@@ -138,6 +170,16 @@ const AdminExamQuestionsRoute = AdminExamQuestionsRouteImport.update({
   path: '/exam/questions',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiOrbitIndexRoute = ApiOrbitIndexRouteImport.update({
+  id: '/api/orbit/',
+  path: '/api/orbit/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOrbitSplatRoute = ApiOrbitSplatRouteImport.update({
+  id: '/api/orbit/$',
+  path: '/api/orbit/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChallengesSlugLeaderboardRoute =
   ChallengesSlugLeaderboardRouteImport.update({
     id: '/challenges/$slug_/leaderboard',
@@ -153,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/thanks': typeof ThanksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/broken-prod': typeof AdminBrokenProdRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -160,14 +203,20 @@ export interface FileRoutesByFullPath {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
+  '/broken-prod/exam': typeof BrokenProdExamRoute
+  '/broken-prod/leaderboard': typeof BrokenProdLeaderboardRoute
+  '/broken-prod/screen': typeof BrokenProdScreenRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
+  '/broken-prod/': typeof BrokenProdIndexRoute
   '/cohort/': typeof CohortIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
+  '/api/orbit/$': typeof ApiOrbitSplatRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
+  '/api/orbit/': typeof ApiOrbitIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -177,6 +226,7 @@ export interface FileRoutesByTo {
   '/thanks': typeof ThanksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/broken-prod': typeof AdminBrokenProdRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -184,14 +234,20 @@ export interface FileRoutesByTo {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
+  '/broken-prod/exam': typeof BrokenProdExamRoute
+  '/broken-prod/leaderboard': typeof BrokenProdLeaderboardRoute
+  '/broken-prod/screen': typeof BrokenProdScreenRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
+  '/broken-prod': typeof BrokenProdIndexRoute
   '/cohort': typeof CohortIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
+  '/api/orbit/$': typeof ApiOrbitSplatRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
+  '/api/orbit': typeof ApiOrbitIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -202,6 +258,7 @@ export interface FileRoutesById {
   '/thanks': typeof ThanksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
+  '/admin/broken-prod': typeof AdminBrokenProdRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -209,14 +266,20 @@ export interface FileRoutesById {
   '/admin/groups': typeof AdminGroupsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/questions': typeof AdminQuestionsRoute
+  '/broken-prod/exam': typeof BrokenProdExamRoute
+  '/broken-prod/leaderboard': typeof BrokenProdLeaderboardRoute
+  '/broken-prod/screen': typeof BrokenProdScreenRoute
   '/challenges/$slug': typeof ChallengesSlugRoute
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
+  '/broken-prod/': typeof BrokenProdIndexRoute
   '/cohort/': typeof CohortIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam_/questions': typeof AdminExamQuestionsRoute
+  '/api/orbit/$': typeof ApiOrbitSplatRoute
   '/challenges/$slug_/leaderboard': typeof ChallengesSlugLeaderboardRoute
+  '/api/orbit/': typeof ApiOrbitIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -228,6 +291,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
+    | '/admin/broken-prod'
     | '/admin/challenge'
     | '/admin/challenges'
     | '/admin/dashboard'
@@ -235,14 +299,20 @@ export interface FileRouteTypes {
     | '/admin/groups'
     | '/admin/login'
     | '/admin/questions'
+    | '/broken-prod/exam'
+    | '/broken-prod/leaderboard'
+    | '/broken-prod/screen'
     | '/challenges/$slug'
     | '/cohort/$cohortId'
     | '/exams/$slug'
+    | '/broken-prod/'
     | '/cohort/'
     | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
+    | '/api/orbit/$'
     | '/challenges/$slug/leaderboard'
+    | '/api/orbit/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,6 +322,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
+    | '/admin/broken-prod'
     | '/admin/challenge'
     | '/admin/challenges'
     | '/admin/dashboard'
@@ -259,14 +330,20 @@ export interface FileRouteTypes {
     | '/admin/groups'
     | '/admin/login'
     | '/admin/questions'
+    | '/broken-prod/exam'
+    | '/broken-prod/leaderboard'
+    | '/broken-prod/screen'
     | '/challenges/$slug'
     | '/cohort/$cohortId'
     | '/exams/$slug'
+    | '/broken-prod'
     | '/cohort'
     | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
+    | '/api/orbit/$'
     | '/challenges/$slug/leaderboard'
+    | '/api/orbit'
   id:
     | '__root__'
     | '/'
@@ -276,6 +353,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
+    | '/admin/broken-prod'
     | '/admin/challenge'
     | '/admin/challenges'
     | '/admin/dashboard'
@@ -283,14 +361,20 @@ export interface FileRouteTypes {
     | '/admin/groups'
     | '/admin/login'
     | '/admin/questions'
+    | '/broken-prod/exam'
+    | '/broken-prod/leaderboard'
+    | '/broken-prod/screen'
     | '/challenges/$slug'
     | '/cohort/$cohortId'
     | '/exams/$slug'
+    | '/broken-prod/'
     | '/cohort/'
     | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam_/questions'
+    | '/api/orbit/$'
     | '/challenges/$slug_/leaderboard'
+    | '/api/orbit/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -300,12 +384,18 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   ThanksRoute: typeof ThanksRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  BrokenProdExamRoute: typeof BrokenProdExamRoute
+  BrokenProdLeaderboardRoute: typeof BrokenProdLeaderboardRoute
+  BrokenProdScreenRoute: typeof BrokenProdScreenRoute
   ChallengesSlugRoute: typeof ChallengesSlugRoute
   CohortCohortIdRoute: typeof CohortCohortIdRoute
   ExamsSlugRoute: typeof ExamsSlugRoute
+  BrokenProdIndexRoute: typeof BrokenProdIndexRoute
   CohortIndexRoute: typeof CohortIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiOrbitSplatRoute: typeof ApiOrbitSplatRoute
   ChallengesSlugLeaderboardRoute: typeof ChallengesSlugLeaderboardRoute
+  ApiOrbitIndexRoute: typeof ApiOrbitIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -359,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/broken-prod': {
+      id: '/admin/broken-prod'
+      path: '/broken-prod'
+      fullPath: '/admin/broken-prod'
+      preLoaderRoute: typeof AdminBrokenProdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/challenge': {
       id: '/admin/challenge'
       path: '/challenge'
@@ -407,6 +504,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/questions'
       preLoaderRoute: typeof AdminQuestionsRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/broken-prod/': {
+      id: '/broken-prod/'
+      path: '/broken-prod'
+      fullPath: '/broken-prod/'
+      preLoaderRoute: typeof BrokenProdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/broken-prod/exam': {
+      id: '/broken-prod/exam'
+      path: '/broken-prod/exam'
+      fullPath: '/broken-prod/exam'
+      preLoaderRoute: typeof BrokenProdExamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/broken-prod/leaderboard': {
+      id: '/broken-prod/leaderboard'
+      path: '/broken-prod/leaderboard'
+      fullPath: '/broken-prod/leaderboard'
+      preLoaderRoute: typeof BrokenProdLeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/broken-prod/screen': {
+      id: '/broken-prod/screen'
+      path: '/broken-prod/screen'
+      fullPath: '/broken-prod/screen'
+      preLoaderRoute: typeof BrokenProdScreenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/challenges/$slug': {
       id: '/challenges/$slug'
@@ -457,6 +582,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExamQuestionsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/orbit/': {
+      id: '/api/orbit/'
+      path: '/api/orbit'
+      fullPath: '/api/orbit/'
+      preLoaderRoute: typeof ApiOrbitIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/orbit/$': {
+      id: '/api/orbit/$'
+      path: '/api/orbit/$'
+      fullPath: '/api/orbit/$'
+      preLoaderRoute: typeof ApiOrbitSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/challenges/$slug_/leaderboard': {
       id: '/challenges/$slug_/leaderboard'
       path: '/challenges/$slug/leaderboard'
@@ -469,6 +608,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminBrokenProdRoute: typeof AdminBrokenProdRoute
   AdminChallengeRoute: typeof AdminChallengeRoute
   AdminChallengesRoute: typeof AdminChallengesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -482,6 +622,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminsRoute: AdminAdminsRoute,
+  AdminBrokenProdRoute: AdminBrokenProdRoute,
   AdminChallengeRoute: AdminChallengeRoute,
   AdminChallengesRoute: AdminChallengesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
@@ -503,12 +644,18 @@ const rootRouteChildren: RootRouteChildren = {
   ThanksRoute: ThanksRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  BrokenProdExamRoute: BrokenProdExamRoute,
+  BrokenProdLeaderboardRoute: BrokenProdLeaderboardRoute,
+  BrokenProdScreenRoute: BrokenProdScreenRoute,
   ChallengesSlugRoute: ChallengesSlugRoute,
   CohortCohortIdRoute: CohortCohortIdRoute,
   ExamsSlugRoute: ExamsSlugRoute,
+  BrokenProdIndexRoute: BrokenProdIndexRoute,
   CohortIndexRoute: CohortIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiOrbitSplatRoute: ApiOrbitSplatRoute,
   ChallengesSlugLeaderboardRoute: ChallengesSlugLeaderboardRoute,
+  ApiOrbitIndexRoute: ApiOrbitIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowUpRight, BrainCircuit, Code2, Clock3, Radio, Users } from "lucide-react";
+import { ArrowUpRight, BrainCircuit, Code2, Clock3, Monitor, Radio, Siren, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { adminListChallenges, type AdminChallengeSummary } from "@/lib/challenge.functions";
 
@@ -66,7 +66,7 @@ function ChallengesLibrary() {
             <article key={challenge.id} className="challenge-project group flex min-h-72 flex-col border border-rule bg-card p-6" style={{ animationDelay: `${index * 90}ms` }}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex h-11 w-11 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                  {challenge.kind === "exam" ? <BrainCircuit className="h-5 w-5" /> : <Code2 className="h-5 w-5" />}
+                  {challenge.kind === "orbit" ? <Siren className="h-5 w-5" /> : challenge.kind === "exam" ? <BrainCircuit className="h-5 w-5" /> : <Code2 className="h-5 w-5" />}
                 </div>
                 <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${challenge.state === "live" ? "border-primary/30 bg-primary/10 text-primary" : "border-rule text-muted-foreground"}`}>
                   {challenge.state === "live" && <Radio className="h-3 w-3 animate-pulse" />}
@@ -75,7 +75,7 @@ function ChallengesLibrary() {
               </div>
 
               <div className="mt-6 text-[11px] uppercase tracking-widest text-muted-foreground">
-                {challenge.kind === "exam" ? "Interactive exam" : "Open-source sprint"}
+                {challenge.kind === "orbit" ? "3-hour solo mission · live scoring" : challenge.kind === "exam" ? "Interactive exam" : "Open-source sprint"}
               </div>
               <h2 className="serif mt-1 text-3xl leading-tight">{challenge.title}</h2>
               <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{challenge.goal ?? challenge.description}</p>
@@ -86,7 +86,9 @@ function ChallengesLibrary() {
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2 border-t border-rule pt-5">
-                {challenge.kind === "exam" ? (
+                {challenge.kind === "orbit" ? (
+                  <><Button asChild><Link to="/admin/broken-prod">Host console <ArrowUpRight /></Link></Button><Button asChild variant="outline"><a href="/broken-prod/screen" target="_blank" rel="noreferrer">Projector <Monitor /></a></Button></>
+                ) : challenge.kind === "exam" ? (
                   <><Button asChild><Link to="/admin/exam">Manage challenge <ArrowUpRight /></Link></Button><Button asChild variant="outline"><Link to="/admin/exam/questions">Questions <ArrowUpRight /></Link></Button></>
                 ) : (
                   <Button asChild><Link to="/admin/challenge">Manage challenge <ArrowUpRight /></Link></Button>

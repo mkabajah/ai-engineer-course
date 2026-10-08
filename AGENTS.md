@@ -1,3 +1,6 @@
 # Project architecture decisions
 
 - Public cohort discovery lives on `/cohort`, with static impact stories at `/cohort/$cohortId` until editable metrics are requested, avoiding unnecessary backend complexity.- MCP server lives in src/lib/mcp with Supabase OAuth; tools forward the caller token so RLS (admin role) governs access.
+- Challenge #3 "Operation: Broken Prod" lives in `src/lib/obp/` (server functions, reporter/organizer API, AI judge), `src/components/obp/` and the `broken-prod.*` / `admin.broken-prod` / `api.orbit.*` routes. Its tables, views and functions are all prefixed `obp_`, have RLS on with no policies, and are revoked from anon/authenticated: only server code (service role) may touch them. Keep it that way: never query `obp_` objects from the browser client.
+- Broken Prod exam answers, hint texts and AI rubrics are imported at runtime from Admin → Broken Prod → Setup (obp-content-pack.json). Never commit them, seed them in a migration, or hard-code them, and never put the plot-twist text in code: the repo is readable by participants.
+- `/api/orbit/*` is called by participants' terminals (`x-orbit-token`) and by the organizer's verifier (`x-orbit-organizer` = secret `ORBIT_ORGANIZER_SECRET`). Don't rename these routes or change their JSON shapes: the downloadable mission pack depends on them.
