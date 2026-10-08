@@ -14,11 +14,15 @@ export const Route = createFileRoute("/admin/login")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") && !s.next.startsWith("//") ? s.next : undefined,
+  }),
   component: AdminLogin,
 });
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +33,8 @@ function AdminLogin() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate({ to: "/admin/dashboard" });
+      if (next) window.location.href = next;
+      else navigate({ to: "/admin/dashboard" });
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Auth failed");
     } finally {

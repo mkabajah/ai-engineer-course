@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ThanksRouteImport } from './routes/thanks'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,13 +26,20 @@ import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminChallengesRouteImport } from './routes/admin.challenges'
 import { Route as AdminChallengeRouteImport } from './routes/admin.challenge'
 import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as ChallengesSlugLeaderboardRouteImport } from './routes/challenges.$slug_.leaderboard'
 import { Route as AdminExamQuestionsRouteImport } from './routes/admin.exam_.questions'
 import { Route as AdminApplicationsIdRouteImport } from './routes/admin.applications.$id'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
 const ThanksRoute = ThanksRouteImport.update({
   id: '/thanks',
   path: '/thanks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApplyRoute = ApplyRouteImport.update({
@@ -109,6 +117,12 @@ const AdminAdminsRoute = AdminAdminsRouteImport.update({
   path: '/admins',
   getParentRoute: () => AdminRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ChallengesSlugLeaderboardRoute =
   ChallengesSlugLeaderboardRouteImport.update({
     id: '/challenges/$slug_/leaderboard',
@@ -125,12 +139,19 @@ const AdminApplicationsIdRoute = AdminApplicationsIdRouteImport.update({
   path: '/applications/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/mcp': typeof McpRoute
   '/thanks': typeof ThanksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
@@ -143,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/cohort/': typeof CohortIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
@@ -151,7 +173,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/mcp': typeof McpRoute
   '/thanks': typeof ThanksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
@@ -164,6 +188,7 @@ export interface FileRoutesByTo {
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/cohort': typeof CohortIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug/leaderboard': typeof ChallengesSlugLeaderboardRoute
@@ -173,7 +198,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/apply': typeof ApplyRoute
+  '/mcp': typeof McpRoute
   '/thanks': typeof ThanksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/admins': typeof AdminAdminsRoute
   '/admin/challenge': typeof AdminChallengeRoute
   '/admin/challenges': typeof AdminChallengesRoute
@@ -186,6 +213,7 @@ export interface FileRoutesById {
   '/cohort/$cohortId': typeof CohortCohortIdRoute
   '/exams/$slug': typeof ExamsSlugRoute
   '/cohort/': typeof CohortIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/applications/$id': typeof AdminApplicationsIdRoute
   '/admin/exam_/questions': typeof AdminExamQuestionsRoute
   '/challenges/$slug_/leaderboard': typeof ChallengesSlugLeaderboardRoute
@@ -196,7 +224,9 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/mcp'
     | '/thanks'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
     | '/admin/challenge'
     | '/admin/challenges'
@@ -209,6 +239,7 @@ export interface FileRouteTypes {
     | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/cohort/'
+    | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
     | '/challenges/$slug/leaderboard'
@@ -217,7 +248,9 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/mcp'
     | '/thanks'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
     | '/admin/challenge'
     | '/admin/challenges'
@@ -230,6 +263,7 @@ export interface FileRouteTypes {
     | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/cohort'
+    | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam/questions'
     | '/challenges/$slug/leaderboard'
@@ -238,7 +272,9 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/apply'
+    | '/mcp'
     | '/thanks'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/admins'
     | '/admin/challenge'
     | '/admin/challenges'
@@ -251,6 +287,7 @@ export interface FileRouteTypes {
     | '/cohort/$cohortId'
     | '/exams/$slug'
     | '/cohort/'
+    | '/.lovable/oauth/consent'
     | '/admin/applications/$id'
     | '/admin/exam_/questions'
     | '/challenges/$slug_/leaderboard'
@@ -260,11 +297,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   ApplyRoute: typeof ApplyRoute
+  McpRoute: typeof McpRoute
   ThanksRoute: typeof ThanksRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ChallengesSlugRoute: typeof ChallengesSlugRoute
   CohortCohortIdRoute: typeof CohortCohortIdRoute
   ExamsSlugRoute: typeof ExamsSlugRoute
   CohortIndexRoute: typeof CohortIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ChallengesSlugLeaderboardRoute: typeof ChallengesSlugLeaderboardRoute
 }
 
@@ -275,6 +315,13 @@ declare module '@tanstack/react-router' {
       path: '/thanks'
       fullPath: '/thanks'
       preLoaderRoute: typeof ThanksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply': {
@@ -382,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAdminsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/challenges/$slug_/leaderboard': {
       id: '/challenges/$slug_/leaderboard'
       path: '/challenges/$slug/leaderboard'
@@ -402,6 +456,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/applications/$id'
       preLoaderRoute: typeof AdminApplicationsIdRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -438,11 +499,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   ApplyRoute: ApplyRoute,
+  McpRoute: McpRoute,
   ThanksRoute: ThanksRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ChallengesSlugRoute: ChallengesSlugRoute,
   CohortCohortIdRoute: CohortCohortIdRoute,
   ExamsSlugRoute: ExamsSlugRoute,
   CohortIndexRoute: CohortIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ChallengesSlugLeaderboardRoute: ChallengesSlugLeaderboardRoute,
 }
 export const routeTree = rootRouteImport
