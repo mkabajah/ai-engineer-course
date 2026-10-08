@@ -5,6 +5,7 @@
 //   POST /api/orbit/register       { name, email, eventCode }                          → { code, token, name, existing, site }
 //   POST /api/orbit/report         header x-orbit-token; { kind, note?, local?, snapshot? } → { ok, id, message }
 //   GET  /api/orbit/status         header x-orbit-token                                → status JSON
+//   GET  /api/orbit/now                                                                 → { stage, exam_open, frozen, announcements }
 //
 // Organizer laptop (verify-snapshots.mjs, ai-review-repos.mjs, judge-f3.mjs) — header x-orbit-organizer: <ORBIT_ORGANIZER_SECRET>
 //   GET  /api/orbit/organizer/state                 → { current_stage, stages }
@@ -28,6 +29,13 @@ export type Deps = {
   ) => Promise<{ url: string | null; error: { message: string } | null }>;
   info: () => Promise<{ stage: number; registration_open: boolean }>;
   stages: () => Promise<unknown[]>;
+  /** what the terminal shows with `npm run mission`: current stage, clock, latest announcements */
+  live?: () => Promise<{
+    stage: { id: number; title: string; status: string; ends_at: string | null } | null;
+    exam_open: boolean;
+    frozen: boolean;
+    announcements: { kind: string; message_md: string; created_at: string }[];
+  }>;
   roster: () => Promise<{ name: string; code: string }[]>;
   updateSettings?: (
     patch: Record<string, unknown>,
@@ -269,6 +277,11 @@ export async function handle(req: Request, subpath: string, deps: Deps): Promise
       });
     }
 
+    if (req.method === "GET" && route === "now") {
+      if (!deps.live) return json({ error: "Not available" }, 404);
+      return json({ ...(await deps.live()), server_time: new Date().toISOString() });
+    }
+
     if (req.method === "POST" && route === "register") {
       const body = (await req.json().catch(() => null)) as Record<string, unknown> | null;
       if (!body) return json({ error: "Send JSON: { name, email, eventCode }" }, 400);
@@ -425,6 +438,29 @@ export async function defaultDeps(req: Request): Promise<Deps> {
         .select("id, title, status, started_at, ends_at, position")
         .order("position");
       return data ?? [];
+    },
+    live: async () => {
+      const [settings, stages, ann] = await Promise.all([
+        client
+          .from("obp_settings")
+          .select("current_stage, exam_open, leaderboard_frozen")
+          .eq("id", 1)
+          .maybeSingle(),
+        client.from("obp_stages").select("id, title, status, ends_at"),
+        client
+          .from("obp_announcements")
+          .select("kind, message_md, created_at")
+          .order("created_at", { ascending: false })
+          .limit(5),
+      ]);
+      const cur = settings.data?.current_stage ?? 0;
+      const stage = (stages.data ?? []).find((x: { id: number }) => x.id === cur) ?? null;
+      return {
+        stage,
+        exam_open: Boolean(settings.data?.exam_open),
+        frozen: Boolean(settings.data?.leaderboard_frozen),
+        announcements: ann.data ?? [],
+      };
     },
     updateSettings: async (patch) => {
       const { error } = await client
