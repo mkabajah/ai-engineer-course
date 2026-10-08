@@ -523,10 +523,10 @@ ${diff}
 /* --------------------------------- admin ---------------------------------- */
 
 export type AdminChallengeSummary = PublicChallenge & {
-  kind: "contribution" | "exam";
+  kind: "contribution" | "exam" | "orbit";
   participant_count: number;
   public_path: string;
-  manage_path: "/admin/challenge" | "/admin/exam";
+  manage_path: "/admin/challenge" | "/admin/exam" | "/admin/broken-prod";
 };
 
 export const adminListChallenges = createServerFn({ method: "GET" })
@@ -538,16 +538,31 @@ export const adminListChallenges = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return Promise.all(
       (rows ?? []).map(async (row) => {
-        const isExam = (row as typeof row & { challenge_type?: string }).challenge_type === "exam" || row.slug === "claude-architect";
+        const type = (row as typeof row & { challenge_type?: string }).challenge_type;
+        if (type === "orbit") {
+          // Operation: Broken Prod keeps its participants in obp_teams (see src/lib/obp)
+          const { count } = await (supabaseAdmin as unknown as import("@supabase/supabase-js").SupabaseClient)
+            .from("obp_teams")
+            .select("id", { count: "exact", head: true })
+            .not("registered_at", "is", null);
+          return {
+            ...normalizeChallenge(row, new Date(), count ?? 0),
+            kind: "orbit" as const,
+            participant_count: count ?? 0,
+            public_path: "/broken-prod",
+            manage_path: "/admin/broken-prod" as const,
+          };
+        }
+        const isExam = type === "exam" || row.slug === "claude-architect";
         const table = isExam ? "exam_attempts" : "challenge_submissions";
         const { count } = await supabaseAdmin.from(table).select("id", { count: "exact", head: true }).eq("challenge_id", row.id);
         const challenge = normalizeChallenge(row, new Date(), count ?? 0);
         return {
           ...challenge,
-          kind: isExam ? "exam" : "contribution",
+          kind: isExam ? ("exam" as const) : ("contribution" as const),
           participant_count: count ?? 0,
           public_path: isExam ? `/exams/${row.slug}` : `/challenges/${row.slug}`,
-          manage_path: isExam ? "/admin/exam" : "/admin/challenge",
+          manage_path: isExam ? ("/admin/exam" as const) : ("/admin/challenge" as const),
         };
       }),
     );
