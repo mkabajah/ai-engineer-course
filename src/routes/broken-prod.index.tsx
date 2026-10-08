@@ -12,6 +12,7 @@ import {
   KeyRound,
   Lightbulb,
   Loader2,
+  Lock,
   LogOut,
   Radio,
   Send,
@@ -560,18 +561,26 @@ function HiddenTests({
           {rows.map((r) => (
             <span
               key={r.id}
-              title={`${r.id}: ${r.result}${r.earned ? ` (+${r.earned})` : ""}`}
+              title={
+                r.result === "LOCKED"
+                  ? `${r.id}: fixed, but locked until you file a bug report (npm run bug)`
+                  : `${r.id}: ${r.result}${r.earned ? ` (${r.earned > 0 ? "+" : ""}${r.earned})` : ""}`
+              }
               className={`inline-flex min-w-14 items-center justify-center gap-1 rounded-sm px-2 py-1 font-mono text-[11px] ${
-                r.result === "PASS"
-                  ? r.earned < 0
-                    ? "bg-amber-100 text-amber-900"
-                    : "bg-emerald-100 text-emerald-800"
-                  : r.result === "ERROR"
-                    ? "bg-amber-100 text-amber-900"
-                    : "bg-muted text-muted-foreground"
+                r.result === "LOCKED"
+                  ? "bg-sky-100 text-sky-900"
+                  : r.earned < 0
+                    ? "bg-primary/10 text-primary"
+                    : r.result === "PASS"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : r.result === "ERROR"
+                        ? "bg-amber-100 text-amber-900"
+                        : "bg-muted text-muted-foreground"
               }`}
             >
-              {r.result === "PASS" ? (
+              {r.result === "LOCKED" ? (
+                <Lock className="h-3 w-3" />
+              ) : r.result === "PASS" ? (
                 <CheckCircle2 className="h-3 w-3" />
               ) : (
                 <XCircle className="h-3 w-3 opacity-60" />
@@ -583,7 +592,7 @@ function HiddenTests({
       )}
       <p className="mt-3 text-[11px] text-muted-foreground">
         {stageId === 1
-          ? "Test IDs only: bug names stay secret. Red herrings and traps can cost points."
+          ? "Test IDs only: bug names stay secret. 🔒 = fixed but locked until you file a bug report (npm run bug). Red herrings and traps can cost points."
           : "API contract + plot-twist acceptance tests."}{" "}
         🩸 First to pass a nasty test draws First Blood.
       </p>
@@ -760,7 +769,9 @@ function ChallengeCard({
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             {challenge.id} ·{" "}
             {challenge.kind === "auto"
-              ? "automatic"
+              ? challenge.points_max > 0
+                ? "automatic"
+                : "read this first"
               : challenge.ai_judged
                 ? "AI-judged"
                 : "host-reviewed"}
@@ -768,7 +779,7 @@ function ChallengeCard({
           <h4 className="mt-1 text-lg font-semibold leading-snug">{challenge.title}</h4>
         </div>
         <span className="shrink-0 rounded-full border border-rule px-2.5 py-1 font-mono text-xs">
-          {challenge.points_max} pts
+          {challenge.points_max > 0 ? `${challenge.points_max} pts` : "📌 brief"}
         </span>
       </div>
       <Markdown text={challenge.description_md} className="mt-3 text-sm text-muted-foreground" />
@@ -810,7 +821,7 @@ function ChallengeCard({
       {canSubmit && (
         <SubmitForm challenge={challenge} code={code} onDone={onDone} retry={Boolean(submission)} />
       )}
-      {challenge.kind === "auto" && !submission && (
+      {challenge.kind === "auto" && !submission && challenge.points_max > 0 && (
         <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
           <Bot className="h-3.5 w-3.5" /> Nothing to submit: the AI reviewer reads your last
           snapshot.
