@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import logoAsset from "@/assets/hasoub-labs.png.asset.json";
 
-const CURRENT_SESSION = 13;
+const CURRENT_SESSION = 30;
 const TOTAL_SESSIONS = 33;
 const PROGRESS = Math.round((CURRENT_SESSION / TOTAL_SESSIONS) * 100);
 
@@ -44,9 +44,9 @@ const OUTCOMES = [
 
 const MOMENTUM = [
   { value: `${PROGRESS}%`, label: "Program delivered", note: `${CURRENT_SESSION} of ${TOTAL_SESSIONS} sessions complete`, icon: RouteIcon },
-  { value: "3.0", label: "Contributions per session", note: `39 contributions across ${CURRENT_SESSION} delivered sessions`, icon: GitPullRequest },
+  { value: "1.3", label: "Contributions per session", note: `39 contributions across ${CURRENT_SESSION} delivered sessions`, icon: GitPullRequest },
   { value: "2×", label: "Learning cadence", note: "Two instructor-led sessions every week", icon: CalendarDays },
-  { value: "26", label: "Sessions still ahead", note: "More time for projects, practice, and career outcomes", icon: Target },
+  { value: "3", label: "Sessions still ahead", note: "The final stretch before Demo Day and graduation", icon: Target },
 ];
 
 const MODEL = [
@@ -58,9 +58,9 @@ const MODEL = [
 
 const JOURNEY = [
   { session: "01", label: "Journey started", state: "done" },
-  { session: "13", label: "We are here", state: "now" },
-  { session: "17", label: "Halfway mark", state: "next" },
-  { session: "25", label: "Final stretch", state: "next" },
+  { session: "17", label: "Halfway mark", state: "done" },
+  { session: "25", label: "Final stretch", state: "done" },
+  { session: "30", label: "We are here", state: "now" },
   { session: "33", label: "Final session", state: "finish" },
 ] as const;
 

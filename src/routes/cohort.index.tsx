@@ -23,7 +23,7 @@ export const Route = createFileRoute("/cohort/")({
   component: CohortDirectory,
 });
 
-const CURRENT_SESSION = 13;
+const CURRENT_SESSION = 30;
 const TOTAL_SESSIONS = 33;
 const PROGRESS = Math.round((CURRENT_SESSION / TOTAL_SESSIONS) * 100);
 
@@ -81,7 +81,7 @@ function CohortDirectory() {
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-14 sm:px-6 md:py-20">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><div className="label-eyebrow">1 cohort documented</div><h2 className="serif mt-2 text-4xl sm:text-5xl">Current cohorts</h2></div><div className="flex items-center gap-2 text-xs text-muted-foreground"><span className="cohort-live-dot h-2 w-2 rounded-full bg-primary" />Updated after Session 13</div></div>
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><div className="label-eyebrow">1 cohort documented</div><h2 className="serif mt-2 text-4xl sm:text-5xl">Current cohorts</h2></div><div className="flex items-center gap-2 text-xs text-muted-foreground"><span className="cohort-live-dot h-2 w-2 rounded-full bg-primary" />Updated after Session 30</div></div>
 
         <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }} className="mt-10 overflow-hidden border border-rule bg-background shadow-[0_24px_70px_color-mix(in_oklab,var(--ink)_10%,transparent)]">
           <div className="grid lg:grid-cols-[0.42fr_0.58fr]">
