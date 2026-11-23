@@ -20,5 +20,6 @@
 - [x] Add the Cohort page to the public navigation and align the final-session date.
 - [x] Turn Cohort into a directory with one live cohort and scalable future entries.
 - [x] Expand Cohort 01 into a richer NGO-facing impact story using verified and clearly derived metrics.
+- [ ] Update Cohort 1 timeline: new current session number (waiting on the number from the user).
 
 - [x] Challenge #3: Operation Broken Prod — 3-hour solo mission (live hidden-test scoring via the in-repo reporter, certification exam, AI-judged Forge, Ship It with plot twist, projector screen, host console).
